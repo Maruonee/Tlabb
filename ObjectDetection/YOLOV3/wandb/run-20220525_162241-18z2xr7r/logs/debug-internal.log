@@ -1,0 +1,67 @@
+2022-05-25 16:22:41,865 INFO    MainThread:18403 [internal.py:wandb_internal():93] W&B internal server running at pid: 18403, started at: 2022-05-25 16:22:41.865604
+2022-05-25 16:22:41,866 INFO    WriterThread:18403 [datastore.py:open_for_write():75] open: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/run-18z2xr7r.wandb
+2022-05-25 16:22:41,867 DEBUG   SenderThread:18403 [sender.py:send():232] send: header
+2022-05-25 16:22:41,867 DEBUG   SenderThread:18403 [sender.py:send():232] send: run
+2022-05-25 16:22:41,872 INFO    SenderThread:18403 [sender.py:_maybe_setup_resume():490] checking resume status for None/YOLOv3/18z2xr7r
+2022-05-25 16:22:42,457 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: check_version
+2022-05-25 16:22:42,458 INFO    SenderThread:18403 [dir_watcher.py:__init__():197] watching files in: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files
+2022-05-25 16:22:42,458 INFO    SenderThread:18403 [sender.py:_start_run_threads():814] run started: 18z2xr7r with start time 1653463361
+2022-05-25 16:22:42,458 DEBUG   SenderThread:18403 [sender.py:send():232] send: summary
+2022-05-25 16:22:42,458 INFO    SenderThread:18403 [sender.py:_save_file():948] saving file wandb-summary.json with policy end
+2022-05-25 16:22:42,458 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: check_version
+2022-05-25 16:22:42,549 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: run_start
+2022-05-25 16:22:42,556 DEBUG   HandlerThread:18403 [meta.py:__init__():35] meta init
+2022-05-25 16:22:42,557 DEBUG   HandlerThread:18403 [meta.py:__init__():49] meta init done
+2022-05-25 16:22:42,557 DEBUG   HandlerThread:18403 [meta.py:probe():209] probe
+2022-05-25 16:22:42,565 DEBUG   HandlerThread:18403 [meta.py:_setup_git():199] setup git
+2022-05-25 16:22:42,586 DEBUG   HandlerThread:18403 [meta.py:_setup_git():206] setup git done
+2022-05-25 16:22:42,586 DEBUG   HandlerThread:18403 [meta.py:_save_pip():53] save pip
+2022-05-25 16:22:42,587 DEBUG   HandlerThread:18403 [meta.py:_save_pip():67] save pip done
+2022-05-25 16:22:42,587 DEBUG   HandlerThread:18403 [meta.py:_save_conda():74] save conda
+2022-05-25 16:22:43,325 DEBUG   HandlerThread:18403 [meta.py:_save_conda():84] save conda done
+2022-05-25 16:22:43,325 DEBUG   HandlerThread:18403 [meta.py:probe():247] probe done
+2022-05-25 16:22:43,340 DEBUG   SenderThread:18403 [sender.py:send():232] send: files
+2022-05-25 16:22:43,340 INFO    SenderThread:18403 [sender.py:_save_file():948] saving file wandb-metadata.json with policy now
+2022-05-25 16:22:43,343 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:22:43,343 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:22:43,458 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/requirements.txt
+2022-05-25 16:22:43,459 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/wandb-metadata.json
+2022-05-25 16:22:43,459 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/wandb-summary.json
+2022-05-25 16:22:43,459 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/conda-environment.yaml
+2022-05-25 16:22:43,459 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:22:43,593 DEBUG   SenderThread:18403 [sender.py:send():232] send: telemetry
+2022-05-25 16:22:43,594 DEBUG   SenderThread:18403 [sender.py:send():232] send: config
+2022-05-25 16:22:44,022 INFO    Thread-11 :18403 [upload_job.py:push():132] Uploaded file /tmp/tmp_rpddnwxwandb/10ysiw1v-wandb-metadata.json
+2022-05-25 16:22:46,460 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:22:50,462 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:22:58,595 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:22:58,595 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:23:11,045 DEBUG   SenderThread:18403 [sender.py:send():232] send: stats
+2022-05-25 16:23:12,480 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/config.yaml
+2022-05-25 16:23:13,848 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:23:13,848 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:23:29,251 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:23:29,251 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:23:41,375 DEBUG   SenderThread:18403 [sender.py:send():232] send: stats
+2022-05-25 16:23:44,615 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:23:44,615 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:23:59,944 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:23:59,944 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:24:00,500 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:24:02,500 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:24:11,612 DEBUG   SenderThread:18403 [sender.py:send():232] send: stats
+2022-05-25 16:24:15,187 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:24:15,188 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:24:30,454 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:24:30,454 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:24:41,848 DEBUG   SenderThread:18403 [sender.py:send():232] send: stats
+2022-05-25 16:24:45,707 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:24:45,708 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:24:50,525 INFO    Thread-7  :18403 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_162241-18z2xr7r/files/output.log
+2022-05-25 16:25:00,984 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:25:00,985 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:25:12,102 DEBUG   SenderThread:18403 [sender.py:send():232] send: stats
+2022-05-25 16:25:16,246 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:25:16,247 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:25:31,548 DEBUG   HandlerThread:18403 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:25:31,550 DEBUG   SenderThread:18403 [sender.py:send_request():246] send_request: stop_status

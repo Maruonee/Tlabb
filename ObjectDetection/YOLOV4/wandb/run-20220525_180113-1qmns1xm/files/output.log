@@ -1,0 +1,18 @@
+
+
+
+
+
+Scanning images:  82%|███████████████████▌    | 390/477 [00:09<00:01, 50.81it/s]
+Scanning images: 100%|████████████████████████| 477/477 [00:11<00:00, 43.06it/s]
+Scanning labels /media/tlab/Data/Dataset/Carm/wire/txt.cache3 (0 found, 0 missing, 477 empty, 0 duplicate, for 477 images): 477it [00:00, 1243432.57it/s]
+Traceback (most recent call last):
+  File "train.py", line 537, in <module>
+    train(hyp, opt, device, tb_writer, wandb)
+  File "train.py", line 183, in train
+    rank=rank, world_size=opt.world_size, workers=opt.workers)
+  File "/home/tlab/Tlab/pytorch/ObjectDetection/YOLOV4/utils/datasets.py", line 72, in create_dataloader
+    rank=rank)
+  File "/home/tlab/Tlab/pytorch/ObjectDetection/YOLOV4/utils/datasets.py", line 497, in __init__
+    assert not augment, '%s. Can not train without labels.' % s
+AssertionError: WARNING: No labels found in /media/tlab/Data/Dataset/Carm/wire/txt/. See https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data. Can not train without labels.

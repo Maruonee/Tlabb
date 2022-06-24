@@ -1,0 +1,171 @@
+2022-05-25 16:39:42,838 INFO    MainThread:2643 [internal.py:wandb_internal():93] W&B internal server running at pid: 2643, started at: 2022-05-25 16:39:42.838285
+2022-05-25 16:39:42,839 INFO    WriterThread:2643 [datastore.py:open_for_write():75] open: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/run-17ifxmyx.wandb
+2022-05-25 16:39:42,840 DEBUG   SenderThread:2643 [sender.py:send():232] send: header
+2022-05-25 16:39:42,840 DEBUG   SenderThread:2643 [sender.py:send():232] send: run
+2022-05-25 16:39:42,844 INFO    SenderThread:2643 [sender.py:_maybe_setup_resume():490] checking resume status for None/YOLOv3/17ifxmyx
+2022-05-25 16:39:43,373 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: check_version
+2022-05-25 16:39:43,375 INFO    SenderThread:2643 [dir_watcher.py:__init__():197] watching files in: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files
+2022-05-25 16:39:43,375 INFO    SenderThread:2643 [sender.py:_start_run_threads():814] run started: 17ifxmyx with start time 1653464382
+2022-05-25 16:39:43,375 DEBUG   SenderThread:2643 [sender.py:send():232] send: summary
+2022-05-25 16:39:43,376 INFO    SenderThread:2643 [sender.py:_save_file():948] saving file wandb-summary.json with policy end
+2022-05-25 16:39:43,376 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: check_version
+2022-05-25 16:39:43,463 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: run_start
+2022-05-25 16:39:43,470 DEBUG   HandlerThread:2643 [meta.py:__init__():35] meta init
+2022-05-25 16:39:43,470 DEBUG   HandlerThread:2643 [meta.py:__init__():49] meta init done
+2022-05-25 16:39:43,470 DEBUG   HandlerThread:2643 [meta.py:probe():209] probe
+2022-05-25 16:39:43,478 DEBUG   HandlerThread:2643 [meta.py:_setup_git():199] setup git
+2022-05-25 16:39:43,501 DEBUG   HandlerThread:2643 [meta.py:_setup_git():206] setup git done
+2022-05-25 16:39:43,501 DEBUG   HandlerThread:2643 [meta.py:_save_pip():53] save pip
+2022-05-25 16:39:43,501 DEBUG   HandlerThread:2643 [meta.py:_save_pip():67] save pip done
+2022-05-25 16:39:43,501 DEBUG   HandlerThread:2643 [meta.py:_save_conda():74] save conda
+2022-05-25 16:39:44,376 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/requirements.txt
+2022-05-25 16:39:44,376 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-summary.json
+2022-05-25 16:39:44,376 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/conda-environment.yaml
+2022-05-25 16:39:44,397 DEBUG   HandlerThread:2643 [meta.py:_save_conda():84] save conda done
+2022-05-25 16:39:44,397 DEBUG   HandlerThread:2643 [meta.py:probe():247] probe done
+2022-05-25 16:39:44,414 DEBUG   SenderThread:2643 [sender.py:send():232] send: files
+2022-05-25 16:39:44,414 INFO    SenderThread:2643 [sender.py:_save_file():948] saving file wandb-metadata.json with policy now
+2022-05-25 16:39:44,417 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:39:44,417 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:39:44,697 DEBUG   SenderThread:2643 [sender.py:send():232] send: telemetry
+2022-05-25 16:39:44,698 DEBUG   SenderThread:2643 [sender.py:send():232] send: config
+2022-05-25 16:39:45,070 INFO    Thread-11 :2643 [upload_job.py:push():132] Uploaded file /tmp/tmpzc8iuokawandb/1or5rkmq-wandb-metadata.json
+2022-05-25 16:39:45,375 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-metadata.json
+2022-05-25 16:39:45,375 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_created():244] file/dir created: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:39:49,377 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:39:51,378 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:40:01,694 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:40:01,694 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:40:11,676 DEBUG   SenderThread:2643 [sender.py:send():232] send: stats
+2022-05-25 16:40:13,385 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/config.yaml
+2022-05-25 16:40:16,942 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:40:16,943 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:40:32,168 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: stop_status
+2022-05-25 16:40:32,169 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: stop_status
+2022-05-25 16:40:33,868 DEBUG   SenderThread:2643 [sender.py:send():232] send: telemetry
+2022-05-25 16:40:35,394 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:40:36,796 DEBUG   SenderThread:2643 [sender.py:send():232] send: exit
+2022-05-25 16:40:36,796 INFO    SenderThread:2643 [sender.py:send_exit():368] handling exit code: 1
+2022-05-25 16:40:36,797 INFO    SenderThread:2643 [sender.py:send_exit():370] handling runtime: 53
+2022-05-25 16:40:36,798 INFO    SenderThread:2643 [sender.py:_save_file():948] saving file wandb-summary.json with policy end
+2022-05-25 16:40:36,798 INFO    SenderThread:2643 [sender.py:send_exit():376] send defer
+2022-05-25 16:40:36,802 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,802 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 0
+2022-05-25 16:40:36,803 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:36,803 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,803 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 0
+2022-05-25 16:40:36,803 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 1
+2022-05-25 16:40:36,803 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:36,806 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,806 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 1
+2022-05-25 16:40:36,905 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,905 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 1
+2022-05-25 16:40:36,905 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 2
+2022-05-25 16:40:36,905 DEBUG   SenderThread:2643 [sender.py:send():232] send: stats
+2022-05-25 16:40:36,906 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,907 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 2
+2022-05-25 16:40:36,908 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:36,908 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,908 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 2
+2022-05-25 16:40:36,908 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 3
+2022-05-25 16:40:36,908 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:36,910 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,910 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 3
+2022-05-25 16:40:36,910 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,910 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 3
+2022-05-25 16:40:36,910 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 4
+2022-05-25 16:40:36,910 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,911 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 4
+2022-05-25 16:40:36,911 DEBUG   SenderThread:2643 [sender.py:send():232] send: summary
+2022-05-25 16:40:36,911 INFO    SenderThread:2643 [sender.py:_save_file():948] saving file wandb-summary.json with policy end
+2022-05-25 16:40:36,912 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,912 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 4
+2022-05-25 16:40:36,912 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 5
+2022-05-25 16:40:36,912 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:36,912 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 5
+2022-05-25 16:40:36,912 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:36,912 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 5
+2022-05-25 16:40:37,012 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,242 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 6
+2022-05-25 16:40:37,243 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,244 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:37,244 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 6
+2022-05-25 16:40:37,256 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:37,256 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 6
+2022-05-25 16:40:37,256 INFO    SenderThread:2643 [dir_watcher.py:finish():312] shutting down directory watcher
+2022-05-25 16:40:37,346 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,396 INFO    Thread-7  :2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/config.yaml
+2022-05-25 16:40:37,397 INFO    SenderThread:2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-summary.json
+2022-05-25 16:40:37,397 INFO    SenderThread:2643 [dir_watcher.py:_on_file_modified():257] file/dir modified: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:40:37,397 INFO    SenderThread:2643 [dir_watcher.py:finish():342] scan: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log output.log
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/requirements.txt requirements.txt
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/conda-environment.yaml conda-environment.yaml
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-summary.json wandb-summary.json
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/config.yaml config.yaml
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [dir_watcher.py:finish():356] scan save: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-metadata.json wandb-metadata.json
+2022-05-25 16:40:37,398 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 7
+2022-05-25 16:40:37,399 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,401 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:37,401 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 7
+2022-05-25 16:40:37,401 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:37,401 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 7
+2022-05-25 16:40:37,401 INFO    SenderThread:2643 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-25 16:40:37,503 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,504 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,607 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,607 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,711 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,712 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,816 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,817 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:37,921 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:37,921 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,024 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,025 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,128 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,129 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,234 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,235 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,296 INFO    Thread-12 :2643 [upload_job.py:push():132] Uploaded file /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/output.log
+2022-05-25 16:40:38,340 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,341 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,378 INFO    Thread-13 :2643 [upload_job.py:push():132] Uploaded file /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/requirements.txt
+2022-05-25 16:40:38,395 INFO    Thread-16 :2643 [upload_job.py:push():132] Uploaded file /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/config.yaml
+2022-05-25 16:40:38,412 INFO    Thread-14 :2643 [upload_job.py:push():132] Uploaded file /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/conda-environment.yaml
+2022-05-25 16:40:38,418 INFO    Thread-15 :2643 [upload_job.py:push():132] Uploaded file /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/files/wandb-summary.json
+2022-05-25 16:40:38,444 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,444 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,548 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:38,549 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:38,620 INFO    Thread-6  :2643 [sender.py:transition_state():389] send defer: 8
+2022-05-25 16:40:38,622 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:38,622 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 8
+2022-05-25 16:40:38,622 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:38,622 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 8
+2022-05-25 16:40:38,652 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:39,189 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 9
+2022-05-25 16:40:39,190 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:39,191 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:39,199 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 9
+2022-05-25 16:40:39,199 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:39,199 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 9
+2022-05-25 16:40:39,199 INFO    SenderThread:2643 [sender.py:transition_state():389] send defer: 10
+2022-05-25 16:40:39,200 DEBUG   SenderThread:2643 [sender.py:send():232] send: final
+2022-05-25 16:40:39,201 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: defer
+2022-05-25 16:40:39,201 DEBUG   SenderThread:2643 [sender.py:send():232] send: footer
+2022-05-25 16:40:39,201 INFO    HandlerThread:2643 [handler.py:handle_request_defer():164] handle defer: 10
+2022-05-25 16:40:39,201 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: defer
+2022-05-25 16:40:39,201 INFO    SenderThread:2643 [sender.py:send_request_defer():385] handle sender defer: 10
+2022-05-25 16:40:39,301 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: poll_exit
+2022-05-25 16:40:39,302 DEBUG   SenderThread:2643 [sender.py:send_request():246] send_request: poll_exit
+2022-05-25 16:40:39,302 INFO    SenderThread:2643 [file_pusher.py:join():150] waiting for file pusher
+2022-05-25 16:40:39,914 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: sampled_history
+2022-05-25 16:40:39,915 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: get_summary
+2022-05-25 16:40:39,915 DEBUG   HandlerThread:2643 [handler.py:handle_request():141] handle_request: shutdown
+2022-05-25 16:40:39,915 INFO    HandlerThread:2643 [handler.py:finish():806] shutting down handler
+2022-05-25 16:40:40,201 INFO    WriterThread:2643 [datastore.py:close():279] close: /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/wandb/run-20220525_163942-17ifxmyx/run-17ifxmyx.wandb
+2022-05-25 16:40:40,812 INFO    SenderThread:2643 [sender.py:finish():1110] shutting down sender
+2022-05-25 16:40:40,813 INFO    SenderThread:2643 [file_pusher.py:finish():145] shutting down file pusher
+2022-05-25 16:40:40,813 INFO    SenderThread:2643 [file_pusher.py:join():150] waiting for file pusher
+2022-05-25 16:40:40,902 INFO    MainThread:2643 [internal.py:handle_exit():80] Internal process exited
