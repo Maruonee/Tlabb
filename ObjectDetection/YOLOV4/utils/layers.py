@@ -70,6 +70,15 @@ class FeatureConcat3(nn.Module):
     def forward(self, x, outputs):
         return torch.cat([outputs[self.layers[0]], outputs[self.layers[1]].detach(), outputs[self.layers[2]].detach()], 1)
 
+class FeatureConcat3(nn.Module):
+    def __init__(self, layers):
+        super(FeatureConcat3, self).__init__()
+        self.layers = layers  # layer indices
+        self.multiple = len(layers) > 1  # multiple layers flag
+
+    def forward(self, x, outputs):
+        return torch.cat([outputs[self.layers[0]], outputs[self.layers[1]].detach(), outputs[self.layers[2]].detach()], 1)
+
 
 class FeatureConcat_l(nn.Module):
     def __init__(self, layers):

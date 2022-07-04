@@ -26,4 +26,9 @@ deb http://deb.anydesk.com/ all main
 sudo apt update
 sudo apt install anydesk
 =================================================================================
+vscode shortcut
 
+ctrl + d = 원하는 단어 전부 선택
+Alt + 클릭 = 원하는 커서 위치 전부 지정
+alt +shift +i = 선택영역 맨 뒤에 커서 전부 지정
+alt + shitf + 드레그 = 선택영역에서 같은부분으로 커서 지정
