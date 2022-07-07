@@ -28,7 +28,7 @@
 #         break
 #     else:
 #         print(output_day)
- # =============================================================
+#  =============================================================
       
 # def say_hello(name, age, output_day, favoite_num):
 #     return f"hello {name} you are {age} years old today is {output_day}, your favoite number is {favoite_num}"
@@ -64,8 +64,8 @@
 #         print(f"오프라인 스터디 모임 {select_number_month}월에는 {number_f_day}일로 선정하였습니다.")
 # test = r'C:\Nature'
 # print(test)  # C:\Nature
-#################################################################### 
-#Quiz 3
+# ################################################################### 
+# Quiz 3
 
 # adress_weburl = ("http://yo.com")
 
@@ -79,7 +79,7 @@
 
 # make_pass_three = adress_weburl.count("e")
 # maked_pass = print(f"{adress_weburl} 에서 생성된 비밀번호는 {make_pass_one}{make_pass_two}{make_pass_three}!입니다.")
-###################################################
+# ##################################################
 # weather = input("오늘 날씨 어때요?")
 # if weather == "비" or weather == "눈":
 #     print("우산을 챙기세요")
@@ -98,7 +98,7 @@
 #      print("개추워요")  
     
 
-###################################################
+# ##################################################
 # name_list = ["황호성","김호철","김동현"]
 # for waiting_no in range(1,30):
 #     for list in name_list:
@@ -116,7 +116,7 @@
 #         break
 #     print("%s 책 읽어봐"%(student))
 
-###################################################
+# ##################################################
 
 # Quiz4
 
@@ -158,7 +158,7 @@
 # print("치킨 당첨자 : {0}".format(winners[0]))
 # print("커피 당첨자 : {0}".format(winners[1:]))
 # print("-- 축하합니다. --")
-####################################################################
+# ###################################################################
 
 # print(5 + 6)   # 11
 # print(5 - 2)   # 3
@@ -166,29 +166,29 @@
 # print(3 ** 3)  # 27 제곱
 # print(8 / 2)   # 4.0 float형
 # print(8 // 2)  # 4 int형
-# print(8 % 3)   # 2 나머지
+# # print(8 % 3)   # 2 나머지
 
-# for items
+# # for items
 
-# d = {'person': 2, 'cat': 4, 'spider': 8}
-# for animal, legs in d.items():
-#     print('A %s has %d legs' % (animal, legs))
+# # d = {'person': 2, 'cat': 4, 'spider': 8}
+# # for animal, legs in d.items():
+# #     print('A %s has %d legs' % (animal, legs))
 
 
-# student = [1,2,3,4,5]
-# print(student)
+# # student = [1,2,3,4,5]
+# # print(student)
 
-# student = [i+100 for i in student]
-# print(student)
+# # student = [i+100 for i in student]
+# # print(student)
 
-####################################################################
+# ####################################################################
 
-# Quiz
-import random
-# tim = random.shuffle(range(1,51))
-ind_num = int(input("손님수를 넣으세요."))
-lis = list(range(1,ind_num))
-tim = [random.randrange(1,61) for i in range(ind_num)]
+# # Quiz
+# import random
+# # tim = random.shuffle(range(1,51))
+# ind_num = int(input("손님수를 넣으세요."))
+# lis = list(range(1,ind_num))
+# tim = [random.randrange(1,61) for i in range(ind_num)]
 
 # tim = []
 # lis = []
@@ -202,18 +202,82 @@ tim = [random.randrange(1,61) for i in range(ind_num)]
 #         print(f"{p_list}번째 손님 (소요시간 : {rd_time})")
 
 
-str_lits = list(map(str, lis)) #문자열 변환
-name_list = ["택시 손님"+i for i in str_lits] # 택시손님 문자열 추가
-texi_list = dict(zip(name_list,tim)) # 손님 : 시간
-print(f"손님 {ind_num}명이 탑승 대기중 입니다.")
-for key, value in texi_list.items():
-    if value <= 15:
-        print(f"하지만 탑승 가능한 손님은 {key}입니다.")
+# str_lits = list(map(str, lis)) #문자열 변환
+# name_list = ["택시 손님"+i for i in str_lits] # 택시손님 문자열 추가
+# texi_list = dict(zip(name_list,tim)) # 손님 : 시간
+# print(f"손님 {ind_num}명이 탑승 대기중 입니다.")
+# for key, value in texi_list.items():
+#     if value <= 15:
+#         print(f"하지만 탑승 가능한 손님은 {key}입니다.")
 
-early_time = min(texi_list.values())
+# early_time = min(texi_list.values())
 
-#key value 뒤집기
-r_texi_list = {v:k for k,v in texi_list.items()}
-early_list=r_texi_list.get(early_time)
+# r_texi_list = {v:k for k,v in texi_list.items()} #key value 뒤집기
+# early_list=r_texi_list.get(early_time)
 
-print(f"가장 가까이 가는 손님은 {early_list}이며 소요시간은 {early_time}분 입니다.")
+# print(f"가장 가까이 가는 손님은 {early_list}이며 소요시간은 {early_time}분 입니다.").
+
+
+
+# def checkpoint(gun, soldiers, optiom=False):
+#     gun = gun - soldiers
+#     print(f"부대내 남은 총은 {gun}입니다.") 
+#     return gun, soldiers
+
+# gun_num = int(input("부대 총의 수를 입력하시오."))
+# soldiers_num = int(input("경계초소 인원을 입력하시오."))
+
+# gun, soldiers = checkpoint(gun_num, soldiers_num)
+
+# print(gun, soldiers)
+
+# def std_weight(c_height, c_gender):
+#     if c_gender =="":
+#         normal_wei = round((c_height)*(c_height) * 22 / 10000,2)
+#         print(f"키 {c_height}, 남자의 표준 체중은 {normal_wei}Kg 입니다.")
+#         return normal_wei
+#     else:
+#         normal_wei = round((c_height)*(c_height) * 21 / 10000)
+#         print(f"키 {c_height}, 여자의 표준 체중은 {normal_wei}Kg 입니다.")
+#         return normal_wei
+
+# height = float(input("키를 입력하시오, (cm단위) "))
+# gender = input("여자라면 아무키나 입력하세요. 아니라면 엔터치세요 ")
+
+# normal_wei = std_weight (height, gender)
+
+# # #내용 덮어쓰는 파일
+# score_file = open("./score.txt","w", encoding = "utf8")
+# score_test = {'수학': 1, '영어' : 50}
+
+# print(score_test, file=score_file)
+
+score_file = open(
+    "score.txt","w", encoding="utf_8"
+    )
+score_test = []
+
+score_test.append(
+        {'이름': input('이름을 입력하시오:'),
+         '과목':input('과목를 입력하시오 :'),
+         '성적': input('성적을 입력하시오:'),
+         '나이':input('나이를 입력하시오:')}
+        )
+print(score_test)
+
+
+for key, value in score_test.items():
+    print(key, value, file=score_file)
+    
+score_file.close()
+
+# score_file = open(
+#     "score.txt","r", encoding="utf_8"
+#     )
+
+
+# print(score_file.readline())
+# print(score_file.readline())
+# print(score_file.readline())
+# print(score_file.readline())
+# print(score_file.readline())
