@@ -17,10 +17,8 @@
 # favo_num = maru_plus(p_a,p_b)
 
 # print(f"your favoite number is {favo_num}")
-
+=============================================================
 # input_days = ("Mom", "Tue","Wed", "Thu", "Fri")
-# =============================================================
-
 # for output_day in input_days:
 #     print(output_day)
 # for output_day in input_days:
@@ -252,24 +250,24 @@
 
 # print(score_test, file=score_file)
 
-score_file = open(
-    "score.txt","w", encoding="utf_8"
-    )
-score_test = []
+# score_file = open(
+#     "score.txt","w", encoding="utf_8"
+#     )
+# score_test = []
 
-score_test.append(
-        {'이름': input('이름을 입력하시오:'),
-         '과목':input('과목를 입력하시오 :'),
-         '성적': input('성적을 입력하시오:'),
-         '나이':input('나이를 입력하시오:')}
-        )
-print(score_test)
+# score_test.append(
+#         {'이름': input('이름을 입력하시오:'),
+#          '과목':input('과목를 입력하시오 :'),
+#          '성적': input('성적을 입력하시오:'),
+#          '나이':input('나이를 입력하시오:')}
+#         )
+# print(score_test)
 
 
-for key, value in score_test.items():
-    print(key, value, file=score_file)
+# for key, value in score_test.items():
+#     print(key, value,)
     
-score_file.close()
+# score_file.close()
 
 # score_file = open(
 #     "score.txt","r", encoding="utf_8"
@@ -281,3 +279,8 @@ score_file.close()
 # print(score_file.readline())
 # print(score_file.readline())
 # print(score_file.readline())
+
+
+
+
+
