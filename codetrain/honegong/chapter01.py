@@ -1,4 +1,4 @@
-#%%"
+#%%
 from ast import Break
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
@@ -16,7 +16,7 @@ smelt_weight = [
     6.7, 7.5, 7.0, 9.7, 9.8, 8.7, 10.0, 9.9, 9.8, 12.2, 13.4, 12.2, 19.7, 19.9
     ]
 
-#%%"
+#%%
 plt.scatter(bream_length, bream_weight)
 plt.scatter(smelt_length, smelt_weight)
 plt.xlabel("length")
@@ -28,15 +28,14 @@ length = bream_length + smelt_length
 weight = bream_weight + smelt_weight
 #배열 속 배열구조로 쌍으로 만들기
 fish_data = [[l,w] for l, w in zip(length, weight)]
-print(f"데이터셋입니다.\n{fish_data}\n데이터셋 끝")
-
-K_point = 100
-
-while K_point <= 49:
-    K_point = int(input("49이하로 입력하세요) "))
-    
 #앞 35과 뒤 14 구분
 fish_target = [1] * 35 + [0]* 14
+print(f"데이터셋입니다.\n{fish_data}\n데이터셋 끝")
+
+while True:
+    K_point = int(input(f"K값을 입력하세요({len(fish_data)}이하로 입력하세요) "))
+    if K_point < len(fish_data):
+        break
 #학습 k값 정하기
 kn = KNeighborsClassifier(n_neighbors=K_point)
 #kn 트레이닝
@@ -48,13 +47,15 @@ A_fish = kn.score(fish_data, fish_target)
 print(f"{int((A_fish)*1000)/10}%의 정확도 입니다.")
 #%%
 #예측
-F_length = input("생선 길이를 입력하시오.")
-F_weight = input("생선 무게를 입력하시오.")
+F_length = int(input("생선 길이를 입력하세요. "))
+F_weight = int(input("생선 무게를 입력하세요. "))
 
 if str(kn.predict([[F_length,F_weight]])) == "[1]":
-     print("도미입니다(bream)")
+     print("도미입니다.(bream)")
 else:
-     print("빙어입니다(smlet)")
+     print("빙어입니다.(smlet)")
      
 # %%
 print(kn._fit_X,"\n", kn._y)
+
+# %%
