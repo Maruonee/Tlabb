@@ -41,7 +41,6 @@ train_datagen = ImageDataGenerator(
 #        zoom_range=0.2,
 #        horizontal_flip=True,
 #        fill_mode=`nearest`)
-#        featurewise_center=False,
 #        samplewise_center=False,
 #        featurewise_std_normalization=False,
 #        samplewise_std_normalization=False,
@@ -107,6 +106,7 @@ out_layer = tf.keras.layers.BatchNormalization()(out_layer)
 out_layer = tf.keras.layers.ReLU()(out_layer) 
 out_layer = tf.keras.layers.GlobalAveragePooling2D()(out_layer)
 out_layer = tf.keras.layers.Dense(Class_num, activation='softmax')(out_layer)
+
 
 # Outlayer Set and model
 model = tf.keras.models.Model(base_model.input, out_layer)
