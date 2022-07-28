@@ -41,6 +41,7 @@ train_datagen = ImageDataGenerator(
 #        zoom_range=0.2,
 #        horizontal_flip=True,
 #        fill_mode=`nearest`)
+#        featurewise_center=False,+
 #        samplewise_center=False,
 #        featurewise_std_normalization=False,
 #        samplewise_std_normalization=False,

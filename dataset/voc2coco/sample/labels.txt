@@ -1,5 +1,0 @@
-mask
-nomask
-nomask_nose
-nomask_mouth
-nomask_nose_mouth

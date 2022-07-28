@@ -247,3 +247,6 @@ ObjectDetection/YOLOV3/wandb/run-20220721_133657-24z4sttv/files/requirements.txt
 ObjectDetection/YOLOV3/wandb/run-20220721_133715-o2eyijxf/files/requirements.txt
 ObjectDetection/YOLOV3/wandb/run-20220721_140222-3l1is46y/files/requirements.txt
 ObjectDetection/YOLOV3/wandb/run-20220721_143833-8bkingls/files/requirements.txt
+*.xml
+*.xml
+*.txt

@@ -86,7 +86,7 @@ cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov3.pt --batch 16 --epochs 10 --cache --evolve
 
 #Train 
-python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov3.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hyp_evolve.yaml
+python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov3.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hyoYOLOv3/hyp_evolve.yaml
 
 #detect
 python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
@@ -112,20 +112,20 @@ python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/t
 conda create -n yolo5
 conda activate yolo5
 pip install wandb
-pip install upgrade wandb
+pip install wandb --upgrade
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 pip install -r requirements.txt
 
 #activate
 conda activate yolo5
-cd home/tlab/Tlabb/ObjectDetection/YOLOV5
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
 python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 10 --cache --evolve
 
 #Train 
-python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hyp_evolve.yaml
+python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hypYOLOv5/hyp_evolve.yaml
 
 
 #detect
