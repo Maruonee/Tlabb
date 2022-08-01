@@ -1,12 +1,12 @@
 #################################PytorchClass
 #install
-conda create -n class
-conda activate class
+conda create -n TorchClass
+conda activate TorchClass
 conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 pip install matplotlib
 
 #activate
-conda activate class
+conda activate TorchClass
 cd /home/tlab/Tlab/pytorch/Classification
 
 #train
@@ -16,8 +16,8 @@ python3 alexnet.py
 
 ##############################TensorFlowClass
 #install
-conda create -n tclass
-conda activate tclass
+conda create -n TensorClass
+conda activate TensorClass
 conda install -c conda-forge tensorflow-gpu
 conda install -c anaconda cudnn==8.2.1
 conda install -c anaconda cudatoolkit==11.3.1
@@ -25,8 +25,8 @@ pip install opencv-python
 pip install matplotlib
 
 #activate
-conda activate tclass
-cd /home/tlab/Tlab/Tensorflow/ubuntu
+conda activate TensorClass
+cd /home/tlab/Tlabb/classfication/TensorClass
 
 #train
 python3 vgg19.py
@@ -41,45 +41,41 @@ python3 xception.py
 
 #detect
 
-
 ##########################################voc2coco
-#install 
-conda create -n voc2coco
-conda activate voc2coco
-cd /home/tlab/Tlab/voc2coco
-conda install python
-pip install tqdm
-
 #activate
-conda activate voc2coco
+conda activate ConVformat
 cd /home/tlab/Tlab/voc2coco
 python3 voc2coco.py --ann_dir /media/tlab/Data/Dataset/Mask/coco/VOC2007/Annotations --ann_ids /media/tlab/Data/Dataset/Mask/coco/VOC2007/ImageSets/Main/val.txt --labels /media/tlab/Data/Dataset/Mask/classes.txt --output /media/tlab/Data/Dataset/Mask/coco/VOC2007/output.json --ext xml
-
 #########################################yolo2COCO
 #install 
-conda create -n yolo2COCO python=3.8
-conda activate yolo2COCO
+conda create -n ConVformat python=3.8
+conda activate ConVformat
 pip install numpy
 pip install opencv-python
+pip install tqdm
 cd /home/tlab/Tlab/yolo2coco
 git clone https://github.com/Taeyoung96/Yolo-to-COCO-format-converter.git
 
 #activate
-conda activate yolo2COCO
+conda activate ConVformat
 cd /home/tlab/Tlab/yolo2coco
 pythoamain.py --path /media/tlab/Data/Dataset/Carm/train.txt --output train.json
+##########################################SplitFolders
+conda activate ConVformat
+pip install split-folders
+
 
 
 #########################################YOLOV3
 #install 
-conda create -n yo
-conda activate yo
+conda create -n YOLOV3
+conda activate YOLOV3
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 pip install -r requirements.txt
 pip install wandb
 
 #activate
-conda activate yo
+conda activate YOLOV3
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
@@ -91,26 +87,30 @@ python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/c
 #detect
 python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
 
-
-#########################################YOLOV4
+##########################################YOLOv4
 #install 
-pip install pycocotools
+conda create -n YOLOV4 python=3.8
+conda activate YOLOV4
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+pip install -r requirements.txt
 
 #activate
-conda activate yo
+conda activate YOLOV4
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV4
 
-#Train
-python train.py --device 0 --batch-size 16 --data /media/tlab/Data/Dataset/Carm/Carm.yaml --cfg /media/tlab/Data/Dataset/Carm/yolov4.cfg --weights /home/tlab/Pretrain/YOLOV4/yolov4.weights --name yolov4
+#Test
+python test.py --img 640 --conf 0.001 --batch 8 --device 0 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights weights/yolov4-pacsp.pt
 
-#detectdj
+#Train 
+python train.py --device 0 --batch-size 16 --img 640 640 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights '' --name yolov4-pacsp
+
+#detect
 python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
-
 
 ##########################################YOLOv5
 #install 
-conda create -n yolo5
-conda activate yolo5
+conda create -n YOLOV5
+conda activate YOLOV5
 pip install wandb
 pip install wandb --upgrade
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
@@ -118,7 +118,7 @@ cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 pip install -r requirements.txt
 
 #activate
-conda activate yolo5
+conda activate YOLOV5
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
@@ -127,10 +127,8 @@ python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/
 #Train 
 python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hypYOLOv5/hyp_evolve.yaml
 
-
 #detect
 python detect.py --weights /media/tlab/Data/Results/Mask/YOLOV5/weights/best.pt --source /media/tlab/Data/Dataset/Mask/test/
-
 
 ########################################YOLOX
 #install	
@@ -150,4 +148,57 @@ python tools/demo.py image -f exps/default/yolox_s.py -c /media/tlab/Data/Result
 
 #test
 python -m yolox.tools.eval -n yolox-s -c /home/tlab/Tlab/pytorch/ObjectDetection/YOLOX/YOLOX_outputs/4/yolox_voc_s/epoch_10_ckpt.pth -b 1 -d 1 --conf 0.001 --fp16 --fuse
+
+########################################YOLOV6
+#install	
+conda create -n YOLOV6 python=3.8
+conda activate YOLOV6
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
+conda activate YOLOV6
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+pip install -r requirements.txt
+
+#activate 
+conda activate YOLOV6
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
+
+#Pre train(optimizer hyperparameter)
+
+#training_mode='hyper_search'#config에 추가
+python tools/train.py --batch 32 --conf configs/repopt/yolov6s_opt.py --data data/coco.yaml --device 0
+
+#train
+python tools/train.py --batch 32 --conf configs/yolov6s.py --data data/coco.yaml --device 0
+
+#Test(optimizer hyperparameter)
+python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --task val
+
+#detect
+python tools/infer.py --weights yolov6s.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/images
+
+########################################YOLOV7
+#install	
+conda create -n YOLOV7 python=3.8
+conda activate YOLOV7
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+pip install -r requirements.txt
+
+#activate 
+conda activate YOLOV7
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
+
+#train
+python train.py --workers 8 --device 0 --batch-size 32 --data data/coco.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
+
+python train.py --workers 8 --device 0 --batch-size 32 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7-custom.yaml --weights 'yolov7_training.pt' --name yolov7-custom --hyp data/hyp.scratch.custom.yaml
+
+#Test(optimizer hyperparameter)
+python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --device 0 --weights yolov7.pt --name yolov7_640_val
+
+#detect
+python detect.py --weights yolov7.pt --conf 0.25 --img-size 640 --source inference/images/horses.jpg
+
+#Pose detect
+keypoint.ipynb
 

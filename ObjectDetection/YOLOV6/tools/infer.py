@@ -14,7 +14,8 @@ if str(ROOT) not in sys.path:
 from yolov6.utils.events import LOGGER
 from yolov6.core.inferer import Inferer
 
-
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 def get_args_parser(add_help=True):
     parser = argparse.ArgumentParser(description='YOLOv6 PyTorch Inference.', add_help=add_help)
     parser.add_argument('--weights', type=str, default='weights/yolov6s.pt', help='model path(s) for inference.')

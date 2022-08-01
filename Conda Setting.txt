@@ -1,33 +1,32 @@
 Conda Env Setting
 #################################PytorchClass
-name : class
+name : TorchClass
 PyTorch 1.11.0
 Torchvision
 Torchaudio
 cudatoolkit 11.3.1
 matplotlib
 ###############################TensorFlowClass
-name: tclass
+name: TensorClass
 tensorflow-gpu 2.7.1
 cudnn 8.2.1
 cudatoolkit 11.3.1
 matplotlib
 pencv-python
 ########################################YOLOv5
-name : yolo5
+name : YOLOV5
 pytorch 1.8.0
 torchvision 0.9.0
 torchaudio 0.8.0
 cudatoolkit 11.1
 wandb
 #########################################YOLO3
-name : yo
+name : YOLOV3
 pytorch 1.8.0
 torchvision 0.9.0
 torchaudio 0.8.0
 cudatoolkit 11.1
 wandb
-
 #########################################YOLOX
 name : YOLOX
 PyTorch 1.11.0
@@ -35,9 +34,7 @@ Torchvision
 Torchaudio
 cudatoolkit 11.3.1
 #####################################yolo2coco
-name : yolo2COCO
+name : ConVformat
 numpy
 opencv-python
-######################################voc2coco
-name : voc2coco
 tqdm
