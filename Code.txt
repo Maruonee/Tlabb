@@ -14,32 +14,19 @@ python3 alexnet.py
 
 #detect
 
-##############################TensorFlowClass
+##############################TensorEnv
 #install
-conda create -n TensorClass
-conda activate TensorClass
-conda install -c conda-forge tensorflow-gpu
+conda create -n TensorEnv python=3.8
+conda activate TensorEnv
+pip install --upgrade tensorflow
 conda install -c anaconda cudnn==8.2.1
-conda install -c anaconda cudatoolkit==11.3.1
 pip install opencv-python
 pip install matplotlib
+pip install SciPy
 
 #activate
-conda activate TensorClass
-cd /home/tlab/Tlabb/classfication/TensorClass
-
-#train
-python3 vgg19.py
-python3 vgg16.py
-python3 Dencenet201.py
-python3 EfficientNetB7.py
-python3 inceptionv3.py
-python3 Mobilenetv2.py
-python3 resnet50.py
-python3 ResNet101.py
-python3 xception.py
-
-#detect
+conda activate TensorEnv
+python3 /home/tlab/Tlabb/classfication/TensorClass/Classfication.py | tee logs.txt
 
 ##########################################voc2coco
 #activate
