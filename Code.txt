@@ -23,6 +23,7 @@ conda install -c anaconda cudnn==8.2.1
 pip install opencv-python
 pip install matplotlib
 pip install SciPy
+pip install knockknock
 
 #activate
 conda activate TensorEnv
