@@ -9,34 +9,44 @@ val
  -----/class3
 """
 import numpy as np
-# import tensorflow as tf
+import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
-# from tensorflow import keras
+from tensorflow import keras
 from keras.preprocessing import image
 from keras_preprocessing.image import ImageDataGenerator
 
-
-# from keras.models import load_model
 #================================================================================================
 #세팅
-predict_dir = "/home/tlab/sono/test"
-class_name = "Fail"
+predict_imgdir = "/home/tlab/sono/test/Fail"
 custom_batch = 16
 model_dir = "/home/tlab/Results/Classification/DenseNet201_Best.h5"
-model_name = "DenseNet201"
 #예측 이미지 생성
 
-predict_datagen = ImageDataGenerator(
-    rescale=1./255,
-    )
-predict_path = os.path.join(predict_dir,class_name)
-predict_dataset = predict_datagen.flow_from_directory(
-    predict_path,
-    batch_size=custom_batch,
-    target_size=(512, 512),
-    class_mode='categorical',
-    )
+for fn in uploaded.keys():
+  path = predict_imgdir
+  img=image.load_img(path, target_size=(150, 150))
+  x=image.img_to_array(img)
+  x=np.expand_dims(x, axis=0)
+  images = np.vstack([x])
+  classes = model.predict(images, batch_size=custom_batch)
+  print(classes[0])
+
+if classes[0]>0:
+    print(fn + " is a dog")
+else:
+    print(fn + " is a cat")
+    
+# predict_datagen = ImageDataGenerator(
+#     rescale=1./255,
+#     )
+# predict_path = os.path.join(predict_dir,class_name)
+# predict_dataset = predict_datagen.flow_from_directory(
+#     predict_path,
+#     batch_size=custom_batch,
+#     target_size=(512, 512),
+#     class_mode='categorical',
+#     )
 
 plt.figure(figsize=(6,6))
 
