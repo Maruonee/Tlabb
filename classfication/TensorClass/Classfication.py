@@ -20,7 +20,7 @@ import time
 #================================================================================================
 #세팅값 입력
 base_dir = '/home/tlab/sono/'
-model_name = "RegNetY320" 
+model_name = "NASNetLarge" 
 # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 custom_batch = 16
 custom_epochs = 1000
@@ -123,7 +123,7 @@ test_dataset = test_datagen.flow_from_directory(
     )
 #================================================================================================
 #모델설정
-base_model =tf.keras.applications.regnet.RegNetY320(
+base_model = tf.keras.applications.nasnet.NASNetLarge(
     # tf.keras.applications.densenet.DenseNet201
     # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
     # tf.keras.applications.inception_v3.InceptionV3
@@ -167,7 +167,7 @@ model.compile(
 model.summary()
 
 #Slack 알람 설정
-webhook_url = "https://hooks.slack.com/services/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"
+webhook_url = "https://hooks.slack.com/services/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"
 @slack_sender(webhook_url=webhook_url, channel="#training")
 
 #학습정의
