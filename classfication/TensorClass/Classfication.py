@@ -167,7 +167,7 @@ model.compile(
 model.summary()
 
 #Slack 알람 설정
-webhook_url = "https://hooks.slack.com/services/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"
+webhook_url = "https://hooks.slack.com/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 @slack_sender(webhook_url=webhook_url, channel="#training")
 
 #학습정의
