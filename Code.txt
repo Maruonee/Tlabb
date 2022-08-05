@@ -27,7 +27,7 @@ pip install knockknock
 
 #activate
 conda activate TensorEnv
-python3 /home/tlab/Tlabb/classfication/TensorClass/Classfication.py | tee logs.txt
+python3 DenseNet201.py ; python3 InceptionResNetV2.py ; python3 InceptionV3.py ; python3 NASNetLarge.py ; python3 RegNetY320.py ; python3 ResNet50.py ; python3 ResNet50V2.py ; python3 ResNetRS50.py ; python3 VGG16.py ; python3 VGG19.py ; python3 Xception.py
 
 ##########################################voc2coco
 #activate

@@ -20,7 +20,7 @@ import time
 #================================================================================================
 #세팅값 입력
 base_dir = '/home/tlab/sono/'
-model_name = "NASNetLarge" 
+model_name = "RegNetY320" 
 # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 custom_batch = 16
 custom_epochs = 1000
@@ -123,7 +123,7 @@ test_dataset = test_datagen.flow_from_directory(
     )
 #================================================================================================
 #모델설정
-base_model = tf.keras.applications.nasnet.NASNetLarge(
+base_model = tf.keras.applications.regnet.RegNetY320(
     # tf.keras.applications.densenet.DenseNet201
     # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
     # tf.keras.applications.inception_v3.InceptionV3
@@ -167,7 +167,7 @@ model.compile(
 model.summary()
 
 #Slack 알람 설정
-webhook_url = "https://hooks.slack.com/services/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"
+webhook_url = "https://hooks.slack.com/services/xxxxxxx"
 @slack_sender(webhook_url=webhook_url, channel="#training")
 
 #학습정의
@@ -234,7 +234,7 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
     print(f'Lest accuracy : {l_accuracy}')  
     print(f'Best loss : {b_loss}')
     print(f'Best accuracy : {b_accuracy}')
-    time.sleep(30)
+    time.sleep(62)
     return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Last accuracy : {l_accuracy}'
 
 # 실행

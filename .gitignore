@@ -250,3 +250,5 @@ ObjectDetection/YOLOV3/wandb/run-20220721_143833-8bkingls/files/requirements.txt
 *.xml
 *.xml
 *.txt
+classfication/TensorClass/Classfication.py
+classfication/TensorClass/Classfication.py
