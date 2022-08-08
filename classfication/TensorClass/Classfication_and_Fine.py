@@ -317,11 +317,14 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     #튜닝 실행
     model.trainable = True
     model.summary()
-    Fine_tuning_CT_Resolution()
+    try:
+        Fine_tuning_CT_Resolution()
     
     #slack에 출력
-    time.sleep(3)
-    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
+    finally:
+        time.sleep(3)
+        return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
+
 
 # 실행
 CT_resoultion_clssification()
