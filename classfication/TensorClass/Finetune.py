@@ -21,36 +21,16 @@ import time
 #세팅값 입력
 base_dir = '/home/tlab/sono/'
 model_name = "RegNetY320" 
+model_dir = "/home/tlab/sono/results/RegNetY320_Best.h5"
 # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 custom_batch = 16
-custom_epochs = 1000
+custom_epochs = 100
 class_num = 2
-custom_learning_rate = 0.001
-#call back에서 설정값
-monitor_factor = 'val_accuracy'
-#call back에서 에포크설정동안 정확도가 향상되지 않으면 훈련 중지
-monitor_epochs = 100
+custom_learning_rate = 0.00001
 #================================================================================================
 
 #모델 저장위치 설정
 save_dir = f"{base_dir}results/"
-
-#callback 옵션, 성능 향상이 멈추면 훈련을 중지
-callback_list=[
-    keras.callbacks.EarlyStopping(
-        monitor=monitor_factor,
-        patience=monitor_epochs, #에포크설정동안 정확도가 향상되지 않으면 훈련 중지
-        mode='auto',
-        restore_best_weights=True #가장 좋았던값으로 가중치를 저장
-        ),
-#에포크마다 현재 가중치를 저장
-    keras.callbacks.ModelCheckpoint(
-        filepath=f"{save_dir}{model_name}_Best.h5",
-        monitor='accuracy',
-        mode='auto',
-        save_best_only=True #가장 좋았던값으로 가중치를 저장
-        )
-    ]
 # 이미지 증강 옵션
 #        rotation_range=40,
 #        width_shift_range=0.2,
@@ -123,39 +103,10 @@ test_dataset = test_datagen.flow_from_directory(
     )
 #================================================================================================
 #모델설정
-base_model = tf.keras.applications.regnet.RegNetY320(
-    # tf.keras.applications.densenet.DenseNet201
-    # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
-    # tf.keras.applications.inception_v3.InceptionV3
-    # tf.keras.applications.xception.Xception
-    # tf.keras.applications.resnet50.ResNet50
-    # tf.keras.applications.resnet_rs.ResNetRS50
-    # tf.keras.applications.resnet_v2.ResNet50V2
-    # tf.keras.applications.regnet.RegNetY320
-    # tf.keras.applications.nasnet.NASNetLarge
-    # tf.keras.applications.vgg16.VGG16
-    # tf.keras.applications.vgg19.VGG19
-    include_top=False,
-    weights='imagenet',#전이학습 가중치
-    input_tensor=None,
-    input_shape=None,
-    pooling=None,
-    classifier_activation='softmax'
-    )
-#기본모델 멈춤
-base_model.trainable = False
+model = load_model(model_dir)
+#전체 모델 학습가능
+model.trainable = True
 #==================================================================================
-
-#아웃레이어 세팅, (기본 모델에 계속 적층하는 구조)
-out_layer = tf.keras.layers.Conv2D(512, (1, 1), padding='SAME', activation='softmax')(base_model.output)
-out_layer = tf.keras.layers.BatchNormalization()(out_layer)
-out_layer = tf.keras.layers.ReLU()(out_layer) 
-out_layer = tf.keras.layers.GlobalAveragePooling2D()(out_layer)
-out_layer = tf.keras.layers.Dense(units = class_num, activation='softmax')(out_layer)
-
-#레이어 추가된 모델 설정
-model = tf.keras.models.Model(base_model.input, out_layer)
-
 # 모델 컴파일
 model.compile(
     loss='categorical_crossentropy',
@@ -171,7 +122,7 @@ webhook_url = "https://hooks.slack.com/services/xxxxxxx"
 @slack_sender(webhook_url=webhook_url, channel="#training")
 
 #학습정의
-def Sono_Axial_classification(your_nicest_parameters='hist'):
+def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
     #학습
     hist = model.fit(
     train_dataset,
@@ -179,10 +130,9 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
     epochs=custom_epochs,
     validation_data=validation_dataset,
     verbose=1,
-    workers=16,
-    callbacks=[callback_list]
+    workers=16
     )
-    model.save(f"{save_dir}{model_name}_Last.h5")
+    model.save(f"{save_dir}{model_name}_Fine_tuning.h5")
     #학습 결과 시각화
     acc = hist.history['accuracy']
     val_acc = hist.history['val_accuracy']
@@ -197,7 +147,7 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
     plt.ylim([min(plt.ylim()),1])
     plt.title('Training and Validation Loss')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}loss_{model_name}.png')
+    plt.savefig(f'{save_dir}loss_{model_name}_Fine_tuning.png')
     #학습 정확도 시각화
     plt.figure()
     plt.plot(acc, label='Training Accuracy')
@@ -207,9 +157,9 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
     plt.ylim([min(plt.ylim()),1])
     plt.title('Training and Validation Accuracy')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}accuracy_{model_name}.png')
+    plt.savefig(f'{save_dir}accuracy_{model_name}_Fine_tuning.png')
     #마지막 가중치 테스트
-    l_loss, l_accuracy = model.evaluate(
+    f_loss, f_accuracy = model.evaluate(
         test_dataset,
         batch_size=custom_batch,
         verbose=1,
@@ -218,26 +168,16 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
         use_multiprocessing=False,
         return_dict=False,
         )
-    #가장 정확도 높은 가중치 테스트
-    b_model = load_model(f"{save_dir}{model_name}_Best.h5")
-    b_loss, b_accuracy = b_model.evaluate(
-        test_dataset,
-        batch_size=custom_batch,
-        verbose=1,
-        steps=None,
-        workers=16,
-        use_multiprocessing=False,
-        return_dict=False,
-        )
+    
     # 테스트 결과 출력
-    print(f'Lest loss : {l_loss}')
-    print(f'Lest accuracy : {l_accuracy}')  
-    print(f'Best loss : {b_loss}')
-    print(f'Best accuracy : {b_accuracy}')
+    print(f'Fine_tuning loss : {f_loss}')
+    print(f'Fine_tuning accuracy : {f_accuracy}')
     time.sleep(3)
-    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Last accuracy : {l_accuracy}'
+    return f'\n {model_name} Fine_tuning_Train accuracy : {max(acc)}\n{model_name} Fine_tuning_test_loss : {f_loss}\n{model_name} Fine_tuning_test_accuracy : {f_accuracy}'
 
 # 실행
-Sono_Axial_classification()
+Fine_tuning_Sono_Axial_classification()
+
+#다음 슬랙을 위한 대기시간 설정
 time.sleep(61)
 print("Done!")

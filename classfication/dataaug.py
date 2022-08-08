@@ -12,7 +12,8 @@ from keras_preprocessing.image import ImageDataGenerator
 #  -----/class3
 #================================================================================================
 #데이터위치
-base_dir = '/home/tlab/sono/'
+train_dir = '/home/tlab/train'
+custom_batch = 16
 #학습 데이터셋
 train_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -22,13 +23,16 @@ train_datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True,
     )
-train_dir = os.path.join(base_dir,'train')
-train_dataset = train_datagen.flow_from_directory(
+
+i=0
+
+for batch in train_datagen.flow_from_directory(
     train_dir,
     target_size=(512, 512),
     batch_size=custom_batch,
-    class_mode='categorical'
-    )
-
-print(train_dataset)
-
+    class_mode='categorical',
+    save_to_dir='/home/tlab/sss'
+    ):
+    i+= 1
+    if i>custom_batch:
+        break

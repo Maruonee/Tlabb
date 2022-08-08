@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/media/tlab/Data/Dataset/Sono/Gray/TIF'
+input_folder = '/home/tlab/CTresol'
 #아웃풋 폴더
 """
 output/
@@ -51,7 +51,3 @@ anno_set = None
 move_opt = False
 
 splitfolders.ratio(input_folder,output=out_foloder, seed =833, ratio=(train_ratio,val_ratio,test_ratio), group_prefix=anno_set, move=False)
-
-"""
-https://pypi.org/project/split-folders/
-"""

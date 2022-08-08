@@ -14,7 +14,7 @@ python3 alexnet.py
 
 #detect
 
-##############################TensorEnv
+##############################TensorEnvakdgk
 #install
 conda create -n TensorEnv python=3.8
 conda activate TensorEnv
