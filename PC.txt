@@ -4,6 +4,11 @@ RAM : 96GB
 GPU : RTX 3090, D6X, 24GB
 OS : Ubuntu 20.04 LTS
 Graphic Driver : nvidia driver 470
+**** Computer-lap ****
+CPU : Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz   2.59 GHz
+RAM : 16GB
+GPU : GTX 1650, 4GB (Turing)
+OS : windows10
 =================================================================================
 **** Anaconda ****
 cd Downloads
