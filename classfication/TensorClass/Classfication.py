@@ -7,36 +7,57 @@ from keras_preprocessing.image import ImageDataGenerator
 from knockknock import slack_sender
 from keras.models import load_model
 import time
-#================================================================================================
-#  데이터셋 구성
-# train
-#  -----/class1
-#  -----/class2
-#  -----/class3
-# val
-#  -----/class1
-#  -----/class2
-#  -----/class3
-# test
-#  -----/class1
-#  -----/class2
-#  -----/class3
-#================================================================================================
+#========================================================
 #세팅값 입력
-base_dir = '/home/tlab/dataset/'
-model_name = "DenseNet201" 
-# DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
+webhook_slack = "https://hooks.slack.com/services/xxxxxxx"
+slack_channel = "#xxxxxxx"
+base_dir = '/xxxxxxxx/'
+model_name = "DenseNet201" # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 custom_batch = 16
-custom_epochs = 1
+custom_epochs = 1000
 class_num = 2
-custom_learning_rate = 0.001
-#call back에서 설정값
-monitor_factor = 'val_accuracy'
-#call back에서 에포크설정동안 정확도가 향상되지 않으면 훈련 중지
+custom_learning_rate = 0.001#call back에서 설정값
+monitor_factor = 'val_accuracy'#call back에서 에포크설정동안 정확도가 향상되지 않으면 훈련 중지
 monitor_epochs = 100
-#================================================================================================
-
-#모델 저장위치 설정
+tuning_epoch = 100
+cpu_core = 16
+base_model = tf.keras.applications.densenet.DenseNet201(
+    # tf.keras.applications.densenet.DenseNet201
+    # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
+    # tf.keras.applications.inception_v3.InceptionV3
+    # tf.keras.applications.xception.Xception
+    # tf.keras.applications.resnet50.ResNet50
+    # tf.keras.applications.resnet_rs.ResNetRS50
+    # tf.keras.applications.resnet_v2.ResNet50V2
+    # tf.keras.applications.regnet.RegNetY320
+    # tf.keras.applications.nasnet.NASNetLarge
+    # tf.keras.applications.vgg16.VGG16
+    # tf.keras.applications.vgg19.VGG19
+    include_top=False,
+    weights='imagenet',#전이학습 가중치
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,
+    classifier_activation='softmax'
+    )
+#========================================================
+# 데이터셋 구성
+# dataset
+#   train
+#       -----/class1
+#       -----/class2
+#       -----/class3
+#   val
+#      -----/class1
+#      -----/class2
+#      -----/class3
+#   test
+#      -----/class1
+#      -----/class2
+#      -----/class3
+#   results
+#========================================================
+#저장위치
 save_dir = f"{base_dir}results/"
 
 #callback 옵션, 성능 향상이 멈추면 훈련을 중지
@@ -55,6 +76,16 @@ callback_list=[
         save_best_only=True #가장 좋았던값으로 가중치를 저장
         )
     ]
+#학습 데이터셋
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    )
+#========================================================
 # 이미지 증강 옵션
 #        rotation_range=40,
 #        width_shift_range=0.2,
@@ -85,16 +116,7 @@ callback_list=[
 #        data_format=None,
 #        validation_split=0.0,
 #        dtype=None
-
-#학습 데이터셋
-train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    horizontal_flip=True,
-    vertical_flip=True,
-    )
+#========================================================
 train_dir = os.path.join(base_dir,'train')
 train_dataset = train_datagen.flow_from_directory(
     train_dir,
@@ -102,6 +124,7 @@ train_dataset = train_datagen.flow_from_directory(
     batch_size=custom_batch,
     class_mode='categorical'
     )
+
 #검증 데이터셋
 validation_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -113,6 +136,7 @@ validation_dataset = validation_datagen.flow_from_directory(
     batch_size=custom_batch,
     class_mode='categorical'
     )
+
 #테스트 데이터 셋
 test_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -125,32 +149,11 @@ test_dataset = test_datagen.flow_from_directory(
     class_mode='categorical',
     classes = None
     )
-#================================================================================================
-#모델설정
-base_model = tf.keras.applications.densenet.DenseNet201(
-    # tf.keras.applications.densenet.DenseNet201
-    # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
-    # tf.keras.applications.inception_v3.InceptionV3
-    # tf.keras.applications.xception.Xception
-    # tf.keras.applications.resnet50.ResNet50
-    # tf.keras.applications.resnet_rs.ResNetRS50
-    # tf.keras.applications.resnet_v2.ResNet50V2
-    # tf.keras.applications.regnet.RegNetY320
-    # tf.keras.applications.nasnet.NASNetLarge
-    # tf.keras.applications.vgg16.VGG16
-    # tf.keras.applications.vgg19.VGG19
-    include_top=False,
-    weights='imagenet',#전이학습 가중치
-    input_tensor=None,
-    input_shape=None,
-    pooling=None,
-    classifier_activation='softmax'
-    )
+
 #기본모델 멈춤
 base_model.trainable = False
-#==================================================================================
 
-#아웃레이어 세팅, (기본 모델에 계속 적층하는 구조)
+#아웃레이어 세팅(기본 모델에 계속 적층하는 구조)
 out_layer = tf.keras.layers.Conv2D(512, (1, 1), padding='SAME', activation='softmax')(base_model.output)
 out_layer = tf.keras.layers.BatchNormalization()(out_layer)
 out_layer = tf.keras.layers.ReLU()(out_layer) 
@@ -170,11 +173,8 @@ model.compile(
 # 모델 요약 출력
 model.summary()
 
-#Slack 알람 설정
-webhook_url = "https://hooks.slack.com/XXXXXXX"
-@slack_sender(webhook_url=webhook_url, channel="#XXXXXXXX")
-
 #학습정의
+@slack_sender(webhook_url=webhook_slack, channel=slack_channel)
 def CT_resoultion_clssification(your_nicest_parameters='hist'):
     #학습
     hist = model.fit(
@@ -183,7 +183,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     epochs=custom_epochs,
     validation_data=validation_dataset,
     verbose=1,
-    workers=16,
+    workers=cpu_core,
     callbacks=[callback_list]
     )
     hist.model.save(f"{save_dir}{model_name}_Last.h5")
@@ -222,19 +222,19 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
         batch_size=custom_batch,
         verbose=1,
         steps=None,
-        workers=16,
+        workers=cpu_core,
         use_multiprocessing=False,
         return_dict=False,
         )
     
-    #가장 정확도 높은 가중치 테스트
+    #Callback 가중치 테스트
     b_model = load_model(f"{save_dir}{model_name}_Best.h5")
     b_loss, b_accuracy = b_model.evaluate(
         test_dataset,
         batch_size=custom_batch,
         verbose=1,
         steps=None,
-        workers=16,
+        workers=cpu_core,
         use_multiprocessing=False,
         return_dict=False,
         )
@@ -244,12 +244,15 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     print(f'Lest accuracy : {l_accuracy}')  
     print(f'Best loss : {b_loss}')
     print(f'Best accuracy : {b_accuracy}')
+    
+    #slack에 출력
     time.sleep(3)
-    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Last accuracy : {l_accuracy}'
+    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
 
 # 실행
 CT_resoultion_clssification()
 
 #다음 슬랙을 위한 대기시간 설정
+print("Waiting for next trainning")
 time.sleep(61)
 print("Done!")
