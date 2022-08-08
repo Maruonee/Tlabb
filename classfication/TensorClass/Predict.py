@@ -41,3 +41,5 @@ plt.imshow(img_array)
 plt.title(f'{img_path}')
 plt.xlabel(f'{np.array(classes_name)[np.argmax(prediction)]}')
 plt.savefig(f'{img_path}_results.png')
+
+model.close()

@@ -48,5 +48,7 @@ loss, accuracy = model.evaluate(
     return_dict=False,
     )
 
+model.close()
+
 print('Test loss :', loss)
 print('Test accuracy :', accuracy)

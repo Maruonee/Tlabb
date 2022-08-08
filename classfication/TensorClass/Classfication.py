@@ -229,6 +229,8 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
         use_multiprocessing=False,
         return_dict=False,
         )
+    model.close()
+    b_model.close()
     # 테스트 결과 출력
     print(f'Lest loss : {l_loss}')
     print(f'Lest accuracy : {l_accuracy}')  
@@ -239,5 +241,6 @@ def Sono_Axial_classification(your_nicest_parameters='hist'):
 
 # 실행
 Sono_Axial_classification()
+    
 time.sleep(61)
 print("Done!")

@@ -168,7 +168,7 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
         use_multiprocessing=False,
         return_dict=False,
         )
-    
+    model.close()
     # 테스트 결과 출력
     print(f'Fine_tuning loss : {f_loss}')
     print(f'Fine_tuning accuracy : {f_accuracy}')
@@ -177,7 +177,6 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
 
 # 실행
 Fine_tuning_Sono_Axial_classification()
-
 #다음 슬랙을 위한 대기시간 설정
 time.sleep(61)
 print("Done!")
