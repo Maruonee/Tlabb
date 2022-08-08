@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 #================================================================================================
 #세팅
-img_dir = "/home/tlab/sono/test/Fail"
-model_name = "RegNetY320"
-model_dir = "/home/tlab/sono/results/RegNetY320_Best.h5"
+img_dir = "/home/tlab/dataset/test/fail"
+model_name = "VGG16"
+model_dir = "/media/tlab/Data/Results/CT/Resolution/220806/VGG16_Last.h5"
 img_format = "tif"
 input_name = input("파일이름 입력 : ")# 파일이름 직업입력 "0133"
 # train
@@ -31,6 +31,7 @@ img_array = image.img_to_array(img)
 expanded_img_array = np.expand_dims(img_array, axis=0)
 preprocessed_img = expanded_img_array / 255
 prediction = model.predict(preprocessed_img)
+# model.close()
 
 #예측값 출력
 print(np.array(classes_name)[np.argmax(prediction)])
@@ -41,5 +42,3 @@ plt.imshow(img_array)
 plt.title(f'{img_path}')
 plt.xlabel(f'{np.array(classes_name)[np.argmax(prediction)]}')
 plt.savefig(f'{img_path}_results.png')
-
-model.close()

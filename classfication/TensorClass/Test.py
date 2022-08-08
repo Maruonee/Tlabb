@@ -1,12 +1,16 @@
 """ 데이터셋 구성
-train
- -----/class1
- -----/class2
- -----/class3
-val
- -----/class1
- -----/class2
- -----/class3
+# train
+#  -----/class1
+#  -----/class2
+#  -----/class3
+# val
+#  -----/class1
+#  -----/class2
+#  -----/class3
+# test
+#  -----/class1
+#  -----/class2
+#  -----/class3
 """
 import os
 from keras_preprocessing.image import ImageDataGenerator

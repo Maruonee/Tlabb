@@ -21,7 +21,7 @@ import time
 #  -----/class1
 #  -----/class2
 #  -----/class3
-#================================================================================================
+#=================================================================================================
 #세팅값 입력
 base_dir = '/home/tlab/dataset/'
 model_name = "DenseNet201" 
@@ -171,8 +171,64 @@ model.compile(
 model.summary()
 
 #Slack 알람 설정
-webhook_url = "https://hooks.slack.com/XXXXXXX"
-@slack_sender(webhook_url=webhook_url, channel="#XXXXXXXX")
+webhook_url = "https://hooks.slack.com/services/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"
+@slack_sender(webhook_url=webhook_url, channel="#ct_train")
+
+#튜닝학습 정의
+def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
+    f_hist = model.fit(
+    train_dataset,
+    batch_size=custom_batch,
+    epochs=1,
+    validation_data=validation_dataset,
+    verbose=1,
+    workers=16
+    )
+    model.save(f"{save_dir}{model_name}_Fine_tuning.h5")
+    #학습 결과 시각화
+    acc = f_hist.history['accuracy']
+    val_acc = f_hist.history['val_accuracy']
+    loss = f_hist.history['loss']
+    val_loss = f_hist.history['val_loss']
+    #학습 손실 시각화
+    plt.figure()
+    plt.plot(loss, label='Training Loss')
+    plt.plot(val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.ylabel('Cross Entropy')
+    plt.ylim([min(plt.ylim()),1])
+    plt.title('Fine_tunning_Training and Validation Loss')
+    plt.xlabel('epoch')
+    plt.savefig(f'{save_dir}loss_{model_name}_Fine_tuning.png')
+    #학습 정확도 시각화
+    plt.figure()
+    plt.plot(acc, label='Training Accuracy')
+    plt.plot(val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.ylabel('Accuracy')
+    plt.ylim([min(plt.ylim()),1])
+    plt.title('Fine_tunning_Training and Validation Accuracy')
+    plt.xlabel('epoch')
+    plt.savefig(f'{save_dir}accuracy_{model_name}_Fine_tuning.png')
+    #마지막 가중치 테스트
+    f_loss, f_accuracy = model.evaluate(
+        test_dataset,
+        batch_size=custom_batch,
+        verbose=1,
+        steps=None,
+        workers=16,
+        use_multiprocessing=False,
+        return_dict=False,
+        )
+    # 테스트 결과 출력
+    print(f'Fine_tuning loss : {f_loss}')
+    print(f'Fine_tuning accuracy : {f_accuracy}')
+    time.sleep(3)
+    return f'\n {model_name} Fine_tuning_Train accuracy : {max(acc)}\n{model_name} Fine_tuning_test_loss : {f_loss}\n{model_name} Fine_tuning_test_accuracy : {f_accuracy}'
+
+#Slack 알람 설정
+webhook_url = "https://hooks.slack.com/XXXXX"
+@slack_sender(webhook_url=webhook_url, channel="#XXXXXX")
 
 #학습정의
 def CT_resoultion_clssification(your_nicest_parameters='hist'):
@@ -187,13 +243,11 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     callbacks=[callback_list]
     )
     hist.model.save(f"{save_dir}{model_name}_Last.h5")
-    
     #학습 결과 시각화
     acc = hist.history['accuracy']
     val_acc = hist.history['val_accuracy']
     loss = hist.history['loss']
     val_loss = hist.history['val_loss']
-    
     #학습 손실 시각화
     plt.figure()
     plt.plot(loss, label='Training Loss')
@@ -204,7 +258,6 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     plt.title('Training and Validation Loss')
     plt.xlabel('epoch')
     plt.savefig(f'{save_dir}loss_{model_name}.png')
-    
     #학습 정확도 시각화
     plt.figure()
     plt.plot(acc, label='Training Accuracy')
@@ -215,7 +268,6 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     plt.title('Training and Validation Accuracy')
     plt.xlabel('epoch')
     plt.savefig(f'{save_dir}accuracy_{model_name}.png')
-    
     #마지막 가중치 테스트
     l_loss, l_accuracy = model.evaluate(
         test_dataset,
@@ -226,7 +278,6 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
         use_multiprocessing=False,
         return_dict=False,
         )
-    
     #가장 정확도 높은 가중치 테스트
     b_model = load_model(f"{save_dir}{model_name}_Best.h5")
     b_loss, b_accuracy = b_model.evaluate(
@@ -244,12 +295,19 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     print(f'Lest accuracy : {l_accuracy}')  
     print(f'Best loss : {b_loss}')
     print(f'Best accuracy : {b_accuracy}')
+
+    #튜닝 실행
+    model.trainable = True
+    model.summary()
+    Fine_tuning_CT_Resolution()
+    
+    # 테스트 결과 슬랙으로 출력
     time.sleep(3)
-    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Last accuracy : {l_accuracy}'
+    return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
 
 # 실행
 CT_resoultion_clssification()
 
 #다음 슬랙을 위한 대기시간 설정
-time.sleep(61)
+time.sleep(1)
 print("Done!")

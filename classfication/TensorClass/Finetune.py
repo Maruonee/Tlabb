@@ -17,18 +17,21 @@ import time
 #  -----/class1
 #  -----/class2
 #  -----/class3
+# test
+#  -----/class1
+#  -----/class2
+#  -----/class3
 #================================================================================================
 #세팅값 입력
-base_dir = '/home/tlab/sono/'
-model_name = "RegNetY320" 
-model_dir = "/home/tlab/sono/results/RegNetY320_Best.h5"
+base_dir = '/home/tlab/dataset/'
+model_name = "DenseNet201" 
+model_dir = f"{base_dir}premodel/{model_name}_Last.h5"
 # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 custom_batch = 16
 custom_epochs = 100
 class_num = 2
 custom_learning_rate = 0.00001
 #================================================================================================
-
 #모델 저장위치 설정
 save_dir = f"{base_dir}results/"
 # 이미지 증강 옵션
@@ -104,6 +107,7 @@ test_dataset = test_datagen.flow_from_directory(
 #================================================================================================
 #모델설정
 model = load_model(model_dir)
+
 #전체 모델 학습가능
 model.trainable = True
 #==================================================================================
@@ -122,7 +126,7 @@ webhook_url = "https://hooks.slack.com/services/xxxxxxx"
 @slack_sender(webhook_url=webhook_url, channel="#training")
 
 #학습정의
-def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
+def Fine_tuning_CT_Resolution(your_nicest_parameters='hist'):
     #학습
     hist = model.fit(
     train_dataset,
@@ -133,11 +137,13 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
     workers=16
     )
     model.save(f"{save_dir}{model_name}_Fine_tuning.h5")
+    
     #학습 결과 시각화
     acc = hist.history['accuracy']
     val_acc = hist.history['val_accuracy']
     loss = hist.history['loss']
     val_loss = hist.history['val_loss']
+    
     #학습 손실 시각화
     plt.figure()
     plt.plot(loss, label='Training Loss')
@@ -148,6 +154,7 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
     plt.title('Training and Validation Loss')
     plt.xlabel('epoch')
     plt.savefig(f'{save_dir}loss_{model_name}_Fine_tuning.png')
+    
     #학습 정확도 시각화
     plt.figure()
     plt.plot(acc, label='Training Accuracy')
@@ -158,6 +165,7 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
     plt.title('Training and Validation Accuracy')
     plt.xlabel('epoch')
     plt.savefig(f'{save_dir}accuracy_{model_name}_Fine_tuning.png')
+    
     #마지막 가중치 테스트
     f_loss, f_accuracy = model.evaluate(
         test_dataset,
@@ -168,7 +176,7 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
         use_multiprocessing=False,
         return_dict=False,
         )
-    model.close()
+    
     # 테스트 결과 출력
     print(f'Fine_tuning loss : {f_loss}')
     print(f'Fine_tuning accuracy : {f_accuracy}')
@@ -176,7 +184,8 @@ def Fine_tuning_Sono_Axial_classification(your_nicest_parameters='hist'):
     return f'\n {model_name} Fine_tuning_Train accuracy : {max(acc)}\n{model_name} Fine_tuning_test_loss : {f_loss}\n{model_name} Fine_tuning_test_accuracy : {f_accuracy}'
 
 # 실행
-Fine_tuning_Sono_Axial_classification()
+Fine_tuning_CT_Resolution()
+
 #다음 슬랙을 위한 대기시간 설정
 time.sleep(61)
 print("Done!")
