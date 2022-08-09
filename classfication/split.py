@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/home/tlab/CTresol'
+input_folder = '/xxxxxxxx/'
 #아웃풋 폴더
 """
 output/
@@ -38,7 +38,7 @@ output/
             imgc.jpg
             ...           
 """
-out_foloder = '/home/tlab/dataset/output'
+out_foloder = '/xxxxxxxx/'
 #학습비율
 train_ratio = 0.6
 #검증비율
