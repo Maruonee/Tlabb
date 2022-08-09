@@ -11,17 +11,15 @@ import time
 #세팅값 입력
 webhook_slack = "https://hooks.slack.com/services/xxxxxxx"
 slack_channel = "#xxxxxxx"
-base_dir = '/xxxxxxxx/'
-model_name = "DenseNet201" # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
+base_dir = ('/xxxxxxxx/') #운영체제에 맞추어 변경해야함
+#DATA_NAME_CHANGE 를 원하는 이름으로 변경
 custom_batch = 16
 custom_epochs = 1000
+custom_learning_rate = 0.001
 class_num = 2
-custom_learning_rate = 0.001 #call back에서 설정값
-tuning_learning_rate = 0.00001 #tunning 학습률
-monitor_factor = 'val_accuracy'#call back에서 에포크설정동안 정확도가 향상되지 않으면 훈련 중지
-monitor_epochs = 100
-tuning_epoch = 100
 cpu_core = 16
+custom_image_size = (512, 512)
+model_name = "DenseNet201" # DenseNet201, InceptionResNetV2, InceptionV3, Xception, ResNet50, ResNetRS50 ,ResNet50V2, RegNetY320, NASNetLarge, VGG16, VGG19
 base_model = tf.keras.applications.densenet.DenseNet201(
     # tf.keras.applications.densenet.DenseNet201
     # tf.keras.applications.inception_resnet_v2.InceptionResNetV2
@@ -42,6 +40,14 @@ base_model = tf.keras.applications.densenet.DenseNet201(
     classifier_activation='softmax'
     )
 #========================================================
+#call back 모니터링 세팅
+monitor_factor = 'val_accuracy'
+monitor_epochs = 100 #call back에서 에포크설정동안 정확도가 향상되지 않으면 훈련 중지
+#========================================================
+#튜닝세팅
+tuning_learning_rate = 0.00001
+tuning_epoch = 100
+#========================================================
 # 데이터셋 구성
 # dataset
 #   train
@@ -59,7 +65,10 @@ base_model = tf.keras.applications.densenet.DenseNet201(
 #   results
 #========================================================
 #저장위치
-save_dir = f"{base_dir}results/"
+save_dir = os.path.join(base_dir,"results")
+best_model_dir = os.path.join(save_dir,f"{model_name}_Best.h5")
+last_model_dir = os.path.join(save_dir,f"{model_name}_Last.h5")
+fine_tuning_model_dir = os.path.join(save_dir,f"{model_name}_Fine_tuning.h5")
 
 #callback 옵션, 성능 향상이 멈추면 훈련을 중지
 callback_list=[
@@ -71,7 +80,7 @@ callback_list=[
         ),
 #에포크마다 현재 가중치를 저장
     keras.callbacks.ModelCheckpoint(
-        filepath=f"{save_dir}{model_name}_Best.h5",
+        filepath=best_model_dir,
         monitor='accuracy',
         mode='auto',
         save_best_only=True #가장 좋았던값으로 가중치를 저장
@@ -121,7 +130,7 @@ train_datagen = ImageDataGenerator(
 train_dir = os.path.join(base_dir,'train')
 train_dataset = train_datagen.flow_from_directory(
     train_dir,
-    target_size=(512, 512),
+    target_size=custom_image_size,
     batch_size=custom_batch,
     class_mode='categorical'
     )
@@ -130,23 +139,20 @@ train_dataset = train_datagen.flow_from_directory(
 validation_datagen = ImageDataGenerator(
     rescale=1./255,
     )
-validation_dir= os.path.join(base_dir,'val')
+validation_dir = os.path.join(base_dir,'val')
 validation_dataset = validation_datagen.flow_from_directory(
     validation_dir,
-    target_size=(512, 512),
+    target_size=custom_image_size,
     batch_size=custom_batch,
     class_mode='categorical'
     )
 
 #테스트 데이터 셋
-test_datagen = ImageDataGenerator(
-    rescale=1./255,
-    )
 test_dir = os.path.join(base_dir,'test')
-test_dataset = test_datagen.flow_from_directory(
+test_dataset = validation_datagen.flow_from_directory(
     test_dir,
     batch_size=custom_batch,
-    target_size=(512, 512),
+    target_size=custom_image_size,
     class_mode='categorical',
     classes = None
     )
@@ -155,7 +161,7 @@ test_dataset = test_datagen.flow_from_directory(
 base_model.trainable = False
 
 #아웃레이어 세팅(기본 모델에 계속 적층하는 구조)
-out_layer = tf.keras.layers.Conv2D(512, (1, 1), padding='SAME', activation='softmax')(base_model.output)
+out_layer = tf.keras.layers.Conv2D(custom_image_size[1], (1, 1), padding='SAME', activation='softmax')(base_model.output)
 out_layer = tf.keras.layers.BatchNormalization()(out_layer)
 out_layer = tf.keras.layers.ReLU()(out_layer) 
 out_layer = tf.keras.layers.GlobalAveragePooling2D()(out_layer)
@@ -176,7 +182,8 @@ model.summary()
 
 #튜닝학습 정의
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
-def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
+#모델이름 설정
+def Fine_tuning_DATA_NAME_CHANGE(your_nicest_parameters='f_hist'):
     model.compile(
     loss='categorical_crossentropy',
     optimizer=tf.keras.optimizers.Adam(learning_rate=tuning_learning_rate), #최적화 설정
@@ -192,7 +199,7 @@ def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
     )
     
     #학습모델 저장
-    model.save(f"{save_dir}{model_name}_Fine_tuning.h5")
+    model.save(fine_tuning_model_dir)
     
     #학습 결과 시각화
     acc = f_hist.history['accuracy']
@@ -207,9 +214,9 @@ def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
     plt.legend(loc='upper right')
     plt.ylabel('Cross Entropy')
     plt.ylim([min(plt.ylim()),1])
-    plt.title('Fine tunning Training and Validation Loss')
+    plt.title('Fine tuning Training and Validation Loss')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}loss_{model_name}_Fine_tuning.png')
+    plt.savefig(os.path.join(save_dir,f'loss_{model_name}_Fine_tuning.png'))
     
     #학습 정확도 시각화
     plt.figure()
@@ -218,9 +225,9 @@ def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
     plt.legend(loc='lower right')
     plt.ylabel('Accuracy')
     plt.ylim([min(plt.ylim()),1])
-    plt.title('Fine tunning Training and Validation Accuracy')
+    plt.title('Fine tuning Training and Validation Accuracy')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}accuracy_{model_name}_Fine_tuning.png')
+    plt.savefig(os.path.join(save_dir,f'accuracy_{model_name}_Fine_tuning.png'))
     
     #테스트
     f_loss, f_accuracy = model.evaluate(
@@ -244,7 +251,7 @@ def Fine_tuning_CT_Resolution(your_nicest_parameters='f_hist'):
 #학습정의
 
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
-def CT_resoultion_clssification(your_nicest_parameters='hist'):
+def DATA_NAME_CHANGE(your_nicest_parameters='hist'):
     #학습
     hist = model.fit(
     train_dataset,
@@ -255,7 +262,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     workers=cpu_core,
     callbacks=[callback_list]
     )
-    hist.model.save(f"{save_dir}{model_name}_Last.h5")
+    hist.model.save(last_model_dir)
     
     #학습 결과 시각화
     acc = hist.history['accuracy']
@@ -272,7 +279,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     plt.ylim([min(plt.ylim()),1])
     plt.title('Training and Validation Loss')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}loss_{model_name}.png')
+    plt.savefig(os.path.join(save_dir,f'loss_{model_name}.png'))
     
     #학습 정확도 시각화
     plt.figure()
@@ -283,7 +290,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     plt.ylim([min(plt.ylim()),1])
     plt.title('Training and Validation Accuracy')
     plt.xlabel('epoch')
-    plt.savefig(f'{save_dir}accuracy_{model_name}.png')
+    plt.savefig(os.path.join(save_dir,f'accuracy_{model_name}.png'))
     
     #마지막 가중치 테스트
     l_loss, l_accuracy = model.evaluate(
@@ -297,7 +304,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
         )
     
     #Callback 가중치 테스트
-    b_model = load_model(f"{save_dir}{model_name}_Best.h5")
+    b_model = load_model(best_model_dir)
     b_loss, b_accuracy = b_model.evaluate(
         test_dataset,
         batch_size=custom_batch,
@@ -318,7 +325,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
     model.trainable = True
     model.summary()
     try:
-        Fine_tuning_CT_Resolution()
+        Fine_tuning_DATA_NAME_CHANGE()
     
     #slack에 출력
     finally:
@@ -327,7 +334,7 @@ def CT_resoultion_clssification(your_nicest_parameters='hist'):
 
 
 # 실행
-CT_resoultion_clssification()
+DATA_NAME_CHANGE()
 
 #다음 슬랙을 위한 대기시간 설정
 print("Waiting for next trainning")
