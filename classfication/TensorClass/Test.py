@@ -15,13 +15,16 @@
 import os
 from keras_preprocessing.image import ImageDataGenerator
 from keras.models import load_model
-#================================================================================================
+#========================================================
 #세팅
-base_dir = '/home/tlab/sono/'
+base_dir = '/home/tlab/sono/' #운영체제에 맞추어 변경해야함
 model_name = "DenseNet201"
+model_dir = "XXXXXX.h5"
 custom_batch = 16
-model_dir = f"{base_dir}results/{model_name}_Best.h5"#모델명 정확히 작성
-#================================================================================================
+custom_image_size = (512, 512)
+cpu_core = 16
+#========================================================
+
 #테스트 데이터 셋
 test_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -30,7 +33,7 @@ test_dir = os.path.join(base_dir,'test')
 test_dataset = test_datagen.flow_from_directory(
     test_dir,
     batch_size=custom_batch,
-    target_size=(512, 512),
+    target_size=custom_image_size,
     class_mode='categorical',
     classes = None
     )
@@ -47,12 +50,10 @@ loss, accuracy = model.evaluate(
     batch_size=custom_batch,
     verbose=1,
     steps=None,
-    workers=16,
+    workers=cpu_core,
     use_multiprocessing=False,
     return_dict=False,
     )
 
-model.close()
-
-print('Test loss :', loss)
-print('Test accuracy :', accuracy)
+print('Test Loss :', loss)
+print('Test Accuracy :', accuracy)
