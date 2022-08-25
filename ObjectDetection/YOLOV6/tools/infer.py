@@ -14,8 +14,7 @@ if str(ROOT) not in sys.path:
 from yolov6.utils.events import LOGGER
 from yolov6.core.inferer import Inferer
 
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 def get_args_parser(add_help=True):
     parser = argparse.ArgumentParser(description='YOLOv6 PyTorch Inference.', add_help=add_help)
     parser.add_argument('--weights', type=str, default='weights/yolov6s.pt', help='model path(s) for inference.')
@@ -28,6 +27,7 @@ def get_args_parser(add_help=True):
     parser.add_argument('--device', default='0', help='device to run our model i.e. 0 or 0,1,2,3 or cpu.')
     parser.add_argument('--save-txt', action='store_true', help='save results to *.txt.')
     parser.add_argument('--save-img', action='store_false', help='save visuallized inference results.')
+    parser.add_argument('--save-dir', type=str, help='directory to save predictions in. See --save-txt.')
     parser.add_argument('--view-img', action='store_true', help='show inference results')
     parser.add_argument('--classes', nargs='+', type=int, help='filter by classes, e.g. --classes 0, or --classes 0 2 3.')
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS.')
@@ -52,6 +52,7 @@ def run(weights=osp.join(ROOT, 'yolov6s.pt'),
         device='',
         save_txt=False,
         save_img=True,
+        save_dir=None,
         view_img=True,
         classes=None,
         agnostic_nms=False,
@@ -83,13 +84,16 @@ def run(weights=osp.join(ROOT, 'yolov6s.pt'),
         half: Use FP16 half-precision inference, e.g. False
     """
     # create save dir
-    save_dir = osp.join(project, name)
+    if save_dir is None:
+        save_dir = osp.join(project, name)
+        save_txt_path = osp.join(save_dir, 'labels')
+    else:
+        save_txt_path = save_dir
     if (save_img or save_txt) and not osp.exists(save_dir):
         os.makedirs(save_dir)
     else:
         LOGGER.warning('Save directory already existed')
     if save_txt:
-        save_txt_path = osp.join(save_dir, 'labels')
         if not osp.exists(save_txt_path):
             os.makedirs(save_txt_path)
 

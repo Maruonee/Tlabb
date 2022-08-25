@@ -74,6 +74,8 @@ class Trainer:
         self.max_stepnum = len(self.train_loader)
         self.batch_size = args.batch_size
         self.img_size = args.img_size
+        self.vis_imgs_list = []
+        self.write_trainbatch_tb = args.write_trainbatch_tb
 
         # set color for classnames
         self.color = [tuple(np.random.choice(range(256), size=3)) for _ in range(self.model.nc)]
@@ -112,11 +114,11 @@ class Trainer:
     def train_in_steps(self):
         images, targets = self.prepro_data(self.batch_data, self.device)
 
-        # plot train_batch and save to tensorboard
-        if self.main_process:
+        # plot train_batch and save to tensorboard once an epoch
+        if self.write_trainbatch_tb and self.main_process and self.step == 0:
             self.plot_train_batch(images, targets)
             write_tbimg(self.tblogger, self.vis_train_batch, self.step + self.max_stepnum * self.epoch, type='train')
-        
+
         # forward
         with amp.autocast(enabled=self.device != 'cpu'):
             preds = self.model(images)
@@ -150,6 +152,11 @@ class Trainer:
             save_ckpt_dir = osp.join(self.save_dir, 'weights')
             save_checkpoint(ckpt, (is_val_epoch) and (self.ap == self.best_ap), save_ckpt_dir, model_name='last_ckpt')
             del ckpt
+
+            # log for learning rate
+            lr = [x['lr'] for x in self.optimizer.param_groups] 
+            self.evaluate_results = list(self.evaluate_results) + lr
+            
             # log for tensorboard
             write_tblog(self.tblogger, self.epoch, self.evaluate_results, self.mean_loss)
 
@@ -188,7 +195,7 @@ class Trainer:
         for i in range(bs):
             x, y = int(w * (i // ns)), int(h * (i % ns))  # block origin
             cv2.rectangle(mosaic, (x, y), (x + w, y + h), (255, 255, 255), thickness=2)  # borders
-            cv2.putText(mosaic, f"{os.path.basename(paths[i])[:40]}", (x + 5, y + 15), 
+            cv2.putText(mosaic, f"{os.path.basename(paths[i])[:40]}", (x + 5, y + 15),
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, color=(220, 220, 220), thickness=1)  # filename
             if len(targets) > 0:
                 ti = targets[targets[:, 0] == i]  # image targets
@@ -213,7 +220,7 @@ class Trainer:
                         label = f'{cls}'
                         cv2.rectangle(mosaic, (box[0], box[1]), (box[2], box[3]), color, thickness=1)
                         cv2.putText(mosaic, label, (box[0], box[1] - 5), cv2.FONT_HERSHEY_COMPLEX, 0.5, color, thickness=1)
-            
+
         self.vis_train_batch = mosaic.copy()
 
     def plot_val_pred(self, vis_outputs, vis_paths, vis_conf=0.3, vis_max_box_num=5):

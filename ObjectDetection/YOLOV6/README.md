@@ -58,8 +58,8 @@ python -m torch.distributed.launch --nproc_per_node 8 tools/train.py --batch 256
 ```
 
 - conf: select config file to specify network/optimizer/hyperparameters
-- data: prepare [COCO](http://cocodataset.org) dataset, [YOLO format coco labes](https://github.com/meituan/YOLOv6/releases/download/0.1.0/coco2017labels.zip) and specify dataset paths in data.yaml
-- make sure your dataset structure as fellows:
+- data: prepare [COCO](http://cocodataset.org) dataset, [YOLO format coco labels](https://github.com/meituan/YOLOv6/releases/download/0.1.0/coco2017labels.zip) and specify dataset paths in data.yaml
+- make sure your dataset structure as follows:
 ```
 ├── coco
 │   ├── annotations
@@ -103,8 +103,10 @@ Your can also specify a checkpoint path to `--resume` parameter by
 ### Deployment
 
 *  [ONNX](./deploy/ONNX)
+*  [OpenCV Python/C++](./deploy/ONNX/OpenCV)
 *  [OpenVINO](./deploy/OpenVINO)
 *  [Partial Quantization](./tools/partial_quantization)
+*  [TensorRT](./deploy/TensorRT)
 
 ### Tutorials
 
@@ -115,7 +117,7 @@ Your can also specify a checkpoint path to `--resume` parameter by
 ## Benchmark
 
 
-| Model           | Size        | mAP<sup>val<br/>0.5:0.95 | Speed<sup>V100<br/>fp16 b32 <br/>(ms) | Speed<sup>V100<br/>fp32 b32 <br/>(ms) | Speed<sup>T4<br/>trt fp16 b1 <br/>(fps) | Speed<sup>T4<br/>trt fp16 b32 <br/>(fps) | Params<br/><sup> (M) | Flops<br/><sup> (G) |
+| Model           | Size        | mAP<sup>val<br/>0.5:0.95 | Speed<sup>V100<br/>fp16 b32 <br/>(ms) | Speed<sup>V100<br/>fp32 b32 <br/>(ms) | Speed<sup>T4<br/>trt fp16 b1 <br/>(fps) | Speed<sup>T4<br/>trt fp16 b32 <br/>(fps) | Params<br/><sup> (M) | FLOPs<br/><sup> (G) |
 | :-------------- | ----------- | :----------------------- | :------------------------------------ | :------------------------------------ | ---------------------------------------- | ----------------------------------------- | --------------- | -------------- |
 | [**YOLOv6-n**](https://github.com/meituan/YOLOv6/releases/download/0.1.0/yolov6n.pt)    | 416<br/>640 | 30.8<br/>35.0            | 0.3<br/>0.5                           | 0.4<br/>0.7                           | 1100<br/>788                             | 2716<br/>1242                             | 4.3<br/>4.3     | 4.7<br/>11.1   |
 | [**YOLOv6-tiny**](https://github.com/meituan/YOLOv6/releases/download/0.1.0/yolov6t.pt) | 640         | 41.3                     | 0.9                                   | 1.5                                   | 425                                      | 602                                       | 15.0            | 36.7           |
@@ -124,7 +126,7 @@ Your can also specify a checkpoint path to `--resume` parameter by
 
 - Comparisons of the mAP and speed of different object detectors are tested on [COCO val2017](https://cocodataset.org/#download) dataset.
 - Refer to [Test speed](./docs/Test_speed.md) tutorial to reproduce the speed results of YOLOv6.
-- Params and Flops of YOLOv6 are estimated on deployed model.
+- Params and FLOPs of YOLOv6 are estimated on deployed model.
 - Speed results of other methods are tested in our environment using official codebase and model if not found from the corresponding official release.
 
  ## Third-party resources
@@ -136,4 +138,3 @@ Your can also specify a checkpoint path to `--resume` parameter by
  * [YOLOv6 web demo](https://huggingface.co/spaces/nateraw/yolov6) on [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/nateraw/yolov6)
  * Tutorial: [How to train YOLOv6 on a custom dataset](https://blog.roboflow.com/how-to-train-yolov6-on-a-custom-dataset/) <a href="https://colab.research.google.com/drive/1YnbqOinBZV-c9I7fk_UL6acgnnmkXDMM"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
  * Demo of YOLOv6 inference on Google Colab [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mahdilamb/YOLOv6/blob/main/inference.ipynb)
-

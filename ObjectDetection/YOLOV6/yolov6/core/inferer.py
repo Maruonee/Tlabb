@@ -29,7 +29,7 @@ class Inferer:
         self.device = device
         self.img_size = img_size
         cuda = self.device != 'cpu' and torch.cuda.is_available()
-        self.device = torch.device('cuda:0' if cuda else 'cpu')
+        self.device = torch.device(f'cuda:{device}' if cuda else 'cpu')
         self.model = DetectBackend(weights, device=self.device)
         self.stride = self.model.stride
         self.class_names = load_yaml(yaml)['names']
@@ -47,9 +47,10 @@ class Inferer:
 
         # Load data
         self.files = LoadData(source)
+        self.source = source
 
         # Switch model to deploy status
-        self.model_switch(self.model, self.img_size)
+        self.model_switch(self.model.model, self.img_size)
 
     def model_switch(self, model, img_size):
         ''' Model switch to deploy status '''
@@ -75,12 +76,15 @@ class Inferer:
             det = non_max_suppression(pred_results, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)[0]
             t2 = time.time()
 
-            save_path = osp.join(save_dir, osp.basename(img_path))  # im.jpg
-            txt_path = osp.join(save_dir, 'labels', osp.splitext(osp.basename(img_path))[0])
+            # Create output files in nested dirs that mirrors the structure of the images' dirs
+            rel_path = osp.relpath(osp.dirname(img_path), self.source)
+            save_path = osp.join(save_dir, rel_path, osp.basename(img_path))  # im.jpg
+            txt_path = osp.join(save_dir, rel_path, osp.splitext(osp.basename(img_path))[0])
+            os.makedirs(osp.join(save_dir, rel_path), exist_ok=True)
 
             gn = torch.tensor(img_src.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             img_ori = img_src.copy()
-            
+
             # check image and font
             assert img_ori.data.contiguous, 'Image needs to be contiguous. Please apply to input images with np.ascontiguousarray(im).'
             self.font_check()
@@ -105,7 +109,7 @@ class Inferer:
             # FPS counter
             fps_calculator.update(1.0 / (t2 - t1))
             avg_fps = fps_calculator.accumulate()
-            
+
             if self.files.type == 'video':
                 self.draw_text(
                     img_src,
@@ -147,7 +151,7 @@ class Inferer:
     @staticmethod
     def precess_image(img_src, img_size, stride, half):
         '''Process image before image inference.'''
-        image = letterbox(img_src, img_size, stride=stride)[0]  
+        image = letterbox(img_src, img_size, stride=stride)[0]
         # Convert
         image = image.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
         image = torch.from_numpy(np.ascontiguousarray(image))

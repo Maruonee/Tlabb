@@ -27,13 +27,18 @@ pip install knockknock
 
 #activate
 conda activate TensorEnv
+
 python3 DenseNet201.py ; python3 InceptionResNetV2.py ; python3 InceptionV3.py ; python3 NASNetLarge.py ; python3 RegNetY320.py ; python3 ResNet50.py ; python3 ResNet50V2.py ; python3 ResNetRS50.py ; python3 VGG16.py ; python3 VGG19.py ; python3 Xception.py
+
 python DenseNet201.py & python InceptionResNetV2.py & python InceptionV3.py & python NASNetLarge.py & python RegNetY320.py & python ResNet50.py & python ResNet50V2.py & python ResNetRS50.py & python VGG16.py & python VGG19.py & python Xception.py
+
 ##########################################voc2coco
 #activate
 conda activate ConVformat
 cd /home/tlab/Tlab/voc2coco
+
 python3 voc2coco.py --ann_dir /media/tlab/Data/Dataset/Mask/coco/VOC2007/Annotations --ann_ids /media/tlab/Data/Dataset/Mask/coco/VOC2007/ImageSets/Main/val.txt --labels /media/tlab/Data/Dataset/Mask/classes.txt --output /media/tlab/Data/Dataset/Mask/coco/VOC2007/output.json --ext xml
+
 #########################################yolo2COCO
 #install 
 conda create -n ConVformat python=3.8
@@ -48,6 +53,7 @@ git clone https://github.com/Taeyoung96/Yolo-to-COCO-format-converter.git
 conda activate ConVformat
 cd /home/tlab/Tlab/yolo2coco
 pythoamain.py --path /media/tlab/Data/Dataset/Carm/train.txt --output train.json
+
 ##########################################SplitFolders
 conda activate ConVformat
 pip install split-folder
@@ -66,10 +72,10 @@ conda activate YOLOV3
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov3.pt --batch 16 --epochs 10 --cache --evolve
-
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512 
 #Train 
-python train.py --cfg /home/tlab/dataset/yolov3.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov3.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hyoYOLOv3/hyp_evolve.yaml
+
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v3_hyp_evolved.yaml --img 512
 
 #detect
 python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
@@ -86,10 +92,10 @@ conda activate YOLOV4
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV4
 
 #Test
-python test.py --img 640 --conf 0.001 --batch 8 --device 0 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights weights/yolov4-pacsp.pt
+python test.py --img 640 --conf 0.001 --batch 8 --device 0 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights weights/yolov4-pacsp.pt  --img 512 512
 
 #Train 
-python train.py --device 0 --batch-size 16 --img 640 640 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights '' --name yolov4-pacsp
+python train.py --device 0 --batch-size 16 --img 512 512 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights '' --name yolov4-pacsp
 
 #detect
 python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
@@ -109,15 +115,15 @@ conda activate YOLOV5
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 10 --cache --evolve
+python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab/dataset/yolov5x.yaml --data /home/tlab/dataset/coco128.yaml --weights yolov5x.pt --batch 16 --epochs 2000 --hyp /home/tlab/dataset/hypYOLOv5/hyp_evolve.yaml
+python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v5_hyp_evolved.yaml --img 512
 
 #detect
 python detect.py --weights /media/tlab/Data/Results/Mask/YOLOV5/weights/best.pt --source /media/tlab/Data/Dataset/Mask/test/
 
-########################################YOLOX
+########################################YOLO_X
 #install	
 conda create -n YOLOX
 conda activate YOLOX
@@ -136,6 +142,28 @@ python tools/demo.py image -f exps/default/yolox_s.py -c /media/tlab/Data/Result
 #test
 python -m yolox.tools.eval -n yolox-s -c /home/tlab/Tlab/pytorch/ObjectDetection/YOLOX/YOLOX_outputs/4/yolox_voc_s/epoch_10_ckpt.pth -b 1 -d 1 --conf 0.001 --fp16 --fuse
 
+
+########################################YOLOR
+#install	
+conda create -n YOLOR python=3.8
+conda activate YOLOR
+cd /home/tlab/Tlabb/ObjectDetection/YOLOR
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+pip install -r requirements.txt
+
+#activate 
+conda activate YOLOR
+cd /home/tlab/Tlabb/ObjectDetection/YOLOR
+
+#train
+python train.py --batch-size 4 --data /home/tlab/dataset/opt/coco.yaml --weights '' --device 0 --epochs 500 --cfg /home/tlab/dataset/opt/yolor_p6.cfg
+
+#detect
+python detect.py --source inference/images/horses.jpg --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --conf 0.25 --img-size 512 --device 0
+
+#test
+python test.py --data data/coco.yaml --img 1280 --batch 32 --conf 0.001 --iou 0.65 --device 0 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --name yolor_p6_val
+
 ########################################YOLOV6
 #install	
 conda create -n YOLOV6 python=3.8
@@ -150,14 +178,34 @@ conda activate YOLOV6
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
 
 #Pre train(optimizer hyperparameter)
+python tools/train.py --batch 32 --conf configs/yolov6s.py --data /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/data.yaml
 
-#training_mode='hyper_search'#config에 추가
-python tools/train.py --batch 32 --conf configs/repopt/yolov6s_opt.py --data data/coco.yaml --device 0
-
+custom_dataset
+├── images
+│   ├── train
+│   │   ├── train0.jpg
+│   │   └── train1.jpg
+│   ├── val
+│   │   ├── val0.jpg
+│   │   └── val1.jpg
+│   └── test
+│       ├── test0.jpg
+│       └── test1.jpg
+└── labels
+    ├── train
+    │   ├── train0.txt
+    │   └── train1.txt
+    ├── val
+    │   ├── val0.txt
+    │   └── val1.txt
+    └── test
+        ├── test0.txt
+        └── test1.txt
+        
 #train
-python tools/train.py --batch 32 --conf configs/yolov6s.py --data data/coco.yaml --device 0
+python tools/train.py --batch 32 --conf configs/yolov6s.py --data /home/tlab/dataset/opt/coco.yaml
 
-#Test(optimizer hyperparameter)
+#Test
 python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --task val
 
 #detect
@@ -175,13 +223,14 @@ pip install -r requirements.txt
 conda activate YOLOV7
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
 
+#Pre train(optimizer hyperparameter)
+python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 1 --epochs 10 --cache --evolve
+
 #train
-python train.py --workers 8 --device 0 --batch-size 32 --data data/coco.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
+python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 32 --epochs 2000 --hyp /home/tlab/dataset/opt/hyp_evolved.yaml
 
-python train.py --workers 8 --device 0 --batch-size 32 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7-custom.yaml --weights 'yolov7_training.pt' --name yolov7-custom --hyp data/hyp.scratch.custom.yaml
-
-#Test(optimizer hyperparameter)
-python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --device 0 --weights yolov7.pt --name yolov7_640_val
+#Test
+python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --weights yolov7.pt --name yolov7_640_val
 
 #detect
 python detect.py --weights yolov7.pt --conf 0.25 --img-size 640 --source inference/images/horses.jpg
@@ -206,3 +255,11 @@ pip install tensorflow==2.4.1 tensorflow-gpu==2.4.1 opencv-python matplotlib
 conda activate allpose
 cd C:\Users\tiger1005\Documents\Pose
 Jupyter Notebook
+
+이름바꾸기
+1. 확인
+rename -n 's/.jpg/.tif/' *.jpg
+2. 실행
+rename -f 's/.tif/.jpg/' *.tif
+
+

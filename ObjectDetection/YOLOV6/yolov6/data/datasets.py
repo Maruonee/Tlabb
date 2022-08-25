@@ -206,9 +206,9 @@ class TrainValDataset(Dataset):
         )
         NUM_THREADS = min(8, os.cpu_count())
 
-        img_paths = glob.glob(osp.join(img_dir, "*"), recursive=True)
+        img_paths = glob.glob(osp.join(img_dir, "**/*"), recursive=True)
         img_paths = sorted(
-            p for p in img_paths if p.split(".")[-1].lower() in IMG_FORMATS
+            p for p in img_paths if p.split(".")[-1].lower() in IMG_FORMATS and os.path.isfile(p)
         )
         assert img_paths, f"No images found in {img_dir}."
 
@@ -257,11 +257,17 @@ class TrainValDataset(Dataset):
         )
         assert osp.exists(label_dir), f"{label_dir} is an invalid directory path!"
 
+        # Look for labels in the save relative dir that the images are in
+        def _new_rel_path_with_ext(base_path: str, full_path: str, new_ext: str):
+            rel_path = osp.relpath(full_path, base_path)
+            return osp.join(osp.dirname(rel_path), osp.splitext(osp.basename(rel_path))[0] + new_ext)
+
         img_paths = list(img_info.keys())
         label_paths = sorted(
-            osp.join(label_dir, osp.splitext(osp.basename(p))[0] + ".txt")
+            osp.join(label_dir, _new_rel_path_with_ext(img_dir, p, ".txt"))
             for p in img_paths
         )
+        assert label_paths, f"No labels found in {label_dir}."
         label_hash = self.get_hash(label_paths)
         if "label_hash" not in cache_info or cache_info["label_hash"] != label_hash:
             self.check_labels = True
@@ -306,8 +312,9 @@ class TrainValDataset(Dataset):
                 LOGGER.info("\n".join(msgs))
             if nf == 0:
                 LOGGER.warning(
-                    f"WARNING: No labels found in {osp.dirname(self.img_paths[0])}. "
+                    f"WARNING: No labels found in {osp.dirname(img_paths[0])}. "
                 )
+
 
         if self.task.lower() == "val":
             if self.data_dict.get("is_coco", False): # use original json file when evaluating on coco dataset.
@@ -425,7 +432,14 @@ class TrainValDataset(Dataset):
             im = Image.open(im_file)
             im.verify()  # PIL verify
             shape = im.size  # (width, height)
-            im_exif = im._getexif()
+            try:
+                im_exif = im._getexif()
+                if im_exif and ORIENTATION in im_exif:
+                    rotation = im_exif[ORIENTATION]
+                    if rotation in (6, 8):
+                        shape = (shape[1], shape[0])
+            except:
+                im_exif = None
             if im_exif and ORIENTATION in im_exif:
                 rotation = im_exif[ORIENTATION]
                 if rotation in (6, 8):
@@ -554,12 +568,12 @@ class LoadData:
     def __init__(self, path):
         p = str(Path(path).resolve())  # os-agnostic absolute path
         if os.path.isdir(p):
-            files = sorted(glob.glob(os.path.join(p, '*.*')))  # dir
+            files = sorted(glob.glob(os.path.join(p, '**/*.*'), recursive=True))  # dir
         elif os.path.isfile(p):
             files = [p]  # files
         else:
             raise FileNotFoundError(f'Invalid path {p}')
-        
+
         imgp = [i for i in files if i.split('.')[-1] in IMG_FORMATS]
         vidp = [v for v in files if v.split('.')[-1] in VID_FORMATS]
         self.files = imgp + vidp
@@ -601,7 +615,7 @@ class LoadData:
             img = cv2.imread(path)  # BGR
 
         return img, path, self.cap
-    
+
     def add_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)

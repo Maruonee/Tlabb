@@ -9,7 +9,7 @@ All this functions should check for errors, follow the comments to see all cases
 
 There should be NO ERRORS from Python in the console.
 """
-
+# %%
 def add_to_dict(d_dict, d_key = False, d_value = False):
     if type(d_dict) is not dict:
         print(f"You need to send a dictionary. You sent: {type(d_dict)}")
@@ -21,7 +21,7 @@ def add_to_dict(d_dict, d_key = False, d_value = False):
         d_dict[d_key] = d_value
         print(f"{d_key} has been added.")
     return
-        
+# %%     
 def get_from_dict(d_dict, d_key = False):
     if type(d_dict) is not dict:
         print(f"You need to send a dictionary. You sent: {type(d_dict)}")
@@ -32,7 +32,7 @@ def get_from_dict(d_dict, d_key = False):
     else: 
         print(f"{d_key} was not found in this dict.")
     return
-
+# In[]
 def update_word(d_dict, d_key = False, d_value = False):
     if type(d_dict) is not dict:
         print(f"You need to send a dictionary. You sent: {type(d_dict)}")
