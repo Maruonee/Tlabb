@@ -72,13 +72,13 @@ conda activate YOLOV3
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512 
-#Train 
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512
 
+#Train 
 python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v3_hyp_evolved.yaml --img 512
 
 #detect
-python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
+python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV3/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.45 --name 'bestnonpass_045' --save-crop
 
 ##########################################YOLOv4
 #install 
@@ -121,7 +121,7 @@ python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/data
 python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v5_hyp_evolved.yaml --img 512
 
 #detect
-python detect.py --weights /media/tlab/Data/Results/Mask/YOLOV5/weights/best.pt --source /media/tlab/Data/Dataset/Mask/test/
+python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV5/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'bestnonpass_04' --save-crop
 
 ########################################YOLO_X
 #install	
@@ -224,16 +224,16 @@ conda activate YOLOV7
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
 
 #Pre train(optimizer hyperparameter)
-python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 1 --epochs 10 --cache --evolve
+python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights '' --batch-size 32 --epochs 10 --cache --evolve
 
 #train
-python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 32 --epochs 2000 --hyp /home/tlab/dataset/opt/hyp_evolved.yaml
+python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights '' --batch-size 32 --epochs 500 --hyp /home/tlab/dataset/opt/hyp_evolved.yaml
 
 #Test
 python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --weights yolov7.pt --name yolov7_640_val
 
 #detect
-python detect.py --weights yolov7.pt --conf 0.25 --img-size 640 --source inference/images/horses.jpg
+python detect.py --weights yolov7.pt --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'lastnonpass_04'
 
 #Pose detect
 keypoint.ipynb
@@ -256,10 +256,14 @@ conda activate allpose
 cd C:\Users\tiger1005\Documents\Pose
 Jupyter Notebook
 
+
+=========================================================
 이름바꾸기
 1. 확인
 rename -n 's/.jpg/.tif/' *.jpg
+rename -n 's/.tif/.jpg/' *.tif
 2. 실행
+rename -f 's/.jpg/.tif/' *.jpg
 rename -f 's/.tif/.jpg/' *.tif
 
 
