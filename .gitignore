@@ -252,3 +252,7 @@ ObjectDetection/YOLOV3/wandb/run-20220721_143833-8bkingls/files/requirements.txt
 *.txt
 classfication/TensorClass/Classfication.py
 classfication/TensorClass/Classfication.py
+CVR/edit_estimate_cvr.py
+CVR/estimate_cvr.py
+Pose/Handpose.ipynb
+Pose/Mediapose.ipynb
