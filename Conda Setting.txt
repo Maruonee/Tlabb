@@ -38,3 +38,5 @@ name : ConVformat
 numpy
 opencv-python
 tqdm
+#####################################DETR
+

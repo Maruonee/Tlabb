@@ -256,6 +256,24 @@ conda activate allpose
 cd C:\Users\tiger1005\Documents\Pose
 Jupyter Notebook
 
+===================DETR
+conda create -n DETR python=3.8.8
+conda activate DETR
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+
+conda activate DETR
+cd /home/tlab/Tlabb/ObjectDetection/DETR
+path/to/coco/
+  annotations/  # annotation json files
+  train2017/    # train images
+  val2017/      # val images
+
+train
+python -m torch.distributed.launch --nproc_per_node=1 --use_env main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017
+
+Evaluation
+python main.py --batch_size 2 --no_aux_loss --eval --resume https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth --coco_path /path/to/coco
+
 
 =========================================================
 이름바꾸기
