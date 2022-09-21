@@ -6,7 +6,7 @@ import os
 data_dir = '/home/tlab/dataset'
 
 #이미지 리스트 불러오기
-img_list = glob(os.path.join(data_dir,"image","*.tif"))
+img_list = glob(os.path.join(data_dir,"img","*.jpg"))
 
 # 트레이닝셋, 벨류, 테스트 6:2:2
 train_img_list, val_test_img_list = train_test_split(

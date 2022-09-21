@@ -51,8 +51,8 @@ git clone https://github.com/Taeyoung96/Yolo-to-COCO-format-converter.git
 
 #activate
 conda activate ConVformat
-cd /home/tlab/Tlab/yolo2coco
-pythoamain.py --path /media/tlab/Data/Dataset/Carm/train.txt --output train.json
+cd /home/tlab/Tlabb/editdata/yolo2coco
+python main.py --path /home/tlab/Tlabb/editdata/yolo2coco/tutorial/test --output test
 
 ##########################################SplitFolders
 conda activate ConVformat
@@ -233,10 +233,17 @@ python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.y
 python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --weights yolov7.pt --name yolov7_640_val
 
 #detect
-python detect.py --weights yolov7.pt --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'lastnonpass_04'
+python detect.py --weights yolov7.pt --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'lastnonpass_04' --line-thickness 5
+
+#Pose Training
+cd /home/tlab/Tlabb/ObjectDetection/YOLOV7_P
+python train.py --data data/coco_kpts.yaml --cfg cfg/yolov7-w6-pose.yaml --weights weights/yolov7-w6-person.pt --batch-size 128 --img 960 --kpt-label --sync-bn --device 0 --name yolov7-w6-pose --hyp data/hyp.pose.yaml
+
+#Pose test
+python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --weights yolov7-w6-pose.pt --kpt-label
 
 #Pose detect
-keypoint.ipynb
+python detect.py --weights yolov7-w6-pose.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV7/figure/yoga8.mp4 --kpt-label --line-thickness 8 --hide-labels --hide-conf --nobbox
 
 ===================hand
 conda create -n hand python=3.8.8

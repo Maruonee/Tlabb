@@ -256,3 +256,4 @@ CVR/edit_estimate_cvr.py
 CVR/estimate_cvr.py
 Pose/Handpose.ipynb
 Pose/Mediapose.ipynb
+*.mp4
