@@ -20,8 +20,8 @@ def get_args_parser(add_help=True):
     parser.add_argument('--weights', type=str, default='weights/yolov6s.pt', help='model path(s) for inference.')
     parser.add_argument('--source', type=str, default='data/images', help='the source path, e.g. image-file/dir.')
     parser.add_argument('--yaml', type=str, default='data/coco.yaml', help='data yaml file.')
-    parser.add_argument('--img-size', type=int, default=640, help='the image-size(h,w) in inference size.')
-    parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold for inference.')
+    parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='the image-size(h,w) in inference size.')
+    parser.add_argument('--conf-thres', type=float, default=0.4, help='confidence threshold for inference.')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold for inference.')
     parser.add_argument('--max-det', type=int, default=1000, help='maximal inferences per image.')
     parser.add_argument('--device', default='0', help='device to run our model i.e. 0 or 0,1,2,3 or cpu.')
@@ -41,12 +41,13 @@ def get_args_parser(add_help=True):
     LOGGER.info(args)
     return args
 
+
 @torch.no_grad()
 def run(weights=osp.join(ROOT, 'yolov6s.pt'),
         source=osp.join(ROOT, 'data/images'),
         yaml=None,
         img_size=640,
-        conf_thres=0.25,
+        conf_thres=0.4,
         iou_thres=0.45,
         max_det=1000,
         device='',
@@ -94,6 +95,7 @@ def run(weights=osp.join(ROOT, 'yolov6s.pt'),
     else:
         LOGGER.warning('Save directory already existed')
     if save_txt:
+        save_txt_path = osp.join(save_dir, 'labels')
         if not osp.exists(save_txt_path):
             os.makedirs(save_txt_path)
 

@@ -52,7 +52,8 @@ git clone https://github.com/Taeyoung96/Yolo-to-COCO-format-converter.git
 #activate
 conda activate ConVformat
 cd /home/tlab/Tlabb/editdata/yolo2coco
-python main.py --path /home/tlab/Tlabb/editdata/yolo2coco/tutorial/test --output test
+python main.py --path /home/tlab/Tlabb/editdata/yolo2coco/tutorial/test --output test.json
+
 
 ##########################################SplitFolders
 conda activate ConVformat
@@ -61,7 +62,7 @@ pip install split-folder
 
 #########################################YOLOV3
 #install 
-conda create -n YOLOV3
+conda create -n YOLOV3 python=3.8
 conda activate YOLOV3
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 pip install -r requirements.txt
@@ -82,27 +83,18 @@ python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV3/best.pt' --sou
 
 ##########################################YOLOv4
 #install 
-conda create -n YOLOV4 python=3.8
-conda activate YOLOV4
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
-pip install -r requirements.txt
 
 #activate
-conda activate YOLOV4
-cd /home/tlab/Tlabb/ObjectDetection/YOLOV4
 
-#Test
-python test.py --img 640 --conf 0.001 --batch 8 --device 0 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights weights/yolov4-pacsp.pt  --img 512 512
+#transform data
 
 #Train 
-python train.py --device 0 --batch-size 16 --img 512 512 --data coco.yaml --cfg cfg/yolov4-pacsp.cfg --weights '' --name yolov4-pacsp
 
 #detect
-python detect.py --weights /home/tlab/Pretrain/YOLOV3/yolov3.pt --source /home/tlab/Tlab/pytorch/ObjectDetection/YOLOV3/data/images/bus.jpg
 
 ##########################################YOLOv5
 #install 
-conda create -n YOLOV5
+conda create -n YOLOV5 python=3.8
 conda activate YOLOV5
 pip install wandb
 pip install wandb --upgrade
@@ -125,56 +117,83 @@ python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV5/best.pt' --sou
 
 ########################################YOLO_X
 #install	
-conda create -n YOLOX
-conda activate YOLOX
-conda install cudatoolkit=11.3
+conda create -n YOLOXX python=3.8
+conda activate YOLOXX
+pip install -U pip
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+pip install numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5
+pip install -v -e .
 
 #activate 
-conda activate YOLOX
+conda activate YOLOXX
 cd /home/tlab/Tlabb/ObjectDetection/YOLOX
 
+#transform data
+VOCdevkit속에 xml파일과 그림파일 한번에 넣기
+/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit폴더에 데이터넣기
+python voc_txt.py "/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit/"
+VOC2012
+#아래파일 Class 수정
+1. yolox/data/datasets/voc_classes.py
+2. yolox/data/datasets/coco_classes.py
+3. yolox_voc_s.py 의  self.num_classes를 클래스 수로 수정
+
 #train
-python tools/train.py -f /media/tlab/Data/Dataset/Carm/yolox_s.py -d 1 -b 32 -c /home/tlab/Pretrain/YOLOX/yolox_s.pth
+python tools/train.py --exp_file /home/tlab/dataset/opt/yolox_voc_s.py --devices 1 --batch-size 16 --fp16 --occupy --weights yolox_s.pth --cache
+epoch수정은 yolox/exp/yolox_base.py의 self.max_epoch에서 설정
 
 #detect
-python tools/demo.py image -f exps/default/yolox_s.py -c /media/tlab/Data/Results/Carm/YOLOX/epoch_2000_ckpt.pth --path assets/dog.jpg --conf 0.25 --tsize 512 --save_result --device gpu
+python tools/demo.py --type video[image] --weights yolox_s.pth --path /home/tlab/Tlabb/ObjectDetection/YOLOR/data/video/sample.mp4 --conf 0.25 --nms 0.45 --img-size 640 --save_result --device gpu --name yolox-s 
 
 #test
-python -m yolox.tools.eval -n yolox-s -c /home/tlab/Tlab/pytorch/ObjectDetection/YOLOX/YOLOX_outputs/4/yolox_voc_s/epoch_10_ckpt.pth -b 1 -d 1 --conf 0.001 --fp16 --fuse
-
+python tools/eval.py --exp_file /home/tlab/dataset/opt/yolox_voc_s.py --weights best_ckpt.pth --batch-size 64 -- devices 1 --conf 0.001 --fp16 --name yolox-s --img-size 640 --name yolox-s
 
 ########################################YOLOR
 #install	
-conda create -n YOLOR python=3.8
-conda activate YOLOR
+conda create -n YOLORR python=3.8
+conda activate YOLORR
 cd /home/tlab/Tlabb/ObjectDetection/YOLOR
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
-pip install -r requirements.txt
+pip install seaborn thop
+pip install cython
+pip install "git+https://github.com/philferriere/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI"
+pip install opencv-contrib-python
+pip install -r requirements-gpu.txt
+conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
 
 #activate 
-conda activate YOLOR
+conda activate YOLORR
 cd /home/tlab/Tlabb/ObjectDetection/YOLOR
+
+#cfg
+batch size = 64, subdivision = 16 training image at a time 4
+yolo 부분에 있는 classes yolo위쪽에 있는 filter = 3 * (5 + classes)
+max_batches = class * 2000
+steps는 max_batches의 80%의 수치와 90%의 수치
+filter: 3 * (5 + classes) = 255
+#L1569, #L1573, #L1577, #L1581, #L1605, #L1649, #L1693, #L1737
+
+#Pre train(optimizer hyperparameter)
+python train.py --batch-size 32 --img-size 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --evolve --cache-images --workers 16
 
 #train
-python train.py --batch-size 4 --data /home/tlab/dataset/opt/coco.yaml --weights '' --device 0 --epochs 500 --cfg /home/tlab/dataset/opt/yolor_p6.cfg
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --hyp hyp.scratch.1280.yaml --cache-images --workers 16
 
 #detect
-python detect.py --source inference/images/horses.jpg --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --conf 0.25 --img-size 512 --device 0
+python detect.py --source /home/tlab/Tlabb/ObjectDetection/YOLOR/data/video/sample.mp4 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --conf-thres 0.25 --img-size 1280 --device 0 --save-txt --iou-thres 0.5
 
 #test
-python test.py --data data/coco.yaml --img 1280 --batch 32 --conf 0.001 --iou 0.65 --device 0 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --name yolor_p6_val
-
+python test.py --data data/coco.yaml --img-size 1280 --batch-size 32 --conf-thres 0.001 --iou-thres 0.65 --device 0 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --name yolor_p6_val --verbose --save-txt --save-conf
 ########################################YOLOV6
-#install	
-conda create -n YOLOV6 python=3.8
-conda activate YOLOV6
+#install
+conda create -n YOLOV66 python=3.8
+conda activate YOLOV66
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
-conda activate YOLOV6
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
-pip install -r requirements.txt
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+pip install numpy opencv-python PyYAML scipy tqdm addict tensorboard pycocotools onnx onnx-simplifier thop
 
 #activate 
-conda activate YOLOV6
+conda activate YOLOV66
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
 
 #Pre train(optimizer hyperparameter)
@@ -212,7 +231,7 @@ python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --tas
 python tools/infer.py --weights yolov6s.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/images
 
 ########################################YOLOV7
-#install	
+#install
 conda create -n YOLOV7 python=3.8
 conda activate YOLOV7
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
@@ -276,11 +295,12 @@ path/to/coco/
   val2017/      # val images
 
 train
-python -m torch.distributed.launch --nproc_per_node=1 --use_env main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017
+python main.py --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial --epochs 300 --num_workers 16
+  
+python main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017 --epochs 1 --num_workers 0 --batch_size 2
 
 Evaluation
-python main.py --batch_size 2 --no_aux_loss --eval --resume https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth --coco_path /path/to/coco
-
+python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
 =========================================================
 이름바꾸기
@@ -290,5 +310,7 @@ rename -n 's/.tif/.jpg/' *.tif
 2. 실행
 rename -f 's/.jpg/.tif/' *.jpg
 rename -f 's/.tif/.jpg/' *.tif
-
-
+3. 데이터 파일 리스트 만들기
+find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
+4. 삭제
+conda env remove -n YOLO6
