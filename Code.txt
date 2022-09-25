@@ -196,10 +196,7 @@ pip install numpy opencv-python PyYAML scipy tqdm addict tensorboard pycocotools
 conda activate YOLOV66
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
 
-#Pre train(optimizer hyperparameter)
-python tools/train.py --batch 32 --conf configs/yolov6s.py --data /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/data.yaml
-
-custom_dataset
+#custom_dataset
 ├── images
 │   ├── train
 │   │   ├── train0.jpg
@@ -222,7 +219,7 @@ custom_dataset
         └── test1.txt
         
 #train
-python tools/train.py --batch 32 --conf configs/yolov6s.py --data /home/tlab/dataset/opt/coco.yaml
+python tools/train.py --batch-size 32 --conf-file /home/tlab/dataset/opt/yolov6s.py --data-path /home/tlab/dataset/opt/yolov6.yaml --device 0 --img-size 512 --epochs 100 --workers 16
 
 #Test
 python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --task val
