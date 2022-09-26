@@ -73,7 +73,7 @@ conda activate YOLOV3
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
 python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v3_hyp_evolved.yaml --img 512

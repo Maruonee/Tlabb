@@ -258,3 +258,4 @@ Pose/Handpose.ipynb
 Pose/Mediapose.ipynb
 *.mp4
 *.pth
+*.csv
