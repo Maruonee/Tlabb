@@ -73,10 +73,10 @@ conda activate YOLOV3
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/cocolabe128.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v3_hyp_evolved.yaml --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov3.pt --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v3/hyp_evolve.yaml --img 512
 
 #detect
 python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV3/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.45 --name 'bestnonpass_045' --save-crop
@@ -107,10 +107,10 @@ conda activate YOLOV5
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov5n.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5n.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights '' --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v5_hyp_evolved.yaml --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov5n.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5n.pt --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v5/hyp_evolve.yaml --img 512
 
 #detect
 python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV5/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'bestnonpass_04' --save-crop
@@ -130,17 +130,15 @@ conda activate YOLOXX
 cd /home/tlab/Tlabb/ObjectDetection/YOLOX
 
 #transform data
-VOCdevkit속에 xml파일과 그림파일 한번에 넣기
-/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit폴더에 데이터넣기
+/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit폴더에 xml파일과 그림파일 한번에 넣기
 python voc_txt.py "/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit/"
-VOC2012
 #아래파일 Class 수정
 1. yolox/data/datasets/voc_classes.py
 2. yolox/data/datasets/coco_classes.py
-3. yolox_voc_s.py 의  self.num_classes를 클래스 수로 수정
+3. yolox/data/datasets/yolox_voc_s.py 의  self.num_classes를 클래스 수로 수정
 
 #train
-python tools/train.py --exp_file /home/tlab/dataset/opt/yolox_voc_s.py --devices 1 --batch-size 16 --fp16 --occupy --weights yolox_s.pth --cache
+python tools/train.py --exp_file //home/tlab/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_s.py --devices 1 --batch-size 32 --fp16 --occupy --weights yolox_m.pth --cache
 epoch수정은 yolox/exp/yolox_base.py의 self.max_epoch에서 설정
 
 #detect
@@ -174,10 +172,10 @@ filter: 3 * (5 + classes) = 255
 #L1569, #L1573, #L1577, #L1581, #L1605, #L1649, #L1693, #L1737
 
 #Pre train(optimizer hyperparameter)
-python train.py --batch-size 32 --img-size 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --evolve --cache-images --workers 16
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --evolve --cache --workers 16
 
 #train
-python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --hyp hyp.scratch.1280.yaml --cache-images --workers 16
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 500 --hyp /home/tlab/dataset/opt/R/hyp_evolved.yaml --cache --workers 16
 
 #detect
 python detect.py --source /home/tlab/Tlabb/ObjectDetection/YOLOR/data/video/sample.mp4 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --conf-thres 0.25 --img-size 1280 --device 0 --save-txt --iou-thres 0.5
@@ -219,7 +217,7 @@ cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
         └── test1.txt
         
 #train
-python tools/train.py --batch-size 32 --conf-file /home/tlab/dataset/opt/yolov6s.py --data-path /home/tlab/dataset/opt/yolov6.yaml --device 0 --img-size 512 --epochs 100 --workers 16
+python tools/train.py --batch-size 32 --conf-file configs/yolov6n.py --data-path /home/tlab/dataset/opt/yolov6.yaml --device 0 --img-size 512 --epochs 500 --workers 16
 
 #Test
 python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --task val
@@ -240,10 +238,10 @@ conda activate YOLOV7
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
 
 #Pre train(optimizer hyperparameter)
-python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights '' --batch-size 32 --epochs 10 --cache --evolve
+python train.py --workers 16 --img 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 32 --epochs 10 --evolve
 
 #train
-python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights '' --batch-size 32 --epochs 500 --hyp /home/tlab/dataset/opt/hyp_evolved.yaml
+python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7.pt --batch-size 32 --epochs 500
 
 #Test
 python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --weights yolov7.pt --name yolov7_640_val

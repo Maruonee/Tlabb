@@ -259,3 +259,7 @@ Pose/Mediapose.ipynb
 *.mp4
 *.pth
 *.csv
+*.0
+*.pkl
+*.array
+*.pyc
