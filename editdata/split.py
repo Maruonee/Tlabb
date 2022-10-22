@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/home/tlab/dataset/img/'
+input_folder = '/home/tlab/dataset'
 #아웃풋 폴더
 """
 output/
@@ -38,7 +38,7 @@ output/
             imgc.jpg
             ...           
 """
-out_foloder = '/home/tlab/dataset/img/output/'
+out_foloder = '/home/tlab/dataset/output'
 #학습비율
 train_ratio = 0.6
 #검증비율
@@ -46,7 +46,7 @@ val_ratio = 0.2
 #테스트비율
 test_ratio = 0.2
 #라벨링 폴더와 같이있으면 2 없으면 None
-anno_set = 2
+anno_set = None
 #파일을 복사하지않고 움빅일경우 True
 move_opt = False
 

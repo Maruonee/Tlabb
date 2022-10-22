@@ -90,7 +90,7 @@ python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV3/best.pt' --sou
 
 #Train 
 
-#detect
+#detec
 
 ##########################################YOLOv5
 #install 
@@ -107,13 +107,13 @@ conda activate YOLOV5
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab/dataset/opt/yolov5n.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5n.pt --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab/dataset/opt/yolov5n.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5n.pt --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/v5/hyp_evolve.yaml --img 512
+python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights best.pt --batch 32 --epochs 500 --hyp /home/tlab/dataset/opt/hyp_evolve.yaml --img 512
 
 #detect
-python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV5/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'bestnonpass_04' --save-crop
+python detect.py --weights best.pt --source '/home/tlab/dataset/IRB/*.tif' --save-conf --save-txt --conf-thres 0.25 --name irb --save-crop
 
 ########################################YOLO_X
 #install	
@@ -309,3 +309,7 @@ rename -f 's/.tif/.jpg/' *.tif
 find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
 4. 삭제
 conda env remove -n YOLO6
+=========================================================
+LaTex
+texmaker
+
