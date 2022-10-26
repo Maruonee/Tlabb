@@ -67,7 +67,6 @@ def detect(save_img=False):
     old_img_b = 1
 
     t0 = time.time()
-    starttime = 0
     for path, img, im0s, vid_cap in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -85,7 +84,8 @@ def detect(save_img=False):
 
         # Inference
         t1 = time_synchronized()
-        pred = model(img, augment=opt.augment)[0]
+        with torch.no_grad():   # Calculating gradients would cause a GPU memory leak
+            pred = model(img, augment=opt.augment)[0]
         t2 = time_synchronized()
 
         # Apply NMS
@@ -130,15 +130,7 @@ def detect(save_img=False):
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
-            # calculate fps
-            if dataset.mode != 'image':
-                currentTime = time.time()
-                
-                fps = 1/(currentTime - startTime)
-                startTime = currentTime
-                cv2.puttext(im0, "FPS : "+ str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0))
-                
-                
+
             # Stream results
             if view_img:
                 cv2.imshow(str(p), im0)
