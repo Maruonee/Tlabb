@@ -2,7 +2,7 @@
 #install
 conda create -n TorchClass
 conda activate TorchClass
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+conda install pytovvrch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 pip install matplotlib
 
 #activate
@@ -13,7 +13,6 @@ cd /home/tlab/Tlab/pytorch/Classification
 python3 alexnet.py
 
 #detect
-
 
 ##############################TensorEnv
 #install
@@ -28,10 +27,12 @@ pip install knockknock
 
 #activate
 conda activate TensorEnv
+cd /home/tlab/dataset
 
 python3 DenseNet201.py ; python3 InceptionResNetV2.py ; python3 InceptionV3.py ; python3 NASNetLarge.py ; python3 RegNetY320.py ; python3 ResNet50.py ; python3 ResNet50V2.py ; python3 ResNetRS50.py ; python3 VGG16.py ; python3 VGG19.py ; python3 Xception.py
 
-python DenseNet201.py & python InceptionResNetV2.py & python InceptionV3.py & python NASNetLarge.py & python RegNetY320.py & python ResNet50.py & python ResNet50V2.py & python ResNetRS50.py & python VGG16.py & python VGG19.py & python Xception.py
+
+python Convnet.py ; python DenseNet201.py & python InceptionResNetV2.py & python InceptionV3.py & python NASNetLarge.py & python RegNetY320.py & python ResNet50.py & python ResNet50V2.py & python ResNetRS50.py & python VGG16.py & python VGG19.py & python Xception.py
 
 ##########################################voc2coco
 #activate
@@ -82,17 +83,8 @@ python train.py --cfg /home/tlab/dataset/opt/yolov3.yaml --data /home/tlab/datas
 #detect
 python detect.py --weights '/home/tlab/dataset/test/weight/YOLOV3/best.pt' --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.45 --name 'bestnonpass_045' --save-crop
 
-##########################################YOLOv4
-#install 
-
-#activate
-
-#transform data
-
-#Train 
-
-#detec
-
+#eval
+python val.py --data /home/tlab/dataset/opt/coco128.yaml --weights /home/tlab/dataset/V3/best.pt --img 512
 ##########################################YOLOv5
 #install 
 conda create -n YOLOV5 python=3.8
@@ -116,6 +108,10 @@ python train.py --cfg /home/tlab/dataset/opt/yolov5x.yaml --data /home/tlab/data
 #detect
 python detect.py --weights best.pt --source '/home/tlab/dataset/IRB/*.tif' --save-conf --save-txt --conf-thres 0.25 --name irb --save-crop
 
+#eval
+python val.py --data /home/tlab/dataset/opt/coco128.yaml --weights /home/tlab/dataset/V7/best.pt --img 512
+
+
 ########################################YOLO_X
 #install	
 conda create -n YOLOXX python=3.8
@@ -133,6 +129,8 @@ cd /home/tlab/Tlabb/ObjectDetection/YOLOX
 #transform data
 /home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit폴더에 xml파일과 그림파일 한번에 넣기
 python voc_txt.py "/home/tlab/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit/"
+* rename -f 's/.tif/.jpg/' *.tif
+* VOC2007만 사용함
 #아래파일 Class 수정(최소 class 4)
 1. YOLOX/yolox/data/datasets/voc_classes.py
 2. YOLOX/yolox/data/datasets/coco_classes.py
@@ -146,7 +144,7 @@ epoch수정은 yolox/exp/yolox_base.py의 self.max_epoch에서 설정
 python tools/demo.py --type video[image] --weights yolox_s.pth --path /home/tlab/Tlabb/ObjectDetection/YOLOR/data/video/sample.mp4 --conf 0.25 --nms 0.45 --img-size 640 --save_result --device gpu --name yolox-s 
 
 #test
-python tools/eval.py --exp_file /home/tlab/dataset/opt/yolox_voc_s.py --weights best_ckpt.pth --batch-size 64 -- devices 1 --conf 0.001 --fp16 --name yolox-s --img-size 640 --name yolox-s
+python tools/eval.py --exp_file /home/tlab/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_s.py --weights /home/tlab/dataset/X/1/	best_ckpt.pth --batch-size 32 -- devices 1 --conf 0.25 --fp16 --name yolox-s1 --img-size 512
 
 ########################################YOLOR
 #install	
@@ -164,7 +162,7 @@ conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit
 conda activate YOLORR
 cd /home/tlab/Tlabb/ObjectDetection/YOLOR
 
-#cfg
+#cfg 21
 batch size = 64, subdivision = 16 training image at a time 4
 yolo 부분에 있는 classes yolo위쪽에 있는 filter = 3 * (5 + classes)
 max_batches = class * 2000
@@ -176,13 +174,14 @@ filter: 3 * (5 + classes) = 255
 python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --evolve --cache --workers 16
 
 #train
-python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 500 --hyp /home/tlab/dataset/opt/R/hyp_evolved.yaml --cache --workers 16
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 500 --cache --workers 16 --hyp /home/tlab/dataset/opt/R/hyp_evolved.yaml
 
 #detect
 python detect.py --source /home/tlab/Tlabb/ObjectDetection/YOLOR/data/video/sample.mp4 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --conf-thres 0.25 --img-size 1280 --device 0 --save-txt --iou-thres 0.5
 
 #test
-python test.py --data data/coco.yaml --img-size 1280 --batch-size 32 --conf-thres 0.001 --iou-thres 0.65 --device 0 --cfg cfg/yolor_p6.cfg --weights yolor_p6.pt --name yolor_p6_val --verbose --save-txt --save-conf
+python test.py --data /home/tlab/dataset/opt/coco.yaml --img-size 512 --batch-size 32 --conf-thres 0.25 --iou-thres 0.65 --device 0 --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights /home/tlab/dataset/R/best.pt --name yolor_1_val --verbose --save-txt --save-conf
+
 ########################################YOLOV6
 #install
 conda create -n YOLOV66 python=3.8
@@ -218,13 +217,13 @@ cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
         └── test1.txt
         
 #train
-python tools/train.py --batch-size 32 --conf-file configs/yolov6n.py --data-path /home/tlab/dataset/opt/yolov6.yaml --device 0 --img-size 512 --epochs 500 --workers 16
+python tools/train.py --batch-size 32 --conf-file configs/yolov6l.py --data-path /home/tlab/dataset/opt/dataset.yaml --device 0 --img-size 512 --epochs 500 --workers 16
 
 #Test
-python tools/eval.py --data data/coco.yaml --batch 32 --weights yolov6s.pt --task val
+python tools/eval.py --data /home/tlab/dataset/opt/dataset.yaml --batch-size 32 --weights /home/tlab/dataset/V66/1/best_ckpt.pt --img-size 512 --iou-thres 0.65 --verbose --conf-thres 0.25 --name yolor_1_val
 
 #detect
-python tools/infer.py --weights yolov6s.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/images
+python tools/infer.py --weights /home/tlab/dataset/V66/1/best_ckpt.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV6/data/images
 
 ########################################YOLOV7
 #install
@@ -239,13 +238,13 @@ conda activate YOLOV7
 cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
 
 #Pre train(optimizer hyperparameter)
-python train.py --workers 16 --img 512 --cfg /home/tlab/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 10 --evolve
+python train.py --img 512 --cfg /home/tlab/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 10 --evolve
 
 #train
 python train.py --workers 16 --img 512 512 --cfg /home/tlab/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 500
 
 #Test
-python test.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.65 --weights yolov7.pt --name yolov7_640_val
+python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --conf 0.25 --iou 0.65 --weights /home/tlab/dataset/V7/best.pt
 
 #detect
 python detect.py --weights yolov7.pt --source '/home/tlab/test/nonpass/*.tif' --save-conf --save-txt --conf-thres 0.4 --name 'lastnonpass_04' --line-thickness 5
@@ -313,4 +312,9 @@ conda env remove -n YOLO6
 =========================================================
 LaTex
 texmaker
+
+
+pip install tensorboard
+tensorboard --logdir = /home/tlab/log
+
 

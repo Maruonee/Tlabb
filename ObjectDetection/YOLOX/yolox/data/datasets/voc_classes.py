@@ -3,4 +3,4 @@
 # Copyright (c) Megvii, Inc. and its affiliates.
 
 # VOC_CLASSES = ( '__background__', # always index 0
-VOC_CLASSES = ("linegauze","thickgauze","line",'thick')
+VOC_CLASSES = ('one','two','thr','four','five','six')

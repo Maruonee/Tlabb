@@ -21,7 +21,7 @@ for filename in os.listdir(root_path):
         with open(os.path.join(root_path, filename)) as f:
             Path(root_path + filename).rename(xmlfilepath + filename)
 
-    if filename.endswith('.jpg'):
+    if filename.endswith('.tif'):
         with open(os.path.join(root_path, filename)) as f:
             Path(root_path + filename).rename(imagefilepath + filename)
 

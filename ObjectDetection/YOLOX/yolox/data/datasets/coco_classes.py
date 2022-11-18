@@ -2,4 +2,4 @@
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii, Inc. and its affiliates.
 
-COCO_CLASSES = ("linegauze","thickgauze","line",'thick',)
+COCO_CLASSES = ('one','two','thr','four','five','six')

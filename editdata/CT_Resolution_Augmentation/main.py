@@ -10,6 +10,7 @@ from skimage import exposure as ex
 import PIL
 from PIL import Image
 
+#파일 위치 설정
 def CreateDirectory(directory):
     try:
         if not os.path.exists(directory):
@@ -30,7 +31,7 @@ def ImageProcess(Path):
                     Img_Path_List.append(Img_Path)
                     print(Img_Path)
 
-                    # Erosion & Dilation
+                    #확장, 축소 Erosion & Dilation
                     Erosion_Folder_Path = Root + '/Erosion'
                     Dilation_Folder_Path = Root + '/Dilation'
                     CreateDirectory(Erosion_Folder_Path)
