@@ -118,8 +118,8 @@ conda create -n YOLOXX python=3.8
 conda activate YOLOXX
 pip install -U pip
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
-pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
-pip install numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5
+pip install numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5 tensorborad
+cd /home/tlab/Tlabb/ObjectDetection/YOLOX
 pip install -v -e .
 
 #activate 
@@ -312,6 +312,11 @@ conda env remove -n YOLO6
 =========================================================
 LaTex
 texmaker
+
+sudo apt-get install xmacro
+xmacrorec2 > test.file
+xmacroplay "$DISPLAY" < test.file
+for (( i=0; i<60; i++ )); do   xmacroplay "$DISPLAY" <test.file; done
 
 
 pip install tensorboard

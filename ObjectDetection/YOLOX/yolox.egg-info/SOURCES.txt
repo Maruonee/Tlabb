@@ -47,6 +47,7 @@ yolox/evaluators/voc_evaluator.py
 yolox/exp/__init__.py
 yolox/exp/base_exp.py
 yolox/exp/build.py
+yolox/exp/yolox.py
 yolox/exp/yolox_base.py
 yolox/layers/__init__.py
 yolox/layers/fast_coco_eval_api.py
