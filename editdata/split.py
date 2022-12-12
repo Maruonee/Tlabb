@@ -46,7 +46,7 @@ val_ratio = 0.2
 #테스트비율
 test_ratio = 0.2
 #라벨링 폴더와 같이있으면 2 없으면 None
-anno_set = None
+anno_set = 2
 #파일을 복사하지않고 움빅일경우 True
 move_opt = True
 
