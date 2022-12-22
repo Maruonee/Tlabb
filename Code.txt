@@ -95,30 +95,29 @@ python val.py --data /home/tlab1004/dataset/opt/coco128.yaml --weights /home/tla
 
 ########################################YOLO_X
 #install	
-conda create -n YOLOXX python=3.8
-conda activate YOLOXX
+conda create -n YOLOX python=3.8
+conda activate YOLOX
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOX
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
-pip install -U pip
-numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5 tensorborad -U pip
+pip install numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5 tensorboard wandb
 pip install -v -e .
-
+python3 setup.py develop
 #activate 
 conda activate YOLOXX
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOX
 
 #transform data
-/home/tlab1004/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit폴더에 xml파일과 그림파일 한번에 넣기
+YOLOX/datasets/VOCdevkit폴더에 xml파일과 그림파일 한번에 넣기
 python voc_txt.py "/home/tlab1004/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit/"
 * rename -f 's/.tif/.jpg/' *.tif
 * VOC2007만 사용함
 #아래파일 Class 수정(최소 class 4)
 1. YOLOX/yolox/data/datasets/voc_classes.py
 2. YOLOX/yolox/data/datasets/coco_classes.py
-3. YOLOX/exps/example/yolox_voc/yolox_voc_s.py 의  self.num_classes를 클래스 수로 수정
+3. opt yolox_voc수정  self.num_classes를 클래스 수로 수정
 
 #train
-python tools/train.py --exp_file /home/tlab/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_s.py --devices 1 --batch-size 32 --fp16 --occupy --weights yolox_m.pth --cache
+python tools/train.py -f /home/tlab1004/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_m.py -d 1 -b 32 --fp16 -o -c yolox_m.pth --cache -l wandb
 epoch수정은 yolox/exp/yolox_base.py의 self.max_epoch에서 설정
 
 #detect

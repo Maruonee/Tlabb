@@ -11,9 +11,9 @@ from yolox.exp import Exp as MyExp
 class Exp(MyExp):
     def __init__(self):
         super(Exp, self).__init__()
-        self.num_classes = 8 #6
-        self.depth = 0.33
-        self.width = 0.50
+        self.num_classes = 4
+        self.depth = 0.67
+        self.width = 0.75
         self.warmup_epochs = 1
 
         # ---------- transform config ------------ #
