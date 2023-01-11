@@ -13,7 +13,7 @@ input/
     ...
 """
 input_folder = '/home/tlab1004/dataset/images'
-#아웃풋 폴더
+#아웃풋 폴더t
 """
 output/
     train/
@@ -46,7 +46,7 @@ val_ratio = 0.2
 #테스트비율
 test_ratio = 0.2
 #라벨링 폴더와 같이있으면 2 없으면 None
-anno_set = 2
+anno_set = None #2 , None
 #파일을 복사하지않고 움빅일경우 True
 move_opt = True
 
