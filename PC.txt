@@ -1,21 +1,31 @@
-**** Computer ****
+**** Lab-Computer ****
 CPU : intel i7 11700KF
 RAM : 96GB
-GPU : RTX 3090, D6X, 24GB
-OS : Ubuntu 20.04 LTS
+GPU : RTX 3090, D6X, 24GB (Ampere, A40, A16, A10, A2) / Compute Capability : 8.6
+OS : Ubuntu 22.04 LTS
 Graphic Driver : nvidia driver 470
+CUDA : 11.5이상
 
 **** Computer-lap ****
 CPU : Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz   2.59 GHz
 RAM : 16GB
-GPU : GTX 1650, 4GB (Turing)
+GPU : GTX 1650, 4GB (Turing, Tesla T4	) / Compute capability : 7.5
 OS : windows10
+CUDA : 10.0이상
 
-**** Computer-Etc ****
+**** Computer-hang ****
 CPU : Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz   3.40 GHz
 RAM : 16GB
-GPU : GTX 1050TI, 4GB (Turing)
+GPU : GTX 1050TI, 4GB (Pascal, Tesla P40, Tesla P6, Tesla P4) / Compute capability : 6.1
 OS : windows10
+CUDA : 8.0이상
+
+**** Computer-home ****
+CPU : Intel(R) Core(TM) i5-2600K CPU @ 3.40GHz   3.40 GHz
+RAM : 16GB
+GPU : GTX 1660s, 6GB (Turing, Tesla T4) Compute capability : 7.5
+OS : windows10
+CUDA : 10.0이상
 
 =================================================================================
 **** Anaconda ****

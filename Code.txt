@@ -1,20 +1,17 @@
 ##############################TensorEnv
 #install
-conda create -n tf python=3.8
-conda activate tf
+conda create -n tenclass python=3.9
+conda activate tenclass
 pip install tensorflow
-conda install -c "nvidia/label/cuda-11.4.0" cuda-toolkit
+conda install conda-forge cuda=11.7 -c nvidia
 pip install opencv-python matplotlib SciPy knockknock tensorrt
 conda install -c conda-forge keras-preprocessing
  
 #activate
-conda activate Tf
+conda activate tenclass
 cd /home/tlab1004/dataset
 
 python3 DenseNet201.py ; python3 VGG19.py ; python3 Xception.py ; python ResNet50.py
-
-
-python Convnet.py ; python DenseNet201.py & python InceptionResNetV2.py & python InceptionV3.py & python NASNetLarge.py & python RegNetY320.py & python ResNet50.py & python ResNet50V2.py & python ResNetRS50.py & python VGG16.py & python VGG19.py & python Xception.py
 
 ##########################################voc2coco
 #activate
