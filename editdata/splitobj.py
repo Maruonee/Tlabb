@@ -3,10 +3,11 @@ from glob import glob
 from sklearn.model_selection import train_test_split
 import os
 #데이터셋 위치
-data_dir = '/home/tlab/dataset'
+data_dir = '/home/tlab1004/dataset/images'
 
 #이미지 리스트 불러오기
-img_list = glob(os.path.join(data_dir,"images","*.tif"))
+#이미지 형식
+img_list = glob(os.path.join(data_dir,"*.jpg"))
 
 # 트레이닝셋, 벨류, 테스트 6:2:2
 train_img_list, val_test_img_list = train_test_split(
@@ -23,11 +24,11 @@ val_img_list, test_img_list = train_test_split(
     random_state=34)
 
 #저장
-with open(os.path.join(data_dir,"train.txt"), 'w') as f:
+with open(os.path.join(data_dir,'datasplit',"train.txt"), 'w') as f:
   f.write('\n'.join(train_img_list) + '\n')
-with open(os.path.join(data_dir,"val.txt"), 'w') as f:
+with open(os.path.join(data_dir,'datasplit',"val.txt"), 'w') as f:
   f.write('\n'.join(val_img_list) + '\n')
-with open(os.path.join(data_dir,"test.txt"), 'w') as f:
+with open(os.path.join(data_dir,,'datasplit',"test.txt"), 'w') as f:
   f.write('\n'.join(test_img_list) + '\n')
   
 #이미지수

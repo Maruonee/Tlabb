@@ -1,27 +1,19 @@
-##########################################voc2coco
-#activate
-conda activate ConVformat
-cd /home/tlab/Tlab/voc2coco
-
-python3 voc2coco.py --ann_dir /media/tlab/Data/Dataset/Mask/coco/VOC2007/Annotations --ann_ids /media/tlab/Data/Dataset/Mask/coco/VOC2007/ImageSets/Main/val.txt --labels /media/tlab/Data/Dataset/Mask/classes.txt --output /media/tlab/Data/Dataset/Mask/coco/VOC2007/output.json --ext xml
-
-#########################################yolo2COCO
+#########################################dataedit
 #install 
 conda create -n ConVformat python=3.8
 conda activate ConVformat
-pip install numpy opencv-python tqdm
-cd /home/tlab/Tlab/yolo2coco
+pip install numpy opencv-python tqdm sklearn split-folder scikit-learn
 git clone https://github.com/Taeyoung96/Yolo-to-COCO-format-converter.git
 
 #activate
+cd /home/tlab/Tlab/yolo2coco
 conda activate ConVformat
 cd /home/tlab/Tlabb/editdata/yolo2coco
 python main.py --path /home/tlab/Tlabb/editdata/yolo2coco/tutorial/test --output test.json
 
-
-##########################################SplitFolders
-conda activate ConVformat
-pip install split-folder
+#activate
+cd /home/tlab/Tlab/voc2coco
+python3 voc2coco.py --ann_dir /media/tlab/Data/Dataset/Mask/coco/VOC2007/Annotations --ann_ids /media/tlab/Data/Dataset/Mask/coco/VOC2007/ImageSets/Main/val.txt --labels /media/tlab/Data/Dataset/Mask/classes.txt --output /media/tlab/Data/Dataset/Mask/coco/VOC2007/output.json --ext xml
 
 #########################################YOLOV3
 #install 
@@ -62,7 +54,7 @@ conda activate YOLOV5
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 500 --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml --img 512
@@ -284,8 +276,7 @@ texmaker
 
 sudo apt-get install xmacro
 xmacrorec2 > test.file
-xmacroplay "$DISPLAY" < test.file
-for (( i=0; i<800; i++ )); do   xmacroplay "$DISPLAY" <test.file; done
+
 
 
 pip install tensorboard
