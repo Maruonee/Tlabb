@@ -263,3 +263,5 @@ Pose/Mediapose.ipynb
 *.pkl
 *.array
 *.pyc
+*.tif
+*.MP4

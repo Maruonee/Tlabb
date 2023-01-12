@@ -1,16 +1,17 @@
 ##############################TensorEnv
 #install
-conda create -n TensorEnv python=3.8
-conda activate TensorEnv
-pip install --upgrade tensorflow
-conda install -c anaconda cudnn==8.2.1
-pip install opencv-python matplotlib SciPy knockknock
-
+conda create -n tf python=3.8
+conda activate tf
+pip install tensorflow
+conda install -c "nvidia/label/cuda-11.4.0" cuda-toolkit
+pip install opencv-python matplotlib SciPy knockknock tensorrt
+conda install -c conda-forge keras-preprocessing
+ 
 #activate
-conda activate TensorEnv
-cd /home/tlab/dataset
+conda activate Tf
+cd /home/tlab1004/dataset
 
-python3 DenseNet201.py ; python3 InceptionResNetV2.py ; python3 InceptionV3.py ; python3 NASNetLarge.py ; python3 RegNetY320.py ; python3 ResNet50.py ; python3 ResNet50V2.py ; python3 ResNetRS50.py ; python3 VGG16.py ; python3 VGG19.py ; python3 Xception.py
+python3 DenseNet201.py ; python3 VGG19.py ; python3 Xception.py ; python ResNet50.py
 
 
 python Convnet.py ; python DenseNet201.py & python InceptionResNetV2.py & python InceptionV3.py & python NASNetLarge.py & python RegNetY320.py & python ResNet50.py & python ResNet50V2.py & python ResNetRS50.py & python VGG16.py & python VGG19.py & python Xception.py
@@ -204,23 +205,23 @@ python tools/infer.py --weights /home/tlab/results/gray/V6/weights/best_ckpt.pt 
 
 ########################################YOLOV7
 #install
-conda create -n YOLOV7 python=3.8
-conda activate YOLOV7
-cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+conda create -n YOLOV77 python=3.8
+conda activate YOLOV77
+cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 pip install -r requirements.txt
-pip install wandb PsychoPy
+pip install wandb
 
 #activate 
-conda activate YOLOV7
-cd /home/tlab/Tlabb/ObjectDetection/YOLOV7
+conda activate YOLOV77
+cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
 
 #Pre train(optimizer hyperparameter)
-python train.py --img 512 --cfg /home/tlab/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 10 --evolve
+python train.py --img 512 --cfg /home/tlab1004/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 10 --evolve
 
 #train
-python train.py --img 512 512 --cfg /home/tlab/dataset/opt/yolov7x.yaml --data /home/tlab/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 500
-
+python train.py --img 512 512 --cfg /home/tlab1004/dataset/opt/yolov7x.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7x.pt --batch-size 32 --epochs 500 --device 0
+ 
 #Test
 python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt
 
@@ -231,14 +232,14 @@ python detect.py --weights /home/tlab/results/v7/weights/best.pt --source '/home
 python detect.py --weights /home/tlab/results/gray/v7/weights/best.pt --source '/home/tlab/testset/*.tif' --save-conf --save-txt --conf-thres 0.01
 
 #Pose Training
-cd /home/tlab/Tlabb/ObjectDetection/YOLOV7_P
+cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7_P
 python train.py --data data/coco_kpts.yaml --cfg cfg/yolov7-w6-pose.yaml --weights weights/yolov7-w6-person.pt --batch-size 128 --img 960 --kpt-label --sync-bn --device 0 --name yolov7-w6-pose --hyp data/hyp.pose.yaml
 
 #Pose test
 python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --weights yolov7-w6-pose.pt --kpt-label
 
 #Pose detect
-python detect.py --weights yolov7-w6-pose.pt --source /home/tlab/Tlabb/ObjectDetection/YOLOV7/figure/yoga8.mp4 --kpt-label --line-thickness 8 --hide-labels --hide-conf --nobbox
+python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/ObjectDetection/YOLOV7_P/data/IMG_0413.MP4 --kpt-label --line-thickness 8 --hide-labels --hide-conf --nobbox
 
 ===================hand
 conda create -n hand python=3.8.8
@@ -294,7 +295,7 @@ find . -type f -name "*.doc" -exec rename .doc .txt {} \;
 3. 데이터 파일 리스트 만들기
 find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
 4. 삭제
-conda env remove -n YOLO6
+conda env remove -n tenflow
 =========================================================
 LaTex
 texmaker
