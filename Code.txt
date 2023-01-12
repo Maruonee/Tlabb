@@ -1,18 +1,3 @@
-##############################TensorEnv
-#install
-conda create -n tenclass python=3.9
-conda activate tenclass
-pip install tensorflow
-conda install conda-forge cuda=11.7 -c nvidia
-pip install opencv-python matplotlib SciPy knockknock tensorrt
-conda install -c conda-forge keras-preprocessing
- 
-#activate
-conda activate tenclass
-cd /home/tlab1004/dataset
-
-python3 DenseNet201.py ; python3 VGG19.py ; python3 Xception.py ; python ResNet50.py
-
 ##########################################voc2coco
 #activate
 conda activate ConVformat
