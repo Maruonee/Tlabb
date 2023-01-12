@@ -39,7 +39,7 @@ data_transforms = {
 
 #data location
 
-data_dir = '/media/tlab/Data/Dataset/Mask/Class'
+data_dir = '/media/tlab/Data/Dataset/Sono/Class/TIF/DeadZone/'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -142,7 +142,8 @@ def visualize_model(model, num_images=6):#6 images
 
 ######################################################################
 # 합성곱 신경망 미세조정(finetuning)
-model_ft = models.efficientnet_b7(pretrained=True)
+model_ft = models.vgg16(pretrained=True)
+
 
 model_ft = model_ft.to(device)
 
@@ -157,7 +158,7 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 # 학습 및 평가하기
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=200)
+                       num_epochs=300)
 
 visualize_model(model_ft)
 
@@ -166,30 +167,11 @@ model.save("/home/model.h5")
 ######################################################################
 # 고정된 특징 추출기로써의 합성곱 신경망
 
-model_conv = torchvision.models.efficientnet_b7(pretrained=True)
-for param in model_conv.parameters():
-    param.requires_grad = False
-
-# 새로 생성된 모듈의 매개변수는 기본값이 requires_grad=True 임
-num_ftrs = model_conv.fc.in_features
-
-# (num_ftrs, (class_names))
-model_conv.fc = nn.Linear(num_ftrs, 5)
-
-model_conv = model_conv.to(device)
-
-criterion = nn.CrossEntropyLoss()
-
-optimizer_conv = optim.SGD(model_conv.fc.parameters(), lr=0.001, momentum=0.9)
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
-
-model.save("/home/conv_model.h5")
-
 ######################################################################
 # 학습 및 평가하기
 
 model_conv = train_model(model_conv, criterion, optimizer_conv,
-                         exp_lr_scheduler, num_epochs=200)
+                         exp_lr_scheduler, num_epochs=300)
 
 visualize_model(model_conv)
 

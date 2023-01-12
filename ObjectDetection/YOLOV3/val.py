@@ -121,7 +121,7 @@ def run(data,
         # Directories
         save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
         (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
-
+###################모델 불러오기##################
         # Load model
         model = DetectMultiBackend(weights, device=device, dnn=dnn)
         stride, pt = model.stride, model.pt
