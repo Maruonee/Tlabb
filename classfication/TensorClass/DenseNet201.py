@@ -12,9 +12,9 @@ import time
 #세팅값 입력
 webhook_slack = "https://hooks.slack.com/services/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"
 slack_channel = "#chest_train"
-base_dir = '/home/tlab1004/dataset/images'#운영체제에 맞추어 변경해야함
+base_dir = 'C:\\Users\\vole9\\OneDrive\\Documents\\Dataset\\images'#운영체제에 맞추어 변경해야함
 #                                      'Sono_Penet' 를 원하는 이름으로 변경
-custom_batch = 16
+custom_batch = 32
 custom_epochs = 1000
 custom_learning_rate = 0.0001
 class_num = 2

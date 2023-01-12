@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/home/tlab1004/dataset/images'
+input_folder = 'C:\\Users\\vole9\\OneDrive\\Documents\\Dataset\\images'
 #아웃풋 폴더t
 """
 output/
@@ -38,7 +38,7 @@ output/
             imgc.jpg
             ...           
 """
-out_foloder = '/home/tlab1004/dataset/images'
+out_foloder = input_folder
 #학습비율
 train_ratio = 0.6
 #검증비율
