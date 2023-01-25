@@ -24,12 +24,11 @@ val_img_list, test_img_list = train_test_split(
     random_state=34)
 
 #저장
-with open(os.path.join(data_dir,'datasplit',"train.txt"), 'w') as f:
+with open(os.path.join(data_dir,"train.txt"), 'w') as f:
   f.write('\n'.join(train_img_list) + '\n')
-with open(os.path.join(data_dir,'datasplit',"val.txt"), 'w') as f:
+with open(os.path.join(data_dir,"val.txt"), 'w') as f:
   f.write('\n'.join(val_img_list) + '\n')
-with open(os.path.join(data_dir,,'datasplit',"test.txt"), 'w') as f:
-  f.write('\n'.join(test_img_list) + '\n')
+with open(os.path.join(data_dir,"test.txt"), 'w') as f:f.write('\n'.join(test_img_list) + '\n')
   
 #이미지수
 print("Total image : ",len(img_list),"\n"
