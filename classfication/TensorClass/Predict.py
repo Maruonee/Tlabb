@@ -1,34 +1,76 @@
 import numpy as np
 import tensorflow as tf
 import os
+from knockknock import slack_sender
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
+from keras_preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 #========================================================
-#테스트 이미지
-img_dir = "/home/tlab1004/dataset/ChestPA/raw/test/Pass"
-custom_image_size = (512, 512)
-input_name = "*.jpg"
-#input_name = "n0333"
-#모델
-model_name = "VGG16"
-#운영체제에 맞추어 변경해야함
+#슬랙 webhook주소
+webhook_slack = "@@@@"
+slack_channel = "#chestpa"
+
+#데이터 및 컴퓨터 설정
+img_dir = '/home/tlab1004/dataset/ChestPA/raw/test'
+class_num = 2
+cpu_core = 16
+classes_name = ["Fail", "Pass"]
+custom_class_mode = 'categorical'#"categorical", "binary", "sparse", "input", "other",'None'
+#모델설정
 model_dir = "XXXXXX.h5"
-#클래스 이름
-classes_name = ["Fail",
-                "Pass"
-                ]
+model_name = "DenseNet201"
+#하이퍼파라미터 설정
+custom_batch = 32
+custom_image_size = (512, 512)
 #========================================================
+
+#테스트 데이터 셋
+predict_datagen = ImageDataGenerator(
+    rescale=1./255,
+    )
+predict_dir = os.path.join(img_dir)
+predict_dataset = predict_datagen.flow_from_directory(
+    predict_dir,
+    batch_size=custom_batch,
+    target_size=custom_image_size,
+    class_mode=custom_class_mode,
+    classes = class_num
+    )
+
 #모델불러오기
 model = load_model(model_dir)
 model.summary()
 
-#이미지 불러오기
-img_path = os.path.join(img_dir, input_name)
-img = image.load_img(img_path, target_size=custom_image_size)
-img_array = image.img_to_array(img)
-expanded_img_array = np.expand_dims(img_array, axis=0)
-prediction = model.predict(expanded_img_array/255)
+@slack_sender(webhook_url=webhook_slack, channel=slack_channel)
+def Predict(your_nicest_parameters='hist'):
+    #학습
+    prediction = model.predict(
+    predict_dataset,
+    verbose='auto',
+    workers=cpu_core
+    )
+    print(type(prediction))
+    print(prediction)
+    return prediction
+
+Predict()
+
+
+
+
+
+
+
+
+
+
+
+
+
+prediction = model.predict(
+    test_dataset
+)
 
 #예측값 출력
 print(np.array(classes_name)[np.argmax(prediction)])
