@@ -12,13 +12,13 @@ webhook_slack = "@@@@"
 slack_channel = "#chestpa"
 
 #데이터 및 컴퓨터 설정
-img_dir = '/home/tlab1004/dataset/ChestPA/raw/test'
+img_dir = '/home/tlab1004/dataset/raw/test'
 class_num = 2
 cpu_core = 16
 classes_name = ["Fail", "Pass"]
 custom_class_mode = 'categorical'#"categorical", "binary", "sparse", "input", "other",'None'
 #모델설정
-model_dir = "XXXXXX.h5"
+model_dir = "/home/tlab1004/dataset/raw/123123/DenseNet201_Best.h5"
 model_name = "DenseNet201"
 #하이퍼파라미터 설정
 custom_batch = 32
@@ -35,7 +35,6 @@ predict_dataset = predict_datagen.flow_from_directory(
     batch_size=custom_batch,
     target_size=custom_image_size,
     class_mode=custom_class_mode,
-    classes = class_num
     )
 
 #모델불러오기
@@ -43,41 +42,16 @@ model = load_model(model_dir)
 model.summary()
 
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
-def Predict(your_nicest_parameters='hist'):
+def Predict(your_nicest_parameters='prediction'):
     #학습
     prediction = model.predict(
     predict_dataset,
     verbose='auto',
     workers=cpu_core
     )
-    print(type(prediction))
-    print(prediction)
-    return prediction
-
+    # print(type(prediction))
+    # print(len(prediction))
+    # print(prediction)
+    # print(np.argmax(prediction))
+    return len(prediction)
 Predict()
-
-
-
-
-
-
-
-
-
-
-
-
-
-prediction = model.predict(
-    test_dataset
-)
-
-#예측값 출력
-print(np.array(classes_name)[np.argmax(prediction)])
-
-#예측값 시각화
-plt.figure()
-plt.imshow(img_array)
-plt.title(f'{model_name} predict {input_name}')
-plt.xlabel(f'{np.array(classes_name)[np.argmax(prediction)]}')
-plt.savefig(f'{img_path}_predict.png')

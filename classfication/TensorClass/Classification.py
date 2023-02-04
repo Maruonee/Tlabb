@@ -196,6 +196,21 @@ model.compile(
 # 모델 요약 출력
 model.summary()
 
+
+@slack_sender(webhook_url=webhook_slack, channel=slack_channel)
+def Test_Predict(your_nicest_parameters='custom_prediction'):
+    #학습
+    custom_prediction = model.predict(
+    test_dataset,
+    verbose='auto',
+    workers=cpu_core
+    )
+    # print(type(prediction))
+    # print(len(prediction))
+    # print(prediction)
+    # print(np.argmax(prediction))
+    return 'Predict time'
+
 #튜닝학습
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
 def Fine_tuning(your_nicest_parameters='f_hist'):
@@ -255,6 +270,7 @@ def Fine_tuning(your_nicest_parameters='f_hist'):
     time.sleep(3)
     #slack에 출력
     return f'\n {model_name} Fine tuning Train accuracy : {max(acc)}\n{model_name} Fine tuning test accuracy : {f_accuracy} \n{model_name} Fine tuning test loss : {f_loss}'
+    Test_Predict()
 
 #학습정의
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
@@ -322,7 +338,7 @@ def Training(your_nicest_parameters='hist'):
     print(f'{model_name} Last loss : {l_loss}')
     print(f'{model_name} Best accuracy : {b_accuracy}')
     print(f'{model_name} Best loss : {b_loss}')
-
+    
     #튜닝 실행
     model.trainable = True
     model.summary()
@@ -332,8 +348,9 @@ def Training(your_nicest_parameters='hist'):
     #slack에 출력
     finally:
         time.sleep(3)
-        return f'\n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
-
+        return f'\n Training data : {len(train_dataset)} , Validation data : {len(validation_dataset)}, Test data : {len(test_dataset)} \n {model_name} Train accuracy : {max(acc)}\n{model_name} Best accuracy : {b_accuracy}\n{model_name} Best loss : {b_loss}\n{model_name} Last accuracy : {l_accuracy}\n{model_name} Last loss : {l_loss}'
+    Test_Predict()
+    
 # 실행
 Training()
 
