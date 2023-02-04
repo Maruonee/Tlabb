@@ -209,7 +209,7 @@ def Test_Predict(your_nicest_parameters='custom_prediction'):
     # print(len(prediction))
     # print(prediction)
     # print(np.argmax(prediction))
-    return 'Predict time'
+    return f'{model_name} : Predict time'
 
 #튜닝학습
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)

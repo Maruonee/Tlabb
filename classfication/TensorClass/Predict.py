@@ -53,5 +53,5 @@ def Predict(your_nicest_parameters='prediction'):
     # print(len(prediction))
     # print(prediction)
     # print(np.argmax(prediction))
-    return len(prediction)
+    return f'Data number : {len(prediction)}, Model : {model_name}'
 Predict()
