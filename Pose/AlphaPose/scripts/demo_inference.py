@@ -53,7 +53,7 @@ parser.add_argument('--profile', default=False, action='store_true',
                     help='add speed profiling at screen output')
 parser.add_argument('--format', type=str,
                     help='save in the format of cmu or coco or openpose, option: coco/cmu/open')
-parser.add_argument('--min_box_area', type=int, default=0,
+parser.add_argument('--min_box_area', type=int, default=5,#0
                     help='min box area to filter out')
 parser.add_argument('--detbatch', type=int, default=5,
                     help='detection batch size PER GPU')

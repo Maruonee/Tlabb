@@ -61,7 +61,7 @@ python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1
  --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml
  
 #detect
-python detect.py --weights /home/tlab1004/Tlabb/ObjectDetection/YOLOV5/runs/train/exp/weights/best.pt --source '/home/tlab1004/dataset/images/*.jpg' --save-conf --save-txt --conf-thres 0.5 --save-crop
+python detect.py --weights /home/tlab1004/Tlabb/ObjectDetection/YOLOV5/runs/train/exp/weights/best.pt --source '/home/tlab1004/dataset/images/*.jpg' --save-conf --save-txt --conf-thres 0.5 --save-crop --line-thickness 6
 
 #eval
 python val.py --data /home/tlab/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV5.pt --img 512
@@ -214,23 +214,6 @@ python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --we
 #Pose detect
 python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/ObjectDetection/YOLOV7_P/data/IMG_0413.MP4 --kpt-label --line-thickness 8 --hide-labels --hide-conf --nobbox
 
-########################################VitPose
-cd cd /home/tlab1004/Tlabb/Pose/
-git clone https://github.com/open-mmlab/mmcv.git
-cd mmcv
-git checkout v1.3.9
-MMCV_WITH_OPS=1 pip install -e .
-cd ..
-git clone https://github.com/ViTAE-Transformer/ViTPose.git
-cd ViTPose
-pip install -v -e .
-pip install timm==0.4.9 einops
-
-#detect
-conda activate VitPose
-cd /home/tlab1004/Tlabb/Pose/ViTPose
-bash tools/dist_train.sh <Config PATH> <NUM GPUs> --cfg-options model.pretrained=<Pretrained PATH> --seed 0
-
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
 conda create -n ahpose python=3.7 -y
@@ -245,8 +228,7 @@ sudo apt-get install libyaml-dev
 python setup.py build develop
 
 #detect
-python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/rawclass/Fail/ --outdir runs/exp --save_img
- --detector yolox-x --showbox
+python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/ChestPA/raw/train/Pass/ --outdir runs/exp --save_img --detector yolo --showbox --vis_fast
 ########################################mmpose
 cd /home/tlab1004/Tlabb/Pose/mmpose
 conda create --name openmmlab python=3.8 -y
@@ -268,8 +250,8 @@ python demo/top_down_img_demo_with_mmdet.py \
 python demo/bottom_up_img_demo.py \
     configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512.py \
     https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
-    --img-path /home/tlab1004/dataset/rawclass/Pass/ \
-    --out-img-root runs/exp
+    --img-path /home/tlab1004/dataset/ChestPA/raw/train/Pass/ \
+    --out-img-root runs/exp --radius 10 --thickness 10
     
 configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/hrnet_w32_aic_512x512.py
 ===================hand
@@ -339,5 +321,3 @@ for (( i=0; i<100; i++ )); do   xmacroplay "$DISPLAY" <test.file; done
 
 pip install tensorboard
 tensorboard --logdir = /home/tlab/log
-
-

@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = 'C:\\Users\\vole9\\OneDrive\\Documents\\Dataset\\images'
+input_folder = '/home/tlab1004/dataset/ChestPA/AlphaYOLOv3'
 #아웃풋 폴더t
 """
 output/

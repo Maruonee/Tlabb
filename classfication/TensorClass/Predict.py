@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 #========================================================
 #테스트 이미지
-img_dir = "/XXXXX"
+img_dir = "/home/tlab1004/dataset/ChestPA/raw/test/Pass"
 custom_image_size = (512, 512)
-input_name = "n0211.tif"
+input_name = "*.jpg"
 #input_name = "n0333"
 #모델
 model_name = "VGG16"

@@ -3,7 +3,7 @@ from glob import glob
 from sklearn.model_selection import train_test_split
 import os
 #데이터셋 위치
-data_dir = '/home/tlab1004/dataset/images'
+data_dir = '/home/tlab1004/dataset/images/'
 
 #이미지 리스트 불러오기
 #이미지 형식
