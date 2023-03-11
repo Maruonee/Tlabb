@@ -8,7 +8,7 @@ from keras_preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 #========================================================
 #슬랙 webhook주소
-webhook_slack = "@@@@"
+webhook_slack = "http://sss.co.kr"
 slack_channel = "#chestpa"
 
 #데이터 및 컴퓨터 설정
