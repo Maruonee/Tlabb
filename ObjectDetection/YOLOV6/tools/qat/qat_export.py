@@ -16,6 +16,8 @@ from tools.partial_quantization.eval import EvalerWrapper
 from tools.partial_quantization.utils import get_module, concat_quant_amax_fuse
 from tools.qat.qat_utils import qat_init_model_manu
 from pytorch_quantization import nn as quant_nn
+from onnx_utils import get_remove_qdq_onnx_and_cache
+
 op_concat_fusion_list = [
     ('backbone.ERBlock_5.2.m', 'backbone.ERBlock_5.2.cv2.conv'),
     ('backbone.ERBlock_5.0.conv', 'neck.Rep_p4.conv1.conv', 'neck.upsample_feat0_quant'),
@@ -62,6 +64,13 @@ if __name__ == '__main__':
     parser.add_argument('--fuse-bn', action='store_true', help='fuse bn')
     parser.add_argument('--graph-opt', action='store_true', help='enable graph optimizer')
     parser.add_argument('--inplace', action='store_true', help='set Detect() inplace=True')
+    parser.add_argument('--end2end', action='store_true', help='export end2end onnx')
+    parser.add_argument('--trt-version', type=int, default=8, help='tensorrt version')
+    parser.add_argument('--with-preprocess', action='store_true', help='export bgr2rgb and normalize')
+    parser.add_argument('--max-wh', type=int, default=None, help='None for tensorrt nms, int value for onnx-runtime nms')
+    parser.add_argument('--topk-all', type=int, default=100, help='topk objects for every images')
+    parser.add_argument('--iou-thres', type=float, default=0.45, help='iou threshold for NMS')
+    parser.add_argument('--conf-thres', type=float, default=0.4, help='conf threshold for NMS')
     parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0, 1, 2, 3 or cpu')
     parser.add_argument('--eval-yaml', type=str, default='../partial_quantization/eval.yaml', help='evaluation config')
     args = parser.parse_args()
@@ -88,9 +97,11 @@ if __name__ == '__main__':
     cfg = Config.fromfile(args.conf)
     # init qat model
     qat_init_model_manu(model, cfg, args)
+    print(model)
     model.neck.upsample_enable_quant(cfg.ptq.num_bits, cfg.ptq.calib_method)
     ckpt = torch.load(args.quant_weights)
     model.load_state_dict(ckpt['model'].float().state_dict())
+    print(model)
     model.to(device)
     if args.scale_fix:
         zero_scale_fix(model, device)
@@ -101,6 +112,10 @@ if __name__ == '__main__':
             concat_quant_amax_fuse(ops)
     qat_mAP = yolov6_evaler.eval(model)
     print(qat_mAP)
+    if args.end2end:
+        from yolov6.models.end2end import End2End
+        model = End2End(model, max_obj=args.topk_all, iou_thres=args.iou_thres,score_thres=args.conf_thres,
+                        max_wh=args.max_wh, device=device, trt_version=args.trt_version, with_preprocess=args.with_preprocess)
     # ONNX export
     quant_nn.TensorQuantizer.use_fb_fake_quant = True
     if args.export_batch_size is None:
@@ -108,7 +123,18 @@ if __name__ == '__main__':
         export_file = args.quant_weights.replace('.pt', '_dynamic.onnx')  # filename
         if args.graph_opt:
             export_file = export_file.replace('.onnx', '_graph_opt.onnx')
-        dynamic_axes = {"image_arrays": {0: "batch"}, "outputs": {0: "batch"}}
+        if args.end2end:
+            export_file = export_file.replace('.onnx', '_e2e.onnx')
+        dynamic_axes = {
+            "image_arrays": {0: "batch"},
+        }
+        if args.end2end:
+            dynamic_axes["num_dets"] = {0: "batch"}
+            dynamic_axes["det_boxes"] = {0: "batch"}
+            dynamic_axes["det_scores"] = {0: "batch"}
+            dynamic_axes["det_classes"] = {0: "batch"}
+        else:
+            dynamic_axes["outputs"] = {0: "batch"}
         torch.onnx.export(model,
                           img,
                           export_file,
@@ -116,8 +142,9 @@ if __name__ == '__main__':
                           opset_version=13,
                           training=torch.onnx.TrainingMode.EVAL,
                           do_constant_folding=True,
-                          input_names=['image_arrays'],
-                          output_names=['outputs'],
+                          input_names=['images'],
+                          output_names=['num_dets', 'det_boxes', 'det_scores', 'det_classes']
+                          if args.end2end else ['outputs'],
                           dynamic_axes=dynamic_axes
                          )
     else:
@@ -125,6 +152,8 @@ if __name__ == '__main__':
         export_file = args.quant_weights.replace('.pt', '_bs{}.onnx'.format(args.export_batch_size))  # filename
         if args.graph_opt:
             export_file = export_file.replace('.onnx', '_graph_opt.onnx')
+        if args.end2end:
+            export_file = export_file.replace('.onnx', '_e2e.onnx')
         torch.onnx.export(model,
                           img,
                           export_file,
@@ -132,6 +161,9 @@ if __name__ == '__main__':
                           opset_version=13,
                           training=torch.onnx.TrainingMode.EVAL,
                           do_constant_folding=True,
-                          input_names=['image_arrays'],
-                          output_names=['outputs']
+                          input_names=['images'],
+                          output_names=['num_dets', 'det_boxes', 'det_scores', 'det_classes']
+                          if args.end2end else ['outputs'],
                           )
+
+    get_remove_qdq_onnx_and_cache(export_file)

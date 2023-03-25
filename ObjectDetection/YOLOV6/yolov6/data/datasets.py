@@ -72,7 +72,7 @@ class TrainValDataset(Dataset):
             self.batch_indices = np.floor(
                 np.arange(len(shapes)) / self.batch_size
             ).astype(
-                np.int
+                np.int_
             )  # batch indices of each image
             self.sort_files_shapes()
         t2 = time.time()
@@ -117,7 +117,7 @@ class TrainValDataset(Dataset):
                 img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment, return_int=self.hyp["letterbox_return_int"])
             else:
                 img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment)
-                  
+
             shapes = (h0, w0), ((h * ratio / h0, w * ratio / w0), pad)  # for COCO mAP rescaling
 
             labels = self.labels[index].copy()
@@ -185,8 +185,12 @@ class TrainValDataset(Dataset):
             Image, original shape of image, resized image shape
         """
         path = self.img_paths[index]
-        im = cv2.imread(path)
-        assert im is not None, f"Image Not Found {path}, workdir: {os.getcwd()}"
+        try:
+            im = cv2.imread(path)
+            assert im is not None, f"opencv cannot read image correctly or {path} not exists"
+        except:
+            im = cv2.cvtColor(np.asarray(Image.open(path)), cv2.COLOR_RGB2BGR)
+            assert im is not None, f"Image Not Found {path}, workdir: {os.getcwd()}"
 
         h0, w0 = im.shape[:2]  # origin shape
         if force_load_size:
@@ -265,10 +269,20 @@ class TrainValDataset(Dataset):
                 json.dump(cache_info, f)
 
         # check and load anns
-        label_dir = osp.join(
+        base_dir = osp.basename(img_dir)
+        if base_dir != "":
+            label_dir = osp.join(
             osp.dirname(osp.dirname(img_dir)), "labels", osp.basename(img_dir)
-        )
-        assert osp.exists(label_dir), f"{label_dir} is an invalid directory path!"
+            )
+            assert osp.exists(label_dir), f"{label_dir} is an invalid directory path!"
+        else:
+            sub_dirs= []
+            label_dir = img_dir
+            for rootdir, dirs, files in os.walk(label_dir):
+                for subdir in dirs:
+                    sub_dirs.append(subdir)
+            assert "labels" in sub_dirs, f"Could not find a labels directory!"
+
 
         # Look for labels in the save relative dir that the images are in
         def _new_rel_path_with_ext(base_path: str, full_path: str, new_ext: str):
@@ -277,10 +291,8 @@ class TrainValDataset(Dataset):
 
 
         img_paths = list(img_info.keys())
-        label_paths = sorted(
-            osp.join(label_dir, _new_rel_path_with_ext(img_dir, p, ".txt"))
-            for p in img_paths
-        )
+        label_paths = [osp.join(label_dir, _new_rel_path_with_ext(img_dir, p, ".txt"))
+                        for p in img_paths]
         assert label_paths, f"No labels found in {label_dir}."
         label_hash = self.get_hash(label_paths)
         if "label_hash" not in cache_info or cache_info["label_hash"] != label_hash:
@@ -432,7 +444,7 @@ class TrainValDataset(Dataset):
                 shapes[i] = [1, 1 / mini]
         self.batch_shapes = (
             np.ceil(np.array(shapes) * self.img_size / self.stride + self.pad).astype(
-                np.int
+                np.int_
             )
             * self.stride
         )
@@ -578,32 +590,44 @@ class TrainValDataset(Dataset):
         h = hashlib.md5("".join(paths).encode())
         return h.hexdigest()
 
-        
+
 class LoadData:
-    def __init__(self, path):
-        p = str(Path(path).resolve())  # os-agnostic absolute path
-        if os.path.isdir(p):
-            files = sorted(glob.glob(os.path.join(p, '**/*.*'), recursive=True))  # dir
-        elif os.path.isfile(p):
-            files = [p]  # files
+    def __init__(self, path, webcam, webcam_addr):
+        self.webcam = webcam
+        self.webcam_addr = webcam_addr
+        if webcam: # if use web camera
+            imgp = []
+            vidp = [int(webcam_addr) if webcam_addr.isdigit() else webcam_addr]
         else:
-            raise FileNotFoundError(f'Invalid path {p}')
-        imgp = [i for i in files if i.split('.')[-1] in IMG_FORMATS]
-        vidp = [v for v in files if v.split('.')[-1] in VID_FORMATS]
+            p = str(Path(path).resolve())  # os-agnostic absolute path
+            if os.path.isdir(p):
+                files = sorted(glob.glob(os.path.join(p, '**/*.*'), recursive=True))  # dir
+            elif os.path.isfile(p):
+                files = [p]  # files
+            else:
+                raise FileNotFoundError(f'Invalid path {p}')
+            imgp = [i for i in files if i.split('.')[-1] in IMG_FORMATS]
+            vidp = [v for v in files if v.split('.')[-1] in VID_FORMATS]
         self.files = imgp + vidp
         self.nf = len(self.files)
         self.type = 'image'
-        if any(vidp):
+        if len(vidp) > 0:
             self.add_video(vidp[0])  # new video
         else:
             self.cap = None
-    @staticmethod
-    def checkext(path):
-        file_type = 'image' if path.split('.')[-1].lower() in IMG_FORMATS else 'video'
+
+    # @staticmethod
+    def checkext(self, path):
+        if self.webcam:
+            file_type = 'video'
+        else:
+            file_type = 'image' if path.split('.')[-1].lower() in IMG_FORMATS else 'video'
         return file_type
+
     def __iter__(self):
         self.count = 0
         return self
+
     def __next__(self):
         if self.count == self.nf:
             raise StopIteration
@@ -624,9 +648,11 @@ class LoadData:
             self.count += 1
             img = cv2.imread(path)  # BGR
         return img, path, self.cap
+        
     def add_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
         self.frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        
     def __len__(self):
         return self.nf  # number of files

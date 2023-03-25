@@ -27,10 +27,10 @@ pip install wandb -r requirements.txt
 conda activate YOLOV3
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov3.pt --batch 32 --epochs 500 --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 500 --img 512
 
 
  --hyp /home/tlab1004/dataset/opt/V3/hyp_evolve.yaml --img 512
@@ -57,9 +57,10 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 500 --img 512
- --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml
- 
+python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512
+
+ --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml 
+
 #detect
 python detect.py --weights /home/tlab1004/Tlabb/ObjectDetection/YOLOV5/runs/train/exp/weights/best.pt --source '/home/tlab1004/dataset/images/*.jpg' --save-conf --save-txt --conf-thres 0.5 --save-crop --line-thickness 6
 
@@ -123,11 +124,13 @@ steps는 max_batches의 80%의 수치와 90%의 수치
 filter: 3 * (5 + classes) = 255
 #L1569, #L1573, #L1577, #L1581, #L1605, #L1649, #L1693, #L1737
 
+data 폴더에 코코 파일 수정
+
 #Pre train(optimizer hyperparameter)
-python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 10 --evolve --cache
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights yolor_p6.pt --device 0 --epochs 10 --evolve --cache
 
 #train
-python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights  yolor_p6.pt --device 0 --epochs 500 --cache
+python train.py --batch-size 32 --img 512 512 --data /home/tlab/dataset/opt/coco.yaml --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights yolor_p6.pt --device 0 --epochs 500 --cache
 
 #detect
 python detect.py --source '/home/tlab/testset/*.tif' --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights /home/tlab/results/gray/R/weights/best.pt --conf-thres 0.01 --img-size 512 --device 0 --save-txt --iou-thres 0.5
@@ -195,8 +198,7 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
 python train.py --cfg /home/tlab1004/dataset/opt/yolov7x.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7x.pt --batch 32 --epochs 10 --img 512 --device 0  --evolve
 
 #train
-python train.py --cfg /home/tlab1004/dataset/opt/yolov7x.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7x.pt --batch 32 --epochs 500 --img 512 --device 0
- --hyp /home/tlab1004/dataset/opt/V7/hyp_evolved.yaml
+python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0
  
 #Test
 python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt

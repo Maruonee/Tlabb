@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/home/tlab1004/dataset/sono'
+input_folder = '/home/tlab1004/dataset/images'
 #아웃풋 폴더t
 """
 output/
