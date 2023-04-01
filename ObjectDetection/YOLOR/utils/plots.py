@@ -70,7 +70,7 @@ def plot_wh_methods():  # from utils.general import *; plot_wh_methods()
     # https://github.com/ultralytics/yolov3/issues/168
     x = np.arange(-4.0, 4.0, .1)
     ya = np.exp(x)
-    yb = torch.sigmoid(torch.from_numpy(x)).numpy() * 2
+    yb = torch.sigmoid(torch.from_numpy(x)).cpu().numpy() * 2
 
     fig = plt.figure(figsize=(6, 3), dpi=150)
     plt.plot(x, ya, '.-', label='YOLO')
@@ -85,6 +85,7 @@ def plot_wh_methods():  # from utils.general import *; plot_wh_methods()
     fig.tight_layout()
     fig.savefig('comparison.png', dpi=200)
 
+
 def output_to_target(output, width, height):
     # Convert model output to target format [batch_id, class_id, x, y, w, h, conf]
     if isinstance(output, torch.Tensor):
@@ -94,7 +95,6 @@ def output_to_target(output, width, height):
     for i, o in enumerate(output):
         if o is not None:
             for pred in o:
-                pred = pred.cpu()
                 box = pred[:4]
                 w = (box[2] - box[0]) / width
                 h = (box[3] - box[1]) / height
@@ -105,7 +105,7 @@ def output_to_target(output, width, height):
 
                 targets.append([i, cls, x, y, w, h, conf])
 
-    return np.array(targets)
+    return np.cpu().array(targets)
 
 
 def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):

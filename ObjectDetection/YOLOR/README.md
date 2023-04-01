@@ -7,32 +7,52 @@ implementation of paper - [You Only Learn One Representation: Unified Network fo
 
 <img src="https://github.com/WongKinYiu/yolor/blob/main/figure/performance.png" height="480">
 
-To reproduce the results in the paper, please use [this branch](https://github.com/WongKinYiu/yolor/tree/paper).
+To get the results on the table, please use [this branch](https://github.com/WongKinYiu/yolor/tree/paper).
 
-| Model | Test Size | AP<sup>test</sup> | AP<sub>50</sub><sup>test</sup> | AP<sub>75</sub><sup>test</sup> | AP<sub>S</sub><sup>test</sup> | AP<sub>M</sub><sup>test</sup> | AP<sub>L</sub><sup>test</sup> | batch1 throughput |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | 
-| **YOLOR-P6** | 1280 | **52.6%** | **70.6%** | **57.6%** | **34.7%** | **56.6%** | **64.2%** | 49 *fps* |
-| **YOLOR-W6** | 1280 | **54.1%** | **72.0%** | **59.2%** | **36.3%** | **57.9%** | **66.1%** | 47 *fps* |
-| **YOLOR-E6** | 1280 | **54.8%** | **72.7%** | **60.0%** | **36.9%** | **58.7%** | **66.9%** | 37 *fps* |
-| **YOLOR-D6** | 1280 | **55.4%** | **73.3%** | **60.6%** | **38.0%** | **59.2%** | **67.1%** | 30 *fps* |
+| Model | Test Size | AP<sup>test</sup> | AP<sub>50</sub><sup>test</sup> | AP<sub>75</sub><sup>test</sup> | batch1 throughput | batch32 inference |
+| :-- | :-: | :-: | :-: | :-: | :-: | :-: |
+| **YOLOR-CSP** | 640 | **52.8%** | **71.2%** | **57.6%** | 106 *fps* | 3.2 *ms* |
+| **YOLOR-CSP-X** | 640 | **54.8%** | **73.1%** | **59.7%** | 87 *fps* | 5.5 *ms* |
+| **YOLOR-P6** | 1280 | **55.7%** | **73.3%** | **61.0%** | 76 *fps* | 8.3 *ms* |
+| **YOLOR-W6** | 1280 | **56.9%** | **74.4%** | **62.2%** | 66 *fps* | 10.7 *ms* |
+| **YOLOR-E6** | 1280 | **57.6%** | **75.2%** | **63.0%** | 45 *fps* | 17.1 *ms* |
+| **YOLOR-D6** | 1280 | **58.2%** | **75.8%** | **63.8%** | 34 *fps* | 21.8 *ms* |
 |  |  |  |  |  |  |  |
-| **YOLOv4-P5** | 896 | **51.8%** | **70.3%** | **56.6%** | **33.4%** | **55.7%** | **63.4%** | 41 *fps* |
-| **YOLOv4-P6** | 1280 | **54.5%** | **72.6%** | **59.8%** | **36.6%** | **58.2%** | **65.5%** | 30 *fps* |
-| **YOLOv4-P7** | 1536 | **55.5%** | **73.4%** | **60.8%** | **38.4%** | **59.4%** | **67.7%** | 16 *fps* |
+| **YOLOv4-P5** | 896 | **51.8%** | **70.3%** | **56.6%** | 41 *fps* (old) | - |
+| **YOLOv4-P6** | 1280 | **54.5%** | **72.6%** | **59.8%** | 30 *fps* (old) | - |
+| **YOLOv4-P7** | 1536 | **55.5%** | **73.4%** | **60.8%** | 16 *fps* (old) | - |
 |  |  |  |  |  |  |  |
+* Fix the speed bottleneck on our NFS, many thanks to NCHC, TWCC, and NARLabs support teams.
 
-To reproduce the inference speed, please see [darknet](https://github.com/WongKinYiu/yolor/tree/main/darknet).
 
-| Model | Test Size | AP<sup>val</sup> | AP<sub>50</sub><sup>val</sup> | AP<sub>75</sub><sup>val</sup> | AP<sub>S</sub><sup>val</sup> | AP<sub>M</sub><sup>val</sup> | AP<sub>L</sub><sup>val</sup> | batch1 throughput |
+| Model | Test Size | AP<sup>val</sup> | AP<sub>50</sub><sup>val</sup> | AP<sub>75</sub><sup>val</sup> | AP<sub>S</sub><sup>val</sup> | AP<sub>M</sub><sup>val</sup> | AP<sub>L</sub><sup>val</sup> | weights |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | 
-| [**YOLOv4-CSP**](/cfg/yolov4_csp.cfg) | 640 | **49.1%** | **67.7%** | **53.8%** | **32.1%** | **54.4%** | **63.2%** | 76 *fps* |
+| [**YOLOv4-CSP**](/cfg/yolov4_csp.cfg) | 640 | **49.1%** | **67.7%** | **53.8%** | **32.1%** | **54.4%** | **63.2%** | - |
 | [**YOLOR-CSP**](/cfg/yolor_csp.cfg) | 640 | **49.2%** | **67.6%** | **53.7%** | **32.9%** | **54.4%** | **63.0%** | [weights](https://drive.google.com/file/d/1ZEqGy4kmZyD-Cj3tEFJcLSZenZBDGiyg/view?usp=sharing) |
 | [**YOLOR-CSP***](/cfg/yolor_csp.cfg) | 640 | **50.0%** | **68.7%** | **54.3%** | **34.2%** | **55.1%** | **64.3%** | [weights](https://drive.google.com/file/d/1OJKgIasELZYxkIjFoiqyn555bcmixUP2/view?usp=sharing) |
 |  |  |  |  |  |  |  |
-| [**YOLOv4-CSP-X**](/cfg/yolov4_csp_x.cfg) | 640 | **50.9%** | **69.3%** | **55.4%** | **35.3%** | **55.8%** | **64.8%** | 53 *fps* |
+| [**YOLOv4-CSP-X**](/cfg/yolov4_csp_x.cfg) | 640 | **50.9%** | **69.3%** | **55.4%** | **35.3%** | **55.8%** | **64.8%** | - |
 | [**YOLOR-CSP-X**](/cfg/yolor_csp_x.cfg) | 640 | **51.1%** | **69.6%** | **55.7%** | **35.7%** | **56.0%** | **65.2%** | [weights](https://drive.google.com/file/d/1L29rfIPNH1n910qQClGftknWpTBgAv6c/view?usp=sharing) |
 | [**YOLOR-CSP-X***](/cfg/yolor_csp_x.cfg) | 640 | **51.5%** | **69.9%** | **56.1%** | **35.8%** | **56.8%** | **66.1%** | [weights](https://drive.google.com/file/d/1NbMG3ivuBQ4S8kEhFJ0FIqOQXevGje_w/view?usp=sharing) |
 |  |  |  |  |  |  |  |
+
+Developing...
+
+| Model | Test Size | AP<sup>test</sup> | AP<sub>50</sub><sup>test</sup> | AP<sub>75</sub><sup>test</sup> | AP<sub>S</sub><sup>test</sup> | AP<sub>M</sub><sup>test</sup> | AP<sub>L</sub><sup>test</sup> |
+| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| **YOLOR-CSP** | 640 | **51.1%** | **69.6%** | **55.7%** | **31.7%** | **55.3%** | **64.7%** |
+| **YOLOR-CSP-X** | 640 | **53.0%** | **71.4%** | **57.9%** | **33.7%** | **57.1%** | **66.8%** |
+
+Train from scratch for 300 epochs...
+
+| Model | Info | Test Size | AP |
+| :-- | :-- | :-: | :-: |
+| **YOLOR-CSP** | [evolution](https://github.com/ultralytics/yolov3/issues/392) | 640 | **48.0%** |
+| **YOLOR-CSP** | [strategy](https://openaccess.thecvf.com/content/ICCV2021W/LPCV/html/Wang_Exploring_the_Power_of_Lightweight_YOLOv4_ICCVW_2021_paper.html) | 640 | **50.0%** |
+| **YOLOR-CSP** | [strategy](https://openaccess.thecvf.com/content/ICCV2021W/LPCV/html/Wang_Exploring_the_Power_of_Lightweight_YOLOv4_ICCVW_2021_paper.html) + [simOTA](https://arxiv.org/abs/2107.08430) | 640 | **51.1%** |
+|  |  |  |  |
+| **YOLOR-CSP-X** | [strategy](https://openaccess.thecvf.com/content/ICCV2021W/LPCV/html/Wang_Exploring_the_Power_of_Lightweight_YOLOv4_ICCVW_2021_paper.html) | 640 | **51.5%** |
+| **YOLOR-CSP-X** | [strategy](https://openaccess.thecvf.com/content/ICCV2021W/LPCV/html/Wang_Exploring_the_Power_of_Lightweight_YOLOv4_ICCVW_2021_paper.html) + [simOTA](https://arxiv.org/abs/2107.08430) | 640 | **53.0%** |
 
 ## Installation
 
