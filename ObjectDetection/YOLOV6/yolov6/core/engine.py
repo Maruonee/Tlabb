@@ -164,9 +164,9 @@ class Trainer:
         self.update_optimizer()
 
     def eval_and_save(self):
-        remaining_epochs = self.max_epoch - self.epoch
-        eval_interval = self.args.eval_interval if remaining_epochs > self.args.heavy_eval_range else 3
-        is_val_epoch = (not self.args.eval_final_only or (remaining_epochs == 1)) and (self.epoch % eval_interval == 0)
+        remaining_epochs = self.max_epoch - 1 - self.epoch # self.epoch is start from 0
+        eval_interval = self.args.eval_interval if remaining_epochs >= self.args.heavy_eval_range else 3
+        is_val_epoch = (remaining_epochs == 0) or ((not self.args.eval_final_only) and ((self.epoch + 1) % eval_interval == 0))
         if self.main_process:
             self.ema.update_attr(self.model, include=['nc', 'names', 'stride']) # update attributes for ema model
             if is_val_epoch:
@@ -231,11 +231,8 @@ class Trainer:
                             dataloader=self.val_loader,
                             save_dir=self.save_dir,
                             task='train',
-                            test_load_size=get_cfg_value(self.cfg.eval_params, "test_load_size", eval_img_size),
-                            letterbox_return_int=get_cfg_value(self.cfg.eval_params, "letterbox_return_int", False),
-                            force_no_pad=get_cfg_value(self.cfg.eval_params, "force_no_pad", False),
-                            not_infer_on_rect=get_cfg_value(self.cfg.eval_params, "not_infer_on_rect", False),
-                            scale_exact=get_cfg_value(self.cfg.eval_params, "scale_exact", False),
+                            shrink_size=get_cfg_value(self.cfg.eval_params, "shrink_size", eval_img_size),
+                            infer_on_rect=get_cfg_value(self.cfg.eval_params, "infer_on_rect", False),
                             verbose=get_cfg_value(self.cfg.eval_params, "verbose", False),
                             do_coco_metric=get_cfg_value(self.cfg.eval_params, "do_coco_metric", True),
                             do_pr_metric=get_cfg_value(self.cfg.eval_params, "do_pr_metric", False),
@@ -267,7 +264,7 @@ class Trainer:
                                         use_dfl=self.cfg.model.head.use_dfl,
                                         reg_max=self.cfg.model.head.reg_max,
                                         iou_type=self.cfg.model.head.iou_type,
-										fpn_strides=self.cfg.model.head.strides)
+					fpn_strides=self.cfg.model.head.strides)
 
         if self.args.fuse_ab:
             self.compute_loss_ab = ComputeLoss_ab(num_classes=self.data_dict['nc'],
@@ -366,7 +363,7 @@ class Trainer:
         val_loader = None
         if args.rank in [-1, 0]:
             val_loader = create_dataloader(val_path, args.img_size, args.batch_size // args.world_size * 2, grid_size,
-                                           hyp=dict(cfg.data_aug), rect=True, rank=-1, pad=0.5,
+                                           hyp=dict(cfg.data_aug), rect=True, rank=-1, pad=0.,
                                            workers=args.workers, check_images=args.check_images,
                                            check_labels=args.check_labels, data_dict=data_dict, task='val')[0]
 

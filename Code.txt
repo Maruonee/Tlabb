@@ -78,41 +78,6 @@ python detect.py --weights /home/tlab1004/dataset/Con/results/CT_Con_YOLOV5_tran
 python val.py --data /home/tlab/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV5.pt --img 512
 
 python val.py --data /home/tlab1004/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV3.pt --img 512
-
-
-########################################YOLO_X
-#install	
-conda create -n YOLOX python=3.8
-conda activate YOLOX
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOX
-conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
-pip install numpy opencv_python loguru tqdm thop ninja tabulate onnx==1.8.1 onnxruntime==1.8.0 onnx-simplifier==0.3.5 tensorboard wandb
-pip install -v -e .
-python3 setup.py develop
-#activate 
-conda activate YOLOXX
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOX
-
-#transform data
-YOLOX/datasets/VOCdevkit폴더에 xml파일과 그림파일 한번에 넣기
-python voc_txt.py "/home/tlab1004/Tlabb/ObjectDetection/YOLOX/datasets/VOCdevkit/"
-* rename -f 's/.tif/.jpg/' *.tif
-* VOC2007만 사용함
-#아래파일 Class 수정(최소 class 4)
-1. YOLOX/yolox/data/datasets/voc_classes.py
-2. YOLOX/yolox/data/datasets/coco_classes.py
-3. opt yolox_voc수정  self.num_classes를 클래스 수로 수정
-
-#train
-python tools/train.py -f /home/tlab1004/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_m.py -d 1 -b 32 --fp16 -o -c yolox_m.pth --cache -l wandb
-epoch수정은 yolox/exp/yolox_base.py의 self.max_epoch에서 설정
-
-#detect
-python tools/demo.py --type image --weights /home/tlab/results/pene/x/best_ckpt.pth --path  '/home/tlab/testset/*.tif' --conf 0.01 --nms 0.45 --img-size 640 --save_result --device gpu --name yolox-s 
-
-#test
-python tools/eval.py --exp_file /home/tlab/Tlabb/ObjectDetection/YOLOX/exps/example/yolox_voc/yolox_voc_s.py --weights /home/tlab/dataset/X/1/best_ckpt.pth --batch-size 32 -- devices 1 --conf 0.25 --fp16 --name yolox-s1 --img-size 512
-
 ########################################YOLOR
 #install	
 conda create -n YOLORR python=3.8
@@ -131,49 +96,6 @@ python train.py --batch-size 32 --img 512 512 --data /home/tlab1004/dataset/opt/
 
 #train
 python train.py --batch-size 32 --img 512 512 --data /home/tlab1004/dataset/opt/coco.yaml --cfg /home/tlab1004/dataset/opt/yolor_p6.cfg --weights ypt/coco.yaml --img-size 512 --batch-size 32 --device 0 --cfg /home/tlab/dataset/opt/yolor_p6.cfg --weights /home/tlab/results/r/weights/best.pt --name yolor_1_val --verbose --save-txt --save-conf
-
-########################################YOLOV6
-#install
-conda create -n YOLOV66 python=3.8
-conda activate YOLOV66
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV6
-conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
-pip install numpy opencv-python PyYAML scipy tqdm addict tensorboard pycocotools onnx onnx-simplifier thop
-
-#activate 
-conda activate YOLOV66
-cd /home/tlab/Tlabb/ObjectDetection/YOLOV6
-
-#custom_dataset
-├── images
-│   ├── train
-│   │   ├── train0.jpg
-│   │   └── train1.jpg
-│   ├── val
-│   │   ├── val0.jpg
-│   │   └── val1.jpg
-│   └── test
-│       ├── test0.jpg
-│       └── test1.jpg
-└── labels
-    ├── train
-    │   ├── train0.txt
-    │   └── train1.txt
-    ├── val
-    │   ├── val0.txt
-    │   └── val1.txt
-    └── test
-        ├── test0.txt
-        └── test1.txt
-        
-#train
-python tools/train.py --batch-size 32 --conf-file configs/yolov6l.py --data-path /home/tlab/dataset/opt/dataset.yaml --device 0 --img-size 512 --epochs 500
-
-#Test
-python tools/eval.py --data /home/tlab/dataset/opt/dataset.yaml --batch-size 32 --weights /home/tlab/results/v6/weights/best_ckpt.pt --img-size 512 --verbose --name yolor_1_val
-
-#detect
-python tools/infer.py --weights /home/tlab/results/gray/V6/weights/best_ckpt.pt --source '/home/tlab/testset/' --conf-thres 0.5 --yaml /home/tlab/dataset/opt/dataset.yaml --iou-thres 0.5
 
 ########################################YOLOV7
 #install
@@ -218,11 +140,131 @@ conda activate YOLOV8
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV8
 pip install ultralytics
 
+conda activate YOLOV8
 
+#사용법
+yolo TASK MODE ARGS
+ TASK : [detect, segment, classify, pose].
+ MODE : [train, val, predict, export, track, benchmark]
+ ARGS : options
 
+#train
+yolo detect train model=yolov8n data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=res 
 
+yolo detect train model=yolov8n.yaml data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=contrastnon
 
+#detect
+yolo detect predict model='/home/tlab1004/dataset/Res/results/CT_Res_YOLOV8_nontransfer/weights/best.pt' source='/home/tlab1004/dataset/images/*.tif' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=0.7
 
+# train
+model	None	path to model file, i.e. yolov8n.pt, yolov8n.yaml
+data	None	path to data file, i.e. coco128.yaml
+epochs	100	number of epochs to train for
+patience	50	epochs to wait for no observable improvement for early stopping of training
+batch	16	number of images per batch (-1 for AutoBatch)
+imgsz	640	size of input images as integer or w,h
+save	True	save train checkpoints and predict results
+save_period	-1	Save checkpoint every x epochs (disabled if < 1)
+cache	False	True/ram, disk or False. Use cache for data loading
+device	None	device to run on, i.e. cuda device=0 or device=0,1,2,3 or device=cpu
+workers	8	number of worker threads for data loading (per RANK if DDP)
+project	None	project name
+name	None	experiment name
+exist_ok	False	whether to overwrite existing experiment
+pretrained	False	whether to use a pretrained model
+optimizer	'SGD'	optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']
+verbose	False	whether to print verbose output
+seed	0	random seed for reproducibility
+deterministic	True	whether to enable deterministic mode
+single_cls	False	train multi-class data as single-class
+image_weights	False	use weighted image selection for training
+rect	False	rectangular training with each batch collated for minimum padding
+cos_lr	False	use cosine learning rate scheduler
+close_mosaic	0	(int) disable mosaic augmentation for final epochs
+resume	False	resume training from last checkpoint
+amp	True	Automatic Mixed Precision (AMP) training, choices=[True, False]
+lr0	0.01	initial learning rate (i.e. SGD=1E-2, Adam=1E-3)
+lrf	0.01	final learning rate (lr0 * lrf)
+momentum	0.937	SGD momentum/Adam beta1
+weight_decay	0.0005	optimizer weight decay 5e-4
+warmup_epochs	3.0	warmup epochs (fractions ok)
+warmup_momentum	0.8	warmup initial momentum
+warmup_bias_lr	0.1	warmup initial bias lr
+box	7.5	box loss gain
+cls	0.5	cls loss gain (scale with pixels)
+dfl	1.5	dfl loss gain
+pose	12.0	pose loss gain (pose-only)
+kobj	2.0	keypoint obj loss gain (pose-only)
+label_smoothing	0.0	label smoothing (fraction)
+nbs	64	nominal batch size
+overlap_mask	True	masks should overlap during training (segment train only)
+mask_ratio	4	mask downsample ratio (segment train only)
+dropout	0.0	use dropout regularization (classify train only)
+val	True	validate/test during training
+
+#Predict
+source	'ultralytics/assets'	source directory for images or videos
+conf	0.25	object confidence threshold for detection
+iou	0.7	intersection over union (IoU) threshold for NMS
+half	False	use half precision (FP16)
+device	None	device to run on, i.e. cuda device=0/1/2/3 or device=cpu
+show	False	show results if possible
+save	False	save images with results
+save_txt	False	save results as .txt file
+save_conf	False	save results with confidence scores
+save_crop	False	save cropped images with results
+show_labels	True	show object labels in plots
+show_conf	True	show object confidence scores in plots
+max_det	300	maximum number of detections per image
+vid_stride	False	video frame-rate stride
+line_thickness	3	bounding box thickness (pixels)
+visualize	False	visualize model features
+augment	False	apply image augmentation to prediction sources
+agnostic_nms	False	class-agnostic NMS
+retina_masks	False	use high-resolution segmentation masks
+classes	None	filter results by class, i.e. class=0, or class=[0,2,3]
+boxes	True	Show boxes in segmentation predictions
+
+#val
+save_json	False	save results to JSON file
+save_hybrid	False	save hybrid version of labels (labels + additional predictions)
+conf	0.001	object confidence threshold for detection
+iou	0.6	intersection over union (IoU) threshold for NMS
+max_det	300	maximum number of detections per image
+half	True	use half precision (FP16)
+device	None	device to run on, i.e. cuda device=0/1/2/3 or device=cpu
+dnn	False	use OpenCV DNN for ONNX inference
+plots	False	show plots during training
+rect	False	rectangular val with each batch collated for minimum padding
+split	val	dataset split to use for validation, i.e. 'val', 'test' or 'train'
+
+#Export
+format	'torchscript'	format to export to
+imgsz	640	image size as scalar or (h, w) list, i.e. (640, 480)
+keras	False	use Keras for TF SavedModel export
+optimize	False	TorchScript: optimize for mobile
+half	False	FP16 quantization
+int8	False	INT8 quantization
+dynamic	False	ONNX/TF/TensorRT: dynamic axes
+simplify	False	ONNX: simplify model
+opset	None	ONNX: opset version (optional, defaults to latest)
+workspace	4	TensorRT: workspace size (GB)
+nms	False	CoreML: add NMS
+
+#Augmentation
+hsv_h	0.015	image HSV-Hue augmentation (fraction)
+hsv_s	0.7	image HSV-Saturation augmentation (fraction)
+hsv_v	0.4	image HSV-Value augmentation (fraction)
+degrees	0.0	image rotation (+/- deg)
+translate	0.1	image translation (+/- fraction)
+scale	0.5	image scale (+/- gain)
+shear	0.0	image shear (+/- deg)
+perspective	0.0	image perspective (+/- fraction), range 0-0.001
+flipud	0.0	image flip up-down (probability)
+fliplr	0.5	image flip left-right (probability)
+mosaic	1.0	image mosaic (probability)
+mixup	0.0	image mixup (probability)
+copy_paste	0.0	segment copy-paste (probability)
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
 conda create -n ahpose python=3.7 -y
@@ -238,6 +280,7 @@ python setup.py build develop
 
 #detect
 python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/ChestPA/raw/train/Pass/ --outdir runs/exp --save_img --detector yolo --showbox --vis_fast
+
 ########################################mmpose
 cd /home/tlab1004/Tlabb/Pose/mmpose
 conda create --name openmmlab python=3.8 -y
@@ -263,6 +306,7 @@ python demo/bottom_up_img_demo.py \
     --out-img-root runs/exp --radius 10 --thickness 10
     
 configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/hrnet_w32_aic_512x512.py
+
 ===================hand
 conda create -n hand python=3.8.8
 conda activate hand

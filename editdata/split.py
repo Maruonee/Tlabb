@@ -13,7 +13,7 @@ input/
     ...
 """
 input_folder = '/home/tlab1004/dataset/images'
-#아웃풋 폴더t
+#아웃풋 폴더
 """
 output/
     train/
@@ -47,7 +47,7 @@ val_ratio = 0.2
 test_ratio = 0.2
 #라벨링 폴더와 같이있으면 2 없으면 None
 anno_set = None #2 , None
-#파일을 복사하지않고 움빅일경우 True
-move_opt = True
+#파일을 복사하지않고 움직일경우 True, 아니면 False
+move_opt = False
 
-splitfolders.ratio(input_folder,output=out_foloder, seed =833, ratio=(train_ratio,val_ratio,test_ratio), group_prefix=anno_set, move=False)
+splitfolders.ratio(input_folder,output=out_foloder, seed =833, ratio=(train_ratio,val_ratio,test_ratio), group_prefix=anno_set, move=move_opt)

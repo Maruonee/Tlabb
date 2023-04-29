@@ -70,7 +70,7 @@ def plot_wh_methods():  # from utils.general import *; plot_wh_methods()
     # https://github.com/ultralytics/yolov3/issues/168
     x = np.arange(-4.0, 4.0, .1)
     ya = np.exp(x)
-    yb = torch.sigmoid(torch.from_numpy(x)).cpu().numpy() * 2
+    yb = torch.sigmoid(torch.from_numpy(x)).numpy() * 2
 
     fig = plt.figure(figsize=(6, 3), dpi=150)
     plt.plot(x, ya, '.-', label='YOLO')
@@ -105,7 +105,7 @@ def output_to_target(output, width, height):
 
                 targets.append([i, cls, x, y, w, h, conf])
 
-    return np.cpu().array(targets)
+    return np.array(targets)
 
 
 def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):

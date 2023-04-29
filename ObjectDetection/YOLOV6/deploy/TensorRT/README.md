@@ -8,8 +8,8 @@
 
 ## Step 1: Get onnx model
 
-Follow the file [ONNX README](../../tools/quantization/tensorrt/post_training/README.md) to convert the pt mdoel to onnx `yolov6n.onnx`.
-**Now do't support end2end onnx model which include the nms plugin**
+Follow the file [ONNX README](../../tools/quantization/tensorrt/post_training/README.md) to convert the pt model to onnx `yolov6n.onnx`.
+**Now don't support end2end onnx model which include the nms plugin**
 ```shell
 python ./deploy/ONNX/export_onnx.py \
     --weights yolov6n.pt \
@@ -22,13 +22,15 @@ python ./deploy/ONNX/export_onnx.py \
 Follow the file [post training README](../../tools/quantization/tensorrt/post_training/README.md) to convert and save the serialized engine file `yolov6.engine`.
 
 ```shell
-python3 onnx_to_tensorrt.py --fp16 --int8 -v \
+python3 onnx_to_tensorrt.py --model ${ONNX_MODEL} \
+        --dtype int8  \
         --max_calibration_size=${MAX_CALIBRATION_SIZE} \
         --calibration-data=${CALIBRATION_DATA} \
         --calibration-cache=${CACHE_FILENAME} \
         --preprocess_func=${PREPROCESS_FUNC} \
         --explicit-batch \
-        --onnx ${ONNX_MODEL} -o ${OUTPUT}
+        --verbose
+        
 ```
 
 ## Step 3: build the demo
@@ -71,8 +73,8 @@ Then run the demo:
 ./yolov6 ../you.engine -i image_path
 ```
 
-# Evaluate the performace
- You can evaluate the performace of the TensorRT model.
+# Evaluate the performance
+ You can evaluate the performance of the TensorRT model.
  ```
  python deploy/TensorRT/eval_yolo_trt.py \
     --imgs_dir /path/to/images/val \
