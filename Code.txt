@@ -345,6 +345,29 @@ python main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017 --epochs 1 --n
 Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
+===================================================================
+HR-net
+conda create -n HRnet python=3.8
+conda activate HRnet
+cd /home/tlab1004/Tlabb/segman/HRnet
+conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia
+pip install -r requirements.txt
+git clone https://github.com/zhanghang1989/detail-api.git $PASCAL_CTX
+cd $PASCAL_CTX/PythonAPI
+python setup.py install
+
+
+
+
+
+
+
+
+
+
+
+
+
 =========================================================
 이름바꾸기
 1. 확인
@@ -361,7 +384,7 @@ find . -type f -name "*.doc" -exec rename .doc .txt {} \;
 3. 데이터 파일 리스트 만들기
 find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
 4. 삭제
-conda env remove -n alphapose
+conda env remove -n HR
 =========================================================
 LaTex
 texmaker
