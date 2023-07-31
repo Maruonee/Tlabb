@@ -31,11 +31,9 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV3
 python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 500 --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 500 --img 512 --hyp /home/tlab1004/dataset/opt/V3/hyp_evolve.yaml
 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
-
- --hyp /home/tlab1004/dataset/opt/V3/hyp_evolve.yaml --img 512
 
 #detect
 python detect.py --weights '/home/tlab1004/dataset/Res/results/CT_Res_YOLOV3_transfer/weights/best.pt' --source '/home/tlab1004/dataset/Res/images/*.tif' --save-conf --save-txt --conf-thres 0.80 --name 'con0.8' --save-crop --line-thickness 1olor_p6.pt --device 0 --epochs 500 --cache
@@ -62,14 +60,12 @@ conda activate YOLOV5
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab1004/dataset/opt/yolov5x.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5x.pt --batch 32 --epochs 10 --cache --evolve --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512
+python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512  --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml --name
 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
-
- --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml 
 
 #detect
 python detect.py --weights /home/tlab1004/dataset/Con/results/CT_Con_YOLOV5_transfer/weights/best.pt --source '/home/tlab1004/dataset/Con/images/*.tif' --save-conf --save-txt --conf-thres 0.7 --save-crop --line-thickness 1 --name 'con0.7' 
@@ -110,16 +106,13 @@ pip install wandb
 conda activate YOLOV77
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
 
-#Pre train(optimizer hyperparameter)
-python train.py --cfg /home/tlab1004/dataset/opt/yolov7x.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7x.pt --batch 32 --epochs 10 --img 512 --device 0  --evolve
-
 #train
-python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0
- 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512 --device 0
+python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 16 --name ct_contrast_1 --evolve
+
+python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 16 --name ctspitial_1
 
 #Test
-python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt
+python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt  --workers16
 
 #detect
 python detect.py --weights '/home/tlab1004/dataset/Con/results/CT_Con_YOLOV7_nontransfer/weights/best.pt' --source '/home/tlab1004/dataset/Con/images/*.tif' --device 0 --save-conf --save-txt --conf-thres 0.6 --name 'con0.6' 
@@ -149,9 +142,7 @@ yolo TASK MODE ARGS
  ARGS : options
 
 #train
-yolo detect train model=yolov8n data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=res 
-
-yolo detect train model=yolov8n.yaml data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=contrastnon
+yolo train model=yolov8n data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=spitialyolo8
 
 #detect
 yolo detect predict model='/home/tlab1004/dataset/Res/results/CT_Res_YOLOV8_nontransfer/weights/best.pt' source='/home/tlab1004/dataset/images/*.tif' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=0.7
@@ -265,6 +256,18 @@ fliplr	0.5	image flip left-right (probability)
 mosaic	1.0	image mosaic (probability)
 mixup	0.0	image mixup (probability)
 copy_paste	0.0	segment copy-paste (probability)
+
+
+
+
+########################################YOLOnas
+#install
+conda create -n YOLOnas python=3.8
+conda activate YOLOnas
+cd /home/tlab1004/Tlabb/ObjectDetection/YOLOnas
+
+
+
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
 conda create -n ahpose python=3.7 -y
@@ -281,7 +284,7 @@ python setup.py build develop
 #detect
 python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/ChestPA/raw/train/Pass/ --outdir runs/exp --save_img --detector yolo --showbox --vis_fast
 
-########################################mmpose
+########################################MMLAb
 cd /home/tlab1004/Tlabb/Pose/mmpose
 conda create --name openmmlab python=3.8 -y
 conda activate openmmlab
@@ -306,6 +309,19 @@ python demo/bottom_up_img_demo.py \
     --out-img-root runs/exp --radius 10 --thickness 10
     
 configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/hrnet_w32_aic_512x512.py
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ===================hand
 conda create -n hand python=3.8.8
@@ -345,18 +361,21 @@ python main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017 --epochs 1 --n
 Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
-===================================================================
+
+=========================================================
 HR-net
 conda create -n HRnet python=3.8
 conda activate HRnet
 cd /home/tlab1004/Tlabb/segman/HRnet
 conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia
 pip install -r requirements.txt
-git clone https://github.com/zhanghang1989/detail-api.git $PASCAL_CTX
-cd $PASCAL_CTX/PythonAPI
+git clone https://github.com/zhanghang1989/detail-api.git
 python setup.py install
 
 
+conda activate HRnet
+cd /home/tlab1004/Tlabb/segman/HRnet
+sudo python3 tools/train.py --cfg experiments/cityscapes/seg_hrnet_ocr_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
 
 
 
