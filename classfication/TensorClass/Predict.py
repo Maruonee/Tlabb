@@ -38,7 +38,7 @@ predict_dataset = predict_datagen.flow_from_directory(
     )
 
 #모델불러오기
-model = load_model(model_dir)
+model = load_model(model_dir, custom_objects={"recall_m": recall_m, "precision_m" : precision_m, "f1_score_m" : f1_score_m})
 model.summary()
 
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
