@@ -381,7 +381,7 @@ ImageProcess(Pass_Path)
 #     Input_Image = cv2.imread(Path)
 #     Kernel = Kernel_Size
 #     Blur_Image = cv2.blur(Input_Image, (Kernel, Kernel))
-#     return(Blur_Image
+#     return(Blur_Image)
 
 # def GaussianBlur_Process(Path, Kernel_Size, Sigma_Size):
 #     Input_Image = cv2.imread(Path)
