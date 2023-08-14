@@ -1,7 +1,5 @@
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import time
 import glob
 import os
 from skimage import exposure
