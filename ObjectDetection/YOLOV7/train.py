@@ -137,6 +137,8 @@ def train(hyp, opt, device, tb_writer=None):
                 pg0.append(v.imb.implicit)
             else:
                 for iv in v.imb:
+                    
+                    
                     pg0.append(iv.implicit)
         if hasattr(v, 'imo'):
             if hasattr(v.imo, 'implicit'):           

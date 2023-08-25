@@ -3,14 +3,13 @@ import numpy as np
 import glob
 import os
 
-sample_file = 'C:\\Users\\tlab\\Documents\\sss\\JPG\\*.jpg'
+sample_file = 'C:\\Users\\vole9\\OneDrive\\Documents\\data\\PNG\\*.png'
+custom_number = 3
 r_dirname, r_filename = os.path.split(sample_file)
 images_dir = glob.glob(sample_file)
+os.mkdir(f"{r_dirname}\\Gamma_{custom_number}")
+
 ###################Gamma###########################
-os.mkdir(f"{r_dirname}\\Gamma")
-
-custom_number = 0.5
-
 for img_list in images_dir:
     dirname, filename = os.path.split(img_list)
     img = cv2.imread(img_list)
