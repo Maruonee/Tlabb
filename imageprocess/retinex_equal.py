@@ -3,11 +3,11 @@ import numpy as np
 import glob
 import os
 
-sample_file = 'C:\\Users\\vole9\\OneDrive\\Documents\\data\\JPG\\*.jpg'
+sample_file = 'C:\\Users\\vole9\\OneDrive\\Documents\\data\\PNG\\*.png'
 r_dirname, r_filename = os.path.split(sample_file)
 images_dir = glob.glob(sample_file)
 ###################retinex###########################
-os.mkdir(f"{r_dirname}\\Retinex_Equalization")
+os.mkdir(f"{r_dirname}\\Retinex")
 sigma_number = 250
 
 #single retinex 정의
@@ -31,6 +31,9 @@ for img_list in images_dir:
     cdf_m = (cdf_m - cdf_m.min())*255/(cdf_m.max()-cdf_m.min())
     cdf = np.ma.filled(cdf_m,0).astype('uint8')
     custom_img = cdf[img]
-    save_dir = f"{dirname}\\Retinex_Equalization\\Retinex_Equalization_{filename}"
-    cv2.imwrite(save_dir, custom_img)
-    print(save_dir)
+    save_dir1 = f"{dirname}\\Retinex\\Retinex{filename}"
+    save_dir2 = f"{dirname}\\Retinex\\Retinex_Equalization_{filename}"
+    cv2.imwrite(save_dir1, img)
+    print(save_dir1)
+    cv2.imwrite(save_dir2, custom_img)
+    print(save_dir2)

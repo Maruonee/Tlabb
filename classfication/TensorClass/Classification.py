@@ -37,11 +37,11 @@ def f1_score_m(y_true, y_pred):
     return f1score
 #====================================================================================
 #슬랙
-webhook_slack = "slackurl"
-slack_channel = "channel name"
+webhook_slack = "https://keras.io/ko/preprocessing/image/"
+slack_channel = "ddddd"
 #데이터 및 컴퓨터 설정
-base_dir = '/home/tlab1004/dataset/images'
-class_num = 1 #binary is 1
+base_dir = '/home/tlab1004/dataset/CLASS'
+class_num = 3 #binary is 1
 cpu_core = 16
 #하이퍼파라미터 설정
 #참고 https://keras.io/ko/preprocessing/image/
