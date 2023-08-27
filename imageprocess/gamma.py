@@ -3,7 +3,7 @@ import numpy as np
 import glob
 import os
 
-sample_file = 'C:\\Users\\tlab\\Documents\\sss\\JPG\\*.jpg'
+sample_file = 'C:\\Users\\vole9\\OneDrive\\Documents\\data\\JPG\\*.jpg'
 r_dirname, r_filename = os.path.split(sample_file)
 images_dir = glob.glob(sample_file)
 ###################Gamma###########################
