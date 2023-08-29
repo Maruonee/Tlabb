@@ -1,13 +1,11 @@
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import time
 import glob
 import os
 from skimage import exposure
 from skimage.exposure import match_histograms
 
-sample_file = 'C:\\Users\\tlab\\Documents\\sss\\JPG\\*.jpg'
+sample_file = 'C:\\Users\\vole9\\OneDrive\\Documents\\data\\PNG\\*.png'
 r_dirname, r_filename = os.path.split(sample_file)
 images_dir = glob.glob(sample_file)
 ###################equal###########################
@@ -26,17 +24,17 @@ for img_list in images_dir:
     cv2.imwrite(save_dir, custom_img)
     print(save_dir)
     
-###################Specification###########################
-reference = "C:\\Users\\tlab\\Documents\\sss\\JPG\\multiply3\\multiply_3_7_1.jpg"
-reference_type = "multiply3"
-os.mkdir(f"{r_dirname}\\Specification_{reference_type}")
-reference_img = cv2.imread(reference)
+# ###################Specification###########################
+# reference = "C:\\Users\\tlab\\Documents\\sss\\JPG\\multiply3\\multiply_3_7_1.jpg"
+# reference_type = "multiply3"
+# os.mkdir(f"{r_dirname}\\Specification_{reference_type}")
+# reference_img = cv2.imread(reference)
 
-for img_list in images_dir:
-    dirname, filename = os.path.split(img_list)
-    img = cv2.imread(img_list)
-    custom_img = match_histograms(img, reference_img,multichannel=True)    
-    save_dir = f"{dirname}\\Specification_{reference_type}\\Specification_{reference_type}_{filename}"
-    cv2.imwrite(save_dir, custom_img)
-    print(save_dir)
+# for img_list in images_dir:
+#     dirname, filename = os.path.split(img_list)
+#     img = cv2.imread(img_list)
+#     custom_img = match_histograms(img, reference_img,multichannel=True)    
+#     save_dir = f"{dirname}\\Specification_{reference_type}\\Specification_{reference_type}_{filename}"
+#     cv2.imwrite(save_dir, custom_img)
+#     print(save_dir)
 
