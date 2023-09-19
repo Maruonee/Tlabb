@@ -47,6 +47,10 @@ python test.py --data /home/tlab/dataset/o
 #eval
 python val.py --data /home/tlab1004/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV3.pt --img 512 --verbose --save-txt --save-hybrid --augment --save-json --exist-ok
 
+
+conda env remove -n seg
+
+
 ##########################################YOLOv5
 #install 
 conda create -n YOLOV5 python=3.8
@@ -130,7 +134,7 @@ python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/Objec
 ########################################YOLOV8
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV8
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV8
 pip install ultralytics
 
 conda activate YOLOV8
@@ -143,6 +147,8 @@ yolo TASK MODE ARGS
 
 #train
 yolo train model=None data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=gauze_normal
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 name=c_arm_needle save=True
 
 #detect
 yolo detect predict model='/home/tlab1004/runs/detect/gauze_equal/weights/best.pt' source='/home/tlab1004/runs/detect/gauze_equal/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
@@ -266,18 +272,23 @@ python setup.py build develop
 python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/ChestPA/raw/train/Pass/ --outdir runs/exp --save_img --detector yolo --showbox --vis_fast
 
 ########################################MMLAb
-cd /home/tlab1004/Tlabb/Pose/mmpose
-conda create --name openmmlab python=3.8 -y
-conda activate openmmlab
-conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+
+cd /home/tlab4090/Tlabb/Pose/mmpose
+conda create --name seg1 python=3.8 -y
+conda activate seg1
+conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
 pip install -U openmim
-mim download mmsegmentation --config pspnet_r50-d8_4xb2-40k_cityscapes-512x1024 --dest .
 mim install mmengine
-mim install mmcv-full
-pip install -r requirements.txt
+mim install "mmcv>=2.0.0"
+git clone -b main https://github.com/open-mmlab/mmsegmentation.git
+cd mmsegmentation
 pip install -v -e .
-conda install -c conda-forge mmcv-full
-cd /home/tlab1004/Tlabb/segman/mmlab
+
+# demo test
+wget https://download.openmmlab.com/mmsegmentation/v0.5/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth
+
+python demo/image_demo.py --img demo/demo.png --config configs/pspnet/pspnet_r50-d8_4xb2-40k_cityscapes-512x1024.py pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth --device cuda:0 --out result.jpg
+
 ========================pose=================
 python demo/top_down_img_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
@@ -298,22 +309,26 @@ configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/hrnet_w32_aic_512x51
 
 
 ########################################segmantaion openmmlab
-conda create --name seg python=3.8 -y
-conda activate seg
+cd /home/tlab4090/Tlabb/segman/mmlab
+conda create --name segman python=3.8 -y
+conda activate segman
 conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
 pip install -U openmim
 mim install mmengine
 mim install "mmcv>=2.0.0"
+git clone -b main https://github.com/open-mmlab/mmsegmentation.git
+cd mmsegmentation
 pip install -v -e .
-python -m pip install cityscapesscripts
-mim download mmsegmentation --config pspnet_r50-d8_4xb2-40k_cityscapes-512x1024 --dest .
 
 #activate 
-conda acitvate seg
-cd /home/tlab1004/Tlabb/segman/mmlab
+conda acitvate segman
+cd /home/tlab4090/Tlabb/segman/mmlab
 
 #test
+mim download mmsegmentation --config pspnet_r50-d8_4xb2-40k_cityscapes-512x1024 --dest .
+
 python demo/image_demo.py demo/demo.png configs/pspnet/pspnet_r50-d8_4xb2-40k_cityscapes-512x1024.py pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth --device cuda:0 --out-file result.jpg
+
 
 
 #dataset(based on cityscapes)
@@ -398,12 +413,30 @@ sudo python3 tools/train.py --cfg experiments/cityscapes/seg_hrnet_ocr_w48_train
 
 
 
+=========================================================soup
+conda create -n soup python==3.8
+conda activate soup
+cd /home/tlab4090/Tlabb/modelsoups
+conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
+pip install ftfy regex tqdm
+pip install git+https://github.com/openai/CLIP.git@40f5484c1c74edd83cb9cf687c6ab92b28d8b656
+pip install wget
+pip install git+https://github.com/modestyachts/ImageNetV2_pytorch
+pip install requests
+pip install matplotlib
+pip install pandas
 
+python main.py --download-models --model-location '/home/tlab4090/Tlabb/modelsoups'
 
+python main.py --eval-individual-models --data-location /home/tlab4090/Tlabb/modelsoups' --model-location '/home/tlab4090/Tlabb/modelsoups'
 
+python main.py --uniform-soup --data-location '/home/tlab4090/Tlabb/modelsoups' --model-location '/home/tlab4090/Tlabb/modelsoups'
 
+python main.py --greedy-soup --data-location '/home/tlab4090/Tlabb/modelsoups'--model-location '/home/tlab4090/Tlabb/modelsoups'
 
+python main.py --plot
 
+python main.py --download-models --eval-individual-models --uniform-soup --greedy-soup --plot --data-location <where data is stored> --model-location <where models are stored>
 
 
 =========================================================
