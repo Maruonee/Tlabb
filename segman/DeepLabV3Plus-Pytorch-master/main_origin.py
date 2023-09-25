@@ -26,8 +26,8 @@ def get_argparser():
     # Datset Options
     parser.add_argument("--data_root", type=str, default='./datasets/data',
                         help="path to Dataset")
-    parser.add_argument("--dataset", type=str, default='cityscapes',
-                        choices=['cityscapes'], help='Name of dataset')
+    parser.add_argument("--dataset", type=str, default='voc',
+                        choices=['voc', 'cityscapes'], help='Name of dataset')
     parser.add_argument("--num_classes", type=int, default=None,
                         help="num classes (default: None)")
 
@@ -38,27 +38,27 @@ def get_argparser():
                               )
     parser.add_argument("--model", type=str, default='deeplabv3plus_mobilenet',
                         choices=available_models, help='model name')
-    parser.add_argument("--separable_conv", action='store_true', default=True,
+    parser.add_argument("--separable_conv", action='store_true', default=False,
                         help="apply separable conv to decoder and aspp")
     parser.add_argument("--output_stride", type=int, default=16, choices=[8, 16])
 
     # Train Options
     parser.add_argument("--test_only", action='store_true', default=False)
-    parser.add_argument("--save_val_results", action='store_true', default=True,
+    parser.add_argument("--save_val_results", action='store_true', default=False,
                         help="save segmentation results to \"./results\"")
     parser.add_argument("--total_itrs", type=int, default=30e3,
                         help="epoch number (default: 30k)")
     parser.add_argument("--lr", type=float, default=0.01,
                         help="learning rate (default: 0.01)")
-    parser.add_argument("--lr_policy", type=str, default='step', choices=['poly', 'step'],
+    parser.add_argument("--lr_policy", type=str, default='poly', choices=['poly', 'step'],
                         help="learning rate scheduler policy")
     parser.add_argument("--step_size", type=int, default=10000)
-    parser.add_argument("--crop_val", action='store_true', default=True,
-                        help='crop validation (default: True)')
-    parser.add_argument("--batch_size", type=int, default=32,
-                        help='batch size (default: 32)')
-    parser.add_argument("--val_batch_size", type=int, default=32,
-                        help='batch size for validation (default: 32)')
+    parser.add_argument("--crop_val", action='store_true', default=False,
+                        help='crop validation (default: False)')
+    parser.add_argument("--batch_size", type=int, default=16,
+                        help='batch size (default: 16)')
+    parser.add_argument("--val_batch_size", type=int, default=4,
+                        help='batch size for validation (default: 4)')
     parser.add_argument("--crop_size", type=int, default=513)
 
     parser.add_argument("--ckpt", default=None, type=str,
@@ -80,8 +80,12 @@ def get_argparser():
     parser.add_argument("--download", action='store_true', default=False,
                         help="download datasets")
 
+    # PASCAL VOC Options
+    parser.add_argument("--year", type=str, default='2012',
+                        choices=['2012_aug', '2012', '2011', '2009', '2008', '2007'], help='year of VOC')
+
     # Visdom options
-    parser.add_argument("--enable_vis", action='store_true', default=True,
+    parser.add_argument("--enable_vis", action='store_true', default=False,
                         help="use visdom for visualization")
     parser.add_argument("--vis_port", type=str, default='13570',
                         help='port for visdom')
@@ -93,6 +97,37 @@ def get_argparser():
 
 
 def get_dataset(opts):
+    """ Dataset And Augmentation
+    """
+    if opts.dataset == 'voc':
+        train_transform = et.ExtCompose([
+            # et.ExtResize(size=opts.crop_size),
+            et.ExtRandomScale((0.5, 2.0)),
+            et.ExtRandomCrop(size=(opts.crop_size, opts.crop_size), pad_if_needed=True),
+            et.ExtRandomHorizontalFlip(),
+            et.ExtToTensor(),
+            et.ExtNormalize(mean=[0.485, 0.456, 0.406],
+                            std=[0.229, 0.224, 0.225]),
+        ])
+        if opts.crop_val:
+            val_transform = et.ExtCompose([
+                et.ExtResize(opts.crop_size),
+                et.ExtCenterCrop(opts.crop_size),
+                et.ExtToTensor(),
+                et.ExtNormalize(mean=[0.485, 0.456, 0.406],
+                                std=[0.229, 0.224, 0.225]),
+            ])
+        else:
+            val_transform = et.ExtCompose([
+                et.ExtToTensor(),
+                et.ExtNormalize(mean=[0.485, 0.456, 0.406],
+                                std=[0.229, 0.224, 0.225]),
+            ])
+        train_dst = VOCSegmentation(root=opts.data_root, year=opts.year,
+                                    image_set='train', download=opts.download, transform=train_transform)
+        val_dst = VOCSegmentation(root=opts.data_root, year=opts.year,
+                                  image_set='val', download=False, transform=val_transform)
+
     if opts.dataset == 'cityscapes':
         train_transform = et.ExtCompose([
             # et.ExtResize( 512 ),
@@ -178,7 +213,7 @@ def main():
     if opts.dataset.lower() == 'voc':
         opts.num_classes = 21
     elif opts.dataset.lower() == 'cityscapes':
-        opts.num_classes = 1
+        opts.num_classes = 19
 
     # Setup visualization
     vis = Visualizer(port=opts.vis_port,
@@ -201,10 +236,10 @@ def main():
 
     train_dst, val_dst = get_dataset(opts)
     train_loader = data.DataLoader(
-        train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=32,
+        train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=2,
         drop_last=True)  # drop_last=True to ignore single-image batches.
     val_loader = data.DataLoader(
-        val_dst, batch_size=opts.val_batch_size, shuffle=True, num_workers=32)
+        val_dst, batch_size=opts.val_batch_size, shuffle=True, num_workers=2)
     print("Dataset: %s, Train set: %d, Val set: %d" %
           (opts.dataset, len(train_dst), len(val_dst)))
 
@@ -255,7 +290,7 @@ def main():
     cur_epochs = 0
     if opts.ckpt is not None and os.path.isfile(opts.ckpt):
         # https://github.com/VainF/DeepLabV3Plus-Pytorch/issues/8#issuecomment-605601402, @PytaichukBohdan
-        checkpoint = torch.load(opts.ckpt, map_location=torch.device('cuda'))
+        checkpoint = torch.load(opts.ckpt, map_location=torch.device('cpu'))
         model.load_state_dict(checkpoint["model_state"])
         model = nn.DataParallel(model)
         model.to(device)

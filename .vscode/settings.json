@@ -1,3 +1,4 @@
 {
-    "notebook.output.textLineLimit": 9999
+    "notebook.output.textLineLimit": 9999,
+    "C_Cpp.default.compilerPath": ""
 }

@@ -20,7 +20,7 @@ class Cityscapes(BaseDataset):
                  root, 
                  list_path, 
                  num_samples=None, 
-                 num_classes=1,
+                 num_classes=19,
                  multi_scale=True, 
                  flip=True, 
                  ignore_label=-1, 
