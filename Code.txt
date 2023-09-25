@@ -111,8 +111,10 @@ conda activate YOLOV77
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
 
 #train
-python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 16 --name ct_contrast_1 --evolve
+python train.py --cfg /home/tlab4090/datasets/opt/yolov7.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 32 --name C_arm_sho
 
+ --evolve
+ 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 16 --name ctspitial_1
 
 #Test
@@ -134,7 +136,7 @@ python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/Objec
 ########################################YOLOV8
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
-cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV8
+cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
 pip install ultralytics
 
 conda activate YOLOV8
@@ -151,7 +153,7 @@ yolo train model=None data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epoch
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 name=c_arm_needle save=True
 
 #detect
-yolo detect predict model='/home/tlab1004/runs/detect/gauze_equal/weights/best.pt' source='/home/tlab1004/runs/detect/gauze_equal/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
+yolo detect predict model='/home/tlab4090/Tlabb/ObjectDetection/myyolo/runs/detect/c_arm_needle_6/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
 
 
 
