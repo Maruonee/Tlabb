@@ -3,11 +3,11 @@ from glob import glob
 from sklearn.model_selection import train_test_split
 import os
 #데이터셋 위치
-data_dir = '/home/tlab1004/dataset/images/'
+data_dir = '/home/tlab4090/datasets/images/'
 
 #이미지 리스트 불러오기
 #이미지 형식
-img_list = glob(os.path.join(data_dir,"*.png"))
+img_list = glob(os.path.join(data_dir,"*.jpg"))
 
 # 트레이닝셋, 벨류, 테스트 6:2:2
 train_img_list, val_test_img_list = train_test_split(

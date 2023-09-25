@@ -14,7 +14,7 @@ slack_channel = "#chestpa"
 #데이터 및 컴퓨터 설정
 img_dir = '/home/tlab1004/dataset/raw/test'
 class_num = 2
-cpu_core = 16
+cpu_core = 16 
 classes_name = ["Fail", "Pass"]
 custom_class_mode = 'categorical'#"categorical", "binary", "sparse", "input", "other",'None'
 #모델설정
