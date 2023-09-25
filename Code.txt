@@ -55,7 +55,7 @@ conda env remove -n seg
 #install 
 conda create -n YOLOV5 python=3.8
 conda activate YOLOV5
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV5
 pip install wandb -r requirements.txt
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 
@@ -67,7 +67,7 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512  --hyp /home/tlab1004/dataset/opt/V5/hyp_evolve.yaml --name
+python train.py --cfg /home/tlab4090/datasets/opt/yolov5n.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512 --name c_arm
 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
 
@@ -398,7 +398,7 @@ Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
 
-=========================================================
+====================================================HR-net
 HR-net
 conda create -n HRnet python=3.8
 conda activate HRnet
@@ -414,6 +414,18 @@ cd /home/tlab1004/Tlabb/segman/HRnet
 sudo python3 tools/train.py --cfg experiments/cityscapes/seg_hrnet_ocr_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
 
 
+====================================================deepnetv3
+conda create -n deepnet python=3.8
+conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia
+
+conda activate deepnet
+cd /home/tlab4090/Tlabb/segman/DeepLabV3Plus-Pytorch-master
+
+
+python main.py --model deeplabv3plus_mobilenet --data_root /home/tlab4090/datasets
+/spine
+
+python main.py --model deeplabv3plus_mobilenet --data_root /home/tlab4090/datasets --test_only
 
 =========================================================soup
 conda create -n soup python==3.8
@@ -444,12 +456,9 @@ python main.py --download-models --eval-individual-models --uniform-soup --greed
 =========================================================
 이름바꾸기
 1. 확인
-rename -n 's/.txt/.docx/' *.txt
-rename -n 's/.docx/.txt/' *.docx
-rename -n 's/.tif/.jpg/' *.tif
+rename -n 's/.png/.txt/' *.png
 2. 실행
-rename -f 's/.jpg/.tif/' *.jpg
-rename 's/.docx/.txt/' *.docx
+rename 's/.txt/.png/' *.txt
 
 find . -type f -name "*.doc" -exec rename .doc .txt {} \;
 

@@ -65,8 +65,7 @@ class Cityscapes(data.Dataset):
 
             for file_name in os.listdir(img_dir):
                 self.images.append(os.path.join(img_dir, file_name))
-                target_name = '{}_{}'.format(file_name.split('')[0],
-                                             self._get_target_suffix(self.mode, self.target_type))
+                target_name = file_name
                 self.targets.append(os.path.join(target_dir, target_name))
 
     @classmethod
@@ -91,7 +90,7 @@ class Cityscapes(data.Dataset):
         target = Image.open(self.targets[index])
         if self.transform:
             image, target = self.transform(image, target)
-        target = self.encode_target(target)
+        # target = self.encode_target(target)
         return image, target
 
     def __len__(self):
