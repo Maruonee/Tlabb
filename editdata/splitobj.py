@@ -7,7 +7,7 @@ data_dir = '/home/tlab4090/datasets/images/'
 
 #이미지 리스트 불러오기
 #이미지 형식
-img_list = glob(os.path.join(data_dir,"*.jpg"))
+img_list = glob(os.path.join(data_dir,"*.png"))
 
 # 트레이닝셋, 벨류, 테스트 6:2:2
 train_img_list, val_test_img_list = train_test_split(

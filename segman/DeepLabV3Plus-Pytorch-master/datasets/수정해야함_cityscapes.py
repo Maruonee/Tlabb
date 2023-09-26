@@ -90,7 +90,8 @@ class Cityscapes(data.Dataset):
         target = Image.open(self.targets[index])
         if self.transform:
             image, target = self.transform(image, target)
-        # target = self.encode_target(target)
+        target = self.encode_target(target)
+        image = self.encode_target(image)
         return image, target
 
     def __len__(self):

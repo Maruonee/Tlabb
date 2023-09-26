@@ -55,11 +55,11 @@ def get_argparser():
     parser.add_argument("--step_size", type=int, default=10000)
     parser.add_argument("--crop_val", action='store_true', default=True,
                         help='crop validation (default: True)')
-    parser.add_argument("--batch_size", type=int, default=32,
+    parser.add_argument("--batch_size", type=int, default=16,
                         help='batch size (default: 32)')
-    parser.add_argument("--val_batch_size", type=int, default=32,
+    parser.add_argument("--val_batch_size", type=int, default=4,
                         help='batch size for validation (default: 32)')
-    parser.add_argument("--crop_size", type=int, default=513)
+    parser.add_argument("--crop_size", type=int, default=512)
 
     parser.add_argument("--ckpt", default=None, type=str,
                         help="restore from checkpoint")
@@ -197,7 +197,7 @@ def main():
 
     # Setup dataloader
     if opts.dataset == 'voc' and not opts.crop_val:
-        opts.val_batch_size = 1
+        opts.val_batch_size = 16
 
     train_dst, val_dst = get_dataset(opts)
     train_loader = data.DataLoader(

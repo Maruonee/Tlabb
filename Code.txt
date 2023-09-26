@@ -155,6 +155,15 @@ yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=yolov8n.yaml epoch
 #detect
 yolo detect predict model='/home/tlab4090/Tlabb/ObjectDetection/myyolo/runs/detect/c_arm_needle_6/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
 
+#seg_train
+yolo segment train data=/home/tlab4090/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True cache=True verbose=True
+
+#val
+yolo segment val model=yolov8n-seg.pt  # val official model
+
+#detect
+yolo segment predict model=yolov8n-seg.pt source='https://ultralytics.com/images/bus.jpg'  # predict with official model 
+
 
 
 # train
@@ -397,22 +406,25 @@ python main.py --coco_path /media/tlab/Data/Dataset/COCO/coco2017 --epochs 1 --n
 Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
+====================================================Unet
+conda acitvate segman
+cd /home/tlab4090/Tlabb/segman/unet
+
+python train.py --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial --epochs 300 --num_workers 16
+
+
 
 ====================================================HR-net
-HR-net
 conda create -n HRnet python=3.8
 conda activate HRnet
-cd /home/tlab1004/Tlabb/segman/HRnet
+cd /home/tlab4090/Tlabb/segman/HRNet
 conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia
 pip install -r requirements.txt
-git clone https://github.com/zhanghang1989/detail-api.git
-python setup.py install
-
 
 conda activate HRnet
-cd /home/tlab1004/Tlabb/segman/HRnet
-sudo python3 tools/train.py --cfg experiments/cityscapes/seg_hrnet_ocr_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
+cd /home/tlab4090/Tlabb/segman/HRNet
 
+python -m torch.distributed.launch --nproc_per_node=1 tools/train.py --cfg /home/tlab4090/Tlabb/segman/HRNet/experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
 
 ====================================================deepnetv3
 conda create -n deepnet python=3.8
