@@ -20,7 +20,7 @@ def CreateDirectory(directory):
 
 #이미지 처리
 def ImageProcess(Path):
-    Root_Dir = Path + '\\raw'
+    Root_Dir = Path
     Img_Path_List = []
     Possible_Img_Extension = ['.png']
     for (Root, Dirs, Files) in os.walk(Root_Dir):
@@ -373,7 +373,7 @@ def Ying_2017_CAIP(img, mu=0.5, ying_a=-0.3293, ying_b=1.1258, lamda=0.5, sigma 
     result[result<0] = 0
     return result.astype(np.uint8)
 ################## MAIN ##################
-Pass_Path = 'C:\\Users\\vole9\\Desktop\\pass'
+Pass_Path = '/home/tlab1004/augdata'
 ImageProcess(Pass_Path)
 ################## END ##################
 # 기타함수

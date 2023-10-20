@@ -137,6 +137,7 @@ python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/Objec
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
 cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
+cd /home/tlab1004/Tlabb/ObjectDetection/myyolo
 pip install ultralytics
 
 conda activate YOLOV8
@@ -156,7 +157,8 @@ yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=yolov8n.yaml epoch
 yolo detect predict model='/home/tlab4090/Tlabb/ObjectDetection/myyolo/runs/detect/c_arm_needle_6/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
 
 #seg_train
-yolo segment train data=/home/tlab4090/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True cache=True verbose=True
+yolo segment train data=/home/tlab4090/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True cache=True patience=0
+yolo segment train data=/home/tlab1004/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=16 save=True cache=True patience=0
 
 #val
 yolo segment val model=yolov8n-seg.pt  # val official model

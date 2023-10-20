@@ -5,9 +5,9 @@ files (`*.yaml`s) that can be used to create custom YOLO models. The models in t
 and fine-tuned by the Ultralytics team to provide the best performance for a wide range of object detection and image
 segmentation tasks.
 
-These model configurations cover a wide range of scenarios, from simple object detection to more complex tasks like
+TheWhese model configurations cover a wide range of scenarios, from simple object detection to more complex tasks like
 instance segmentation and object tracking. They are also designed to run efficiently on a variety of hardware platforms,
-from CPUs to GPUs. Whether you are a seasoned machine learning practitioner or just getting started with YOLO, this
+from CPUs to GPUs. ther you are a seasoned machine learning practitioner or just getting started with YOLO, this
 directory provides a great starting point for your custom model development needs.
 
 To get started, simply browse through the models in this directory and find one that best suits your needs. Once you've

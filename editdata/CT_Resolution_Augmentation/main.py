@@ -349,7 +349,7 @@ def Ying_2017_CAIP(img, mu=0.5, a=-0.3293, b=1.1258):
 
     # Weight matrix estimation
     t_b = np.max(I, axis=2)
-    t_our = cv2.resize(tsmooth(scipy.misc.imresize(t_b, 0.5, interp='bicubic', mode='F'), lamda, sigma), (t_b.shape[1], t_b.shape[0]), interpolation=cv2.INTER_AREA)
+    new_scale = np.array(Image.fromarray(t_b).resize((int(0.5 * t_b.shape[0]), int(t_b.shape[1] * 0.5)), resample=PIL.Image.BICUBIC))
     #t_our = t_b
     # Apply camera model with k(exposure ratio)
     isBad = t_our < 0.5
@@ -398,9 +398,6 @@ def BilateralFilter_Process(Path, Kernel_Size, SigmaColor_Size, SigmaSpac_Size):
     return(BilateralFilter_Image)
 
 ################## MAIN ##################
-Pass_Path = 'E:/OPEN DATASET/Eulgi Dataset/Spatial Resolution/PNG_pass'
-Nonpass_Path = 'E:/OPEN DATASET/Eulgi Dataset/Spatial Resolution/PNG_nonpass'
-
+Pass_Path = '/home/tlab1004/augdata/'
 ImageProcess(Pass_Path)
-ImageProcess(Nonpass_Path)
 ################## END ##################
