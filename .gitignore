@@ -267,3 +267,5 @@ Pose/Mediapose.ipynb
 *.MP4
 *.zip
 *.tmp
+*.gz
+*.1

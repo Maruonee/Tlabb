@@ -6,19 +6,19 @@ from mmseg.apis import MMSegInferencer
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('img', help='Image file')
-    parser.add_argument('model', help='Config file')
+    parser.add_argument('--img', help='Image file')
+    parser.add_argument('--model', help='Config file')
     parser.add_argument('--checkpoint', default=None, help='Checkpoint file')
     parser.add_argument(
         '--out-dir', default='', help='Path to save result file')
     parser.add_argument(
         '--show',
         action='store_true',
-        default=False,
+        default=True,
         help='Whether to display the drawn image.')
     parser.add_argument(
         '--dataset-name',
-        default='cityscapes',
+        default='spine',
         help='Color palette used for segmentation map')
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')

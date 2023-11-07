@@ -53,11 +53,11 @@ if __name__ == "__main__":
     create_dir("files")
 
     """ Load dataset """
-    train_x = sorted(glob("../new_data/train/image/*"))
-    train_y = sorted(glob("../new_data/train/mask/*"))
+    train_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/images/train/*"))
+    train_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/marks/train/*"))
 
-    valid_x = sorted(glob("../new_data/test/image/*"))
-    valid_y = sorted(glob("../new_data/test/mask/*"))
+    valid_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/images/val/*"))
+    valid_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/marks/val/*"))
 
     data_str = f"Dataset Size:\nTrain: {len(train_x)} - Valid: {len(valid_x)}\n"
     print(data_str)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     W = 512
     size = (H, W)
     batch_size = 2
-    num_epochs = 50
+    num_epochs = 300
     lr = 1e-4
     checkpoint_path = "files/checkpoint.pth"
 
@@ -79,14 +79,14 @@ if __name__ == "__main__":
         dataset=train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=2
+        num_workers=32
     )
 
     valid_loader = DataLoader(
         dataset=valid_dataset,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=2
+        num_workers=32
     )
 
     device = torch.device('cuda')   ## GTX 1060 6GB

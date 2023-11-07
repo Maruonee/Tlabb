@@ -82,7 +82,7 @@ class BaseSegDataset(BaseDataset):
 
     def __init__(self,
                  ann_file: str = '',
-                 img_suffix='.jpg',
+                 img_suffix='.png',
                  seg_map_suffix='.png',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,

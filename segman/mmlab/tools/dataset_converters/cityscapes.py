@@ -9,7 +9,7 @@ from mmengine.utils import (mkdir_or_exist, scandir, track_parallel_progress,
 
 def convert_json_to_label(json_file):
     label_file = json_file.replace('_polygons.json', '_labelTrainIds.png')
-    json2labelImg(json_file, label_file, 'trainIds')    
+    json2labelImg(json_file, label_file, 'trainIds')
 
 
 def parse_args():

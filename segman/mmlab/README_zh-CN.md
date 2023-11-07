@@ -26,6 +26,7 @@
 [![license](https://img.shields.io/github/license/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/blob/main/LICENSE)
 [![issue resolution](https://isitmaintained.com/badge/resolution/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/issues)
 [![open issues](https://isitmaintained.com/badge/open/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/issues)
+[![Open in OpenXLab](https://cdn-static.openxlab.org.cn/app-center/openxlab_demo.svg)](https://openxlab.org.cn/apps?search=mmseg)
 
 文档: <https://mmsegmentation.readthedocs.io/zh_CN/latest>
 
@@ -87,7 +88,7 @@ MMSegmentation v1.x 在 0.x 版本的基础上有了显著的提升，提供了�
 
 ## 更新日志
 
-最新版本 v1.1.1 在 2023.07.24 发布。
+最新版本 v1.2.0 在 2023.10.12 发布。
 如果想了解更多版本更新细节和历史信息，请阅读[更新日志](docs/en/notes/changelog.md)。
 
 ## 安装
@@ -123,6 +124,7 @@ MMSegmentation v1.x 在 0.x 版本的基础上有了显著的提升，提供了�
 - [教程3：使用预训练模型推理](docs/zh_cn/user_guides/3_inference.md)
 - [教程4：使用现有模型进行训练和测试](docs/zh_cn/user_guides/4_train_test.md)
 - [教程5：模型部署](docs/zh_cn/user_guides/5_deployment.md)
+- [在 Jetson 平台部署 mmsegmentation](docs/zh_cn/user_guides/deploy_jetson.md)
 - [常用工具](docs/zh_cn/user_guides/useful_tools.md)
 - [特征图可视化](docs/zh_cn/user_guides/visualization_feature_map.md)
 - [可视化](docs/zh_cn/user_guides/visualization.md)
@@ -185,44 +187,46 @@ MMSegmentation v1.x 在 0.x 版本的基础上有了显著的提升，提供了�
 <details open>
 <summary>已支持的算法：</summary>
 
-- [x] [FCN (CVPR'2015/TPAMI'2017)](configs/fcn)
-- [x] [ERFNet (T-ITS'2017)](configs/erfnet)
-- [x] [UNet (MICCAI'2016/Nat. Methods'2019)](configs/unet)
-- [x] [PSPNet (CVPR'2017)](configs/pspnet)
-- [x] [DeepLabV3 (ArXiv'2017)](configs/deeplabv3)
-- [x] [BiSeNetV1 (ECCV'2018)](configs/bisenetv1)
-- [x] [PSANet (ECCV'2018)](configs/psanet)
-- [x] [DeepLabV3+ (CVPR'2018)](configs/deeplabv3plus)
-- [x] [UPerNet (ECCV'2018)](configs/upernet)
-- [x] [ICNet (ECCV'2018)](configs/icnet)
-- [x] [NonLocal Net (CVPR'2018)](configs/nonlocal_net)
-- [x] [EncNet (CVPR'2018)](configs/encnet)
-- [x] [Semantic FPN (CVPR'2019)](configs/sem_fpn)
-- [x] [DANet (CVPR'2019)](configs/danet)
-- [x] [APCNet (CVPR'2019)](configs/apcnet)
+- [x] [SAN (CVPR'2023)](configs/san/)
+- [x] [VPD (ICCV'2023)](configs/vpd)
+- [x] [DDRNet (T-ITS'2022)](configs/ddrnet)
+- [x] [PIDNet (ArXiv'2022)](configs/pidnet)
+- [x] [Mask2Former (CVPR'2022)](configs/mask2former)
+- [x] [MaskFormer (NeurIPS'2021)](configs/maskformer)
+- [x] [K-Net (NeurIPS'2021)](configs/knet)
+- [x] [SegFormer (NeurIPS'2021)](configs/segformer)
+- [x] [Segmenter (ICCV'2021)](configs/segmenter)
+- [x] [DPT (ArXiv'2021)](configs/dpt)
+- [x] [SETR (CVPR'2021)](configs/setr)
+- [x] [STDC (CVPR'2021)](configs/stdc)
+- [x] [BiSeNetV2 (IJCV'2021)](configs/bisenetv2)
+- [x] [CGNet (TIP'2020)](configs/cgnet)
+- [x] [PointRend (CVPR'2020)](configs/point_rend)
+- [x] [DNLNet (ECCV'2020)](configs/dnlnet)
+- [x] [OCRNet (ECCV'2020)](configs/ocrnet)
+- [x] [ISANet (ArXiv'2019/IJCV'2021)](configs/isanet)
+- [x] [Fast-SCNN (ArXiv'2019)](configs/fastscnn)
+- [x] [FastFCN (ArXiv'2019)](configs/fastfcn)
+- [x] [GCNet (ICCVW'2019/TPAMI'2020)](configs/gcnet)
+- [x] [ANN (ICCV'2019)](configs/ann)
 - [x] [EMANet (ICCV'2019)](configs/emanet)
 - [x] [CCNet (ICCV'2019)](configs/ccnet)
 - [x] [DMNet (ICCV'2019)](configs/dmnet)
-- [x] [ANN (ICCV'2019)](configs/ann)
-- [x] [GCNet (ICCVW'2019/TPAMI'2020)](configs/gcnet)
-- [x] [FastFCN (ArXiv'2019)](configs/fastfcn)
-- [x] [Fast-SCNN (ArXiv'2019)](configs/fastscnn)
-- [x] [ISANet (ArXiv'2019/IJCV'2021)](configs/isanet)
-- [x] [OCRNet (ECCV'2020)](configs/ocrnet)
-- [x] [DNLNet (ECCV'2020)](configs/dnlnet)
-- [x] [PointRend (CVPR'2020)](configs/point_rend)
-- [x] [CGNet (TIP'2020)](configs/cgnet)
-- [x] [BiSeNetV2 (IJCV'2021)](configs/bisenetv2)
-- [x] [STDC (CVPR'2021)](configs/stdc)
-- [x] [SETR (CVPR'2021)](configs/setr)
-- [x] [DPT (ArXiv'2021)](configs/dpt)
-- [x] [Segmenter (ICCV'2021)](configs/segmenter)
-- [x] [SegFormer (NeurIPS'2021)](configs/segformer)
-- [x] [K-Net (NeurIPS'2021)](configs/knet)
-- [x] [MaskFormer (NeurIPS'2021)](configs/maskformer)
-- [x] [Mask2Former (CVPR'2022)](configs/mask2former)
-- [x] [PIDNet (ArXiv'2022)](configs/pidnet)
-- [x] [DDRNet (T-ITS'2022)](configs/ddrnet)
+- [x] [Semantic FPN (CVPR'2019)](configs/sem_fpn)
+- [x] [DANet (CVPR'2019)](configs/danet)
+- [x] [APCNet (CVPR'2019)](configs/apcnet)
+- [x] [NonLocal Net (CVPR'2018)](configs/nonlocal_net)
+- [x] [EncNet (CVPR'2018)](configs/encnet)
+- [x] [DeepLabV3+ (CVPR'2018)](configs/deeplabv3plus)
+- [x] [UPerNet (ECCV'2018)](configs/upernet)
+- [x] [ICNet (ECCV'2018)](configs/icnet)
+- [x] [PSANet (ECCV'2018)](configs/psanet)
+- [x] [BiSeNetV1 (ECCV'2018)](configs/bisenetv1)
+- [x] [DeepLabV3 (ArXiv'2017)](configs/deeplabv3)
+- [x] [PSPNet (CVPR'2017)](configs/pspnet)
+- [x] [ERFNet (T-ITS'2017)](configs/erfnet)
+- [x] [UNet (MICCAI'2016/Nat. Methods'2019)](configs/unet)
+- [x] [FCN (CVPR'2015/TPAMI'2017)](configs/fcn)
 
 </details>
 
@@ -248,6 +252,7 @@ MMSegmentation v1.x 在 0.x 版本的基础上有了显著的提升，提供了�
 - [x] [Mapillary Vistas](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/zh_cn/user_guides/2_dataset_prepare.md#mapillary-vistas-datasets)
 - [x] [LEVIR-CD](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/zh_cn/user_guides/2_dataset_prepare.md#levir-cd)
 - [x] [BDD100K](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/zh_cn/user_guides/2_dataset_prepare.md#bdd100K)
+- [x] [NYU](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/en/user_guides/2_dataset_prepare.md#nyu)
 
 </details>
 
@@ -308,11 +313,11 @@ MMSegmentation 是一个由来自不同高校和企业的研发人员共同参�
 
 ## 欢迎加入 OpenMMLab 社区
 
-扫描下方的二维码可关注 OpenMMLab 团队的 [知乎官方账号](https://www.zhihu.com/people/openmmlab)，加入 [OpenMMLab 团队](https://jq.qq.com/?_wv=1027&k=aCvMxdr3) 以及 [MMSegmentation](https://jq.qq.com/?_wv=1027&k=ukevz6Ie) 的 QQ 群。
+扫描下方的二维码可关注 OpenMMLab 团队的 [知乎官方账号](https://www.zhihu.com/people/openmmlab)，扫描下方微信二维码添加喵喵好友，进入 MMSegmentation 微信交流社群。【加好友申请格式：研究方向+地区+学校/公司+姓名】
 
 <div align="center">
- <img src="docs/zh_cn/imgs/zhihu_qrcode.jpg" height="400" />  <img src="docs/zh_cn/imgs/qq_group_qrcode.jpg" height="400" />  <img src="docs/zh_cn/imgs/seggroup_qrcode.jpg" height="400" />
- </div>
+<img src="docs/zh_cn/imgs/zhihu_qrcode.jpg" height="400" />  <img src="resources/miaomiao_qrcode.jpg" height="400" />
+</div>
 
 我们会在 OpenMMLab 社区为大家
 

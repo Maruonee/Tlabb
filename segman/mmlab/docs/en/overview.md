@@ -8,7 +8,7 @@ Semantic segmentation is the task of clustering parts of an image together that 
 It is a form of pixel-level prediction because each pixel in an image is classified according to a category.
 Some example benchmarks for this task are [Cityscapes](https://www.cityscapes-dataset.com/benchmarks/), [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) and [ADE20K](https://groups.csail.mit.edu/vision/datasets/ADE20K/).
 Models are usually evaluated with the Mean Intersection-Over-Union (Mean IoU) and Pixel Accuracy metrics.
- 
+
 ## What is MMSegmentation?
 
 MMSegmentation is a toolbox that provides a framework for unified implementation and evaluation of semant
