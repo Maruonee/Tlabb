@@ -451,12 +451,10 @@ Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
 ====================================================Unet
-conda acitvate segman
+conda acitvate YOLOV77
 cd /home/tlab4090/Tlabb/segman/unet
 
-python train.py --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial --epochs 300 --num_workers 16
-
-
+python train.py
 
 ====================================================HR-net
 conda create -n HRnet python=3.8
