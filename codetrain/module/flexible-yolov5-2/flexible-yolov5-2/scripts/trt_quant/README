@@ -1,0 +1,6 @@
+int8 engine
+```shell script
+python scripts/trt_quant/generate_int8_engine.py --onnx path --images-dir  img_path  --save-engine  engine_path  
+```
+
+
