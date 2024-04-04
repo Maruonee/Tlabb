@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from ultralytics import YOLO
 from ultralytics.nn.tasks import DetectionModel
 from ultralytics.yolo import v8
 from ultralytics.yolo.data import build_dataloader, build_yolo_dataset

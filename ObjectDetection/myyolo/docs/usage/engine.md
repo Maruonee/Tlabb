@@ -1,22 +1,24 @@
-Both the Ultralytics YOLO command-line and python interfaces are simply a high-level abstraction on the base engine
-executors. Let's take a look at the Trainer engine.
+---
+comments: true
+description: Discover how to customize and extend base Ultralytics YOLO Trainer engines. Support your custom model and dataloader by overriding built-in functions.
+keywords: Ultralytics, YOLO, trainer engines, BaseTrainer, DetectionTrainer, customizing trainers, extending trainers, custom model, custom dataloader
+---
+
+Both the Ultralytics YOLO command-line and Python interfaces are simply a high-level abstraction on the base engine executors. Let's take a look at the Trainer engine.
 
 ## BaseTrainer
 
-BaseTrainer contains the generic boilerplate training routine. It can be customized for any task based over overriding
-the required functions or operations as long the as correct formats are followed. For example, you can support your own
-custom model and dataloader by just overriding these functions:
+BaseTrainer contains the generic boilerplate training routine. It can be customized for any task based over overriding the required functions or operations as long the as correct formats are followed. For example, you can support your own custom model and dataloader by just overriding these functions:
 
 * `get_model(cfg, weights)` - The function that builds the model to be trained
-* `get_dataloder()` - The function that builds the dataloader
-  More details and source code can be found in [`BaseTrainer` Reference](../reference/yolo/engine/trainer.md)
+* `get_dataloader()` - The function that builds the dataloader More details and source code can be found in [`BaseTrainer` Reference](../reference/engine/trainer.md)
 
 ## DetectionTrainer
 
 Here's how you can use the YOLOv8 `DetectionTrainer` and customize it.
 
 ```python
-from ultralytics.yolo.v8.detect import DetectionTrainer
+from ultralytics.models.yolo.detect import DetectionTrainer
 
 trainer = DetectionTrainer(overrides={...})
 trainer.train()
@@ -25,11 +27,10 @@ trained_model = trainer.best  # get best model
 
 ### Customizing the DetectionTrainer
 
-Let's customize the trainer **to train a custom detection model** that is not supported directly. You can do this by
-simply overloading the existing the `get_model` functionality:
+Let's customize the trainer **to train a custom detection model** that is not supported directly. You can do this by simply overloading the existing the `get_model` functionality:
 
 ```python
-from ultralytics.yolo.v8.detect import DetectionTrainer
+from ultralytics.models.yolo.detect import DetectionTrainer
 
 
 class CustomTrainer(DetectionTrainer):
@@ -48,19 +49,18 @@ You now realize that you need to customize the trainer further to:
   Here's how you can do it:
 
 ```python
-from ultralytics.yolo.v8.detect import DetectionTrainer
+from ultralytics.models.yolo.detect import DetectionTrainer
+from ultralytics.nn.tasks import DetectionModel
+
+
+class MyCustomModel(DetectionModel):
+    def init_criterion(self):
+        ...
 
 
 class CustomTrainer(DetectionTrainer):
     def get_model(self, cfg, weights):
-        ...
-
-    def criterion(self, preds, batch):
-        # get ground truth
-        imgs = batch["imgs"]
-        bboxes = batch["bboxes"]
-        ...
-        return loss, loss_items  # see Reference-> Trainer for details on the expected format
+        return MyCustomModel(...)
 
 
 # callback to upload model weights
@@ -80,4 +80,3 @@ To know more about Callback triggering events and entry point, checkout our [Cal
 
 There are other components that can be customized similarly like `Validators` and `Predictors`
 See Reference section for more information on these.
-
