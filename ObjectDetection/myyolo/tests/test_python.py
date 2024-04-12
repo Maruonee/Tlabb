@@ -397,7 +397,7 @@ def test_utils_benchmarks():
 
 def test_utils_torchutils():
     """Test Torch utility functions."""
-    from ultralytics.nn.modules.conv import Conv
+    from ObjectDetection.myyolo.ultralytics.nn.modules.conv import Conv
     from ultralytics.utils.torch_utils import get_flops_with_torch_profiler, profile, time_sync
 
     x = torch.randn(1, 64, 20, 20)
@@ -450,7 +450,7 @@ def test_utils_files():
 
 def test_nn_modules_conv():
     """Test Convolutional Neural Network modules."""
-    from ultralytics.nn.modules.conv import CBAM, Conv2, ConvTranspose, DWConvTranspose2d, Focus
+    from ObjectDetection.myyolo.ultralytics.nn.modules.conv import CBAM, Conv2, ConvTranspose, DWConvTranspose2d, Focus
 
     c1, c2 = 8, 16  # input and output channels
     x = torch.zeros(4, c1, 10, 10)  # BCHW

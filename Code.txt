@@ -143,14 +143,28 @@ python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --we
 #Pose detect
 python detect.py --weights '/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Spitial/Object/yolov7/weights/best.pt' --source '/home/tlab4090/datasets/opt/test.txt' --conf-thres 0.5 --iou-thres 0.3 --save-txt --save-conf --name contrast
 
+
+
+########################################YOLOV8_module
+conda create -n YOLO_8_m python=3.8
+conda activate YOLO_8_m
+cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+pip install -r requirements.txt
+pip install timm 
+python /home/tlab4090/Tlabb/ObjectDetection/myyolo/train.py
+
+
 ########################################YOLOV8
+
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
 cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
 cd /home/tlab1004/Tlabb/ObjectDetection/myyolo
 pip install ultralytics
 
-conda activate YOLOV8
+#custom train
+python train.py
 
 #사용법
 yolo TASK MODE ARGS
@@ -158,19 +172,29 @@ yolo TASK MODE ARGS
  MODE : [train, val, predict, export, track, benchmark]
  ARGS : options
 
-#train
+#normal train
 yolo train model=None data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=gauze_normal
 
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=/home/tlab4090/datasets/opt/yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_sptitial save=True
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=/home/tlab4090/datasets/opt/yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_contrast save=True
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 
-yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_contrast save=True
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8cbam.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 
 yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_spitial save=True
-
-
 yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Spitial/Object/yolov7/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.5 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=spitial
+
+yolo detect train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=gauze save=True verbose=True plots=True
+
+
+
+yolo detect val data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/Tlabb/runs/detect/gauze_netinex/weights/best.pt' imgsz=512 batch=32 device=0 name=gauze save_json=True conf=0.1 name=conf0.1_0.85 iou=0.85
 
 #detect
 yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Contrast/Object/yolov8/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.3 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=Contrast
@@ -537,7 +561,7 @@ find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/val/ap -name '*.png' -t
 
 
 4. 삭제
-conda env remove -n HR
+conda env remove -n YOLOV88
 =========================================================
 LaTex
 texmaker

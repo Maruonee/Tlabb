@@ -7,8 +7,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+#수정 SENetC3
 __all__ = ('Conv', 'Conv2', 'LightConv', 'DWConv', 'DWConvTranspose2d', 'ConvTranspose', 'Focus', 'GhostConv',
-           'ChannelAttention', 'SpatialAttention', 'CBAM', 'Concat', 'RepConv')
+           'ChannelAttention', 'SpatialAttention', 'CBAM', 'Concat', 'RepConv','SENetC3')
 
 
 def autopad(k, p=None, d=1):  # kernel, padding, dilation
@@ -260,46 +261,68 @@ class RepConv(nn.Module):
 class ChannelAttention(nn.Module):
     """Channel-attention module https://github.com/open-mmlab/mmdetection/tree/v3.0.0rc1/configs/rtmdet."""
 
-    def __init__(self, channels: int) -> None:
+    def __init__(self, f_input, r=16):
         """Initializes the class and sets the basic configurations and instance variables required."""
-        super().__init__()
-        self.pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Conv2d(channels, channels, 1, 1, 0, bias=True)
+        super(ChannelAttention, self).__init__()
+
+    # Apply the reduction ratio r to the input feature F
+        f_reduced = f_input // r
+
+    # Define the AvgPool and MaxPool functions
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+
+    # Define the Shared MLP
+        self.shared_MLP = nn.Sequential(
+        nn.Linear(in_features=f_input, out_features=f_reduced),
+        nn.LeakyReLU(0.1, inplace=True),
+        nn.Linear(in_features=f_reduced, out_features=f_input)
+        )
+
+    # Define the sigmoid function σ()
         self.act = nn.Sigmoid()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Applies forward pass using activation on convolutions of the input, optionally using batch normalization."""
-        return x * self.act(self.fc(self.pool(x)))
+    def forward(self, x):
+        """
+        Channel Attention
+        Mc(F) = σ(MLP(AvgPool(F)) + MLP(MaxPool(F)))
+              = σ(W1(W0(Fc_avg)) + W1(W0(Fc_max)))
+        """
+    # MLP(AvgPool(F))
+        mlp_avg_pool_f = self.shared_MLP(self.avg_pool(x).view(x.size(0), -1)).unsqueeze(2).unsqueeze(3)
+
+    # MLP(MaxPool(F))
+        mlp_max_pool_f = self.shared_MLP(self.max_pool(x).view(x.size(0), -1)).unsqueeze(2).unsqueeze(3)
+
+    # Mc(F)
+        return self.act(mlp_avg_pool_f + mlp_max_pool_f)
 
 
 class SpatialAttention(nn.Module):
     """Spatial-attention module."""
 
-    def __init__(self, kernel_size=7):
-        """Initialize Spatial-attention module with kernel size argument."""
-        super().__init__()
-        assert kernel_size in (3, 7), 'kernel size must be 3 or 7'
-        padding = 3 if kernel_size == 7 else 1
-        self.cv1 = nn.Conv2d(2, 1, kernel_size, padding=padding, bias=False)
+    def __init__(self):
+        super(SpatialAttention, self).__init__()
+        self.conv2d = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=7, stride=1, padding=3)
         self.act = nn.Sigmoid()
 
     def forward(self, x):
-        """Apply channel and spatial attention on input for feature recalibration."""
-        return x * self.act(self.cv1(torch.cat([torch.mean(x, 1, keepdim=True), torch.max(x, 1, keepdim=True)[0]], 1)))
+        return self.act(self.conv2d(torch.cat([torch.mean(x, 1, keepdim=True), torch.max(x, 1, keepdim=True)[0]], 1)))
+
+
 
 
 class CBAM(nn.Module):
     """Convolutional Block Attention Module."""
 
-    def __init__(self, c1, kernel_size=7):
-        """Initialize CBAM with given input channel (c1) and kernel size."""
-        super().__init__()
-        self.channel_attention = ChannelAttention(c1)
-        self.spatial_attention = SpatialAttention(kernel_size)
+
+    def __init__(self, f_input, c2):
+        super(CBAM, self).__init__()
+        self.channel_attention = ChannelAttention(f_input)
+        self.spatial_attention = SpatialAttention()
 
     def forward(self, x):
-        """Applies the forward pass through C1 module."""
-        return self.spatial_attention(self.channel_attention(x))
+        return self.spatial_attention(self.channel_attention(x) * x) * self.channel_attention(x) * x
 
 
 class Concat(nn.Module):
@@ -313,3 +336,65 @@ class Concat(nn.Module):
     def forward(self, x):
         """Forward pass for the YOLOv8 mask Proto module."""
         return torch.cat(x, self.d)
+
+
+
+# SENet
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=1):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc1 = nn.Sequential(
+            nn.Linear(channel, channel // reduction),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel),
+            nn.Sigmoid())
+        self.fc2 = nn.Sequential(
+            nn.Conv2d(channel , channel // reduction, 1, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(channel , channel // reduction, 1, bias=False),
+            nn.Sigmoid()
+        )
+        self.fc1[0].weights = nn.Parameter(torch.Tensor([channel, channel / reduction, 1, 1]))
+        self.fc1[1].weights = nn.Parameter(torch.Tensor([channel / reduction, channel, 1, 1]))
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c) # 全连接层只接受2维的输入
+        y = self.fc1(y).view(b, c, 1, 1)
+        return x * y
+ 
+# SENet
+class SENetBottleneck(nn.Module):
+    # Standard bottleneck
+    def __init__(self, c1, c2, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, shortcut, groups, expansion
+        super(SENetBottleneck, self).__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c_, c2, 3, 1, g=g)
+        self.add = shortcut and c1 == c2
+
+        # 添加SENet模块
+        self.senet = SELayer(c1, 16)
+
+    def forward(self, x):
+        return x + self.senet(self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x)))
+        #return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))
+
+
+# 수정 SENETc3
+class SENetC3(nn.Module):
+    # CSP Bottleneck with 3 convolutions
+    def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
+        super(SENetC3, self).__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c1, c_, 1, 1)
+        self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
+        self.m = nn.Sequential(*[SENetBottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
+        # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
+
+    def forward(self, x):
+        return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+
+

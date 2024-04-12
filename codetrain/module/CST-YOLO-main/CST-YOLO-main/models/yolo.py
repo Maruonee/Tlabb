@@ -758,7 +758,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                  ResX, ResXCSPA, ResXCSPB, ResXCSPC, 
                  RepResX, RepResXCSPA, RepResXCSPB, RepResXCSPC, 
                  Ghost, GhostCSPA, GhostCSPB, GhostCSPC,
-                  Aatten,MCS,CST ]:
+                  Aatten,MCSSPPCSPC]:
             c1, c2 = ch[f], args[0]
             if c2 != no:  # if not output
                 c2 = make_divisible(c2 * gw, 8)

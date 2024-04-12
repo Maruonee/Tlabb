@@ -11,7 +11,9 @@ from model import build_unet
 from loss import IoULoss, DiceBCELoss
 from utils import seeding, create_dir, epoch_time
 from sklearn.metrics import jaccard_score,confusion_matrix
+import datetime
 
+start = time.time()
 def train(model, loader, optimizer, loss_fn, device):
     epoch_loss = 0.0
 
@@ -58,15 +60,15 @@ if __name__ == "__main__":
     # data_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/masks/*"))
 
     """ Load dataset """
-    data_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_lat/Train/image/*"))
-    data_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_lat/Train/masks/*"))
+    data_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/image/*"))
+    data_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/masks/*"))
 
     """ Hyperparameters """
     H = 512
     W = 512
     size = (H, W)
     batch_size = 2
-    num_epochs = 50
+    num_epochs = 200
     lr = 1e-3
     checkpoint_path = "files/checkpoint.pth"
     
@@ -124,3 +126,13 @@ if __name__ == "__main__":
         data_str += f'\tTrain Loss: {train_loss:.3f}\n'
         data_str += f'\t Val. Loss: {valid_loss:.3f}\n'
         print(data_str)
+        
+end = time.time()
+print(f"{end - start:.5f} 초")
+
+sec = (end - start)
+result = datetime.timedelta(seconds=sec)
+print(result)
+result_list = str(datetime.timedelta(seconds=sec)).split(".")
+print(result_list[0])
+

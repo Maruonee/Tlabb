@@ -14,7 +14,7 @@ from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
 
 
-class Mlp(nn.Module):
+class MMlp(nn.Module):
     """ Multilayer perceptron."""
 
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
@@ -169,14 +169,14 @@ class SwinTransformerBlock(nn.Module):
     """
 
     def __init__(self, dim, num_heads, window_size=7, shift_size=0,
-                 mlp_ratio=4., qkv_bias=True, qk_scale=None, drop=0., attn_drop=0., drop_path=0.,
+                 mmlp_ratio=4., qkv_bias=True, qk_scale=None, drop=0., attn_drop=0., drop_path=0.,
                  act_layer=nn.GELU, norm_layer=nn.LayerNorm):
         super().__init__()
         self.dim = dim
         self.num_heads = num_heads
         self.window_size = window_size
         self.shift_size = shift_size
-        self.mlp_ratio = mlp_ratio
+        self.mmlp_ratio = mmlp_ratio
         assert 0 <= self.shift_size < self.window_size, "shift_size must in 0-window_size"
 
         self.norm1 = norm_layer(dim)
@@ -186,8 +186,8 @@ class SwinTransformerBlock(nn.Module):
 
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
         self.norm2 = norm_layer(dim)
-        mlp_hidden_dim = int(dim * mlp_ratio)
-        self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
+        mmlp_hidden_dim = int(dim * mmlp_ratio)
+        self.mmlp = MMlp(in_features=dim, hidden_features=mmlp_hidden_dim, act_layer=act_layer, drop=drop)
 
         self.H = None
         self.W = None
@@ -247,7 +247,7 @@ class SwinTransformerBlock(nn.Module):
 
         # FFN
         x = shortcut + self.drop_path(x)
-        x = x + self.drop_path(self.mlp(self.norm2(x)))
+        x = x + self.drop_path(self.mmlp(self.norm2(x)))
 
         return x
 
@@ -319,7 +319,7 @@ class BasicLayer(nn.Module):
                  depth,
                  num_heads,
                  window_size=7,
-                 mlp_ratio=4.,
+                 mmlp_ratio=4.,
                  qkv_bias=True,
                  qk_scale=None,
                  drop=0.,
@@ -341,7 +341,7 @@ class BasicLayer(nn.Module):
                 num_heads=num_heads,
                 window_size=window_size,
                 shift_size=0 if (i % 2 == 0) else window_size // 2,
-                mlp_ratio=mlp_ratio,
+                mmlp_ratio=mmlp_ratio,
                 qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
                 drop=drop,
@@ -480,7 +480,7 @@ class SwinTransformer(nn.Module):
                  depths=[2, 2, 18, 2],
                  num_heads=[3, 6, 12, 24],
                  window_size=7,
-                 mlp_ratio=4.,
+                 mmlp_ratio=4.,
                  qkv_bias=True,
                  qk_scale=None,
                  drop_rate=0.,
@@ -529,7 +529,7 @@ class SwinTransformer(nn.Module):
                 depth=depths[i_layer],
                 num_heads=num_heads[i_layer],
                 window_size=window_size,
-                mlp_ratio=mlp_ratio,
+                mmlp_ratio=mmlp_ratio,
                 qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
                 drop=drop_rate,
