@@ -24,14 +24,18 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV3
 pip install wandb -r requirements.txt
 
 #activate
-conda activate YOLOV3
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV3
+conda activate YOLOV5
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV3
 
 #Pre train(optimizer hyperparameter)
 python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov3.pt --batch 32 --epochs 500 --img 512 --hyp /home/tlab1004/dataset/opt/V3/hyp_evolve.yaml
+python train.py --cfg /home/tlab4090/datasets/opt/yolov4.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
+
+
+python train.py --cfg yolov4.cfg --weights ''
+
 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov3.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
 
@@ -51,6 +55,12 @@ python val.py --data /home/tlab1004/dataset/opt/coco128.yaml --weights /home/tla
 conda env remove -n seg
 
 
+
+
+python train.py --cfg yolov4.cfg --weights ''
+
+
+
 ##########################################YOLOv5
 #install 
 conda create -n YOLOV5 python=3.8
@@ -67,7 +77,7 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --batch 32 --epochs 10 --cache --evolve --img 512
 
 #Train 
-python train.py --cfg /home/tlab4090/datasets/opt/yolov5n.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512 --name c_arm
+python train.py --cfg /home/tlab4090/datasets/opt/yolov5n.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov5m.pt --batch 32 --epochs 500 --img 512 --name ct_sptial
 
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights '' --batch 32 --epochs 500 --img 512
 
@@ -101,24 +111,24 @@ python train.py --batch-size 32 --img 512 512 --data /home/tlab1004/dataset/opt/
 #install
 conda create -n YOLOV77 python=3.8
 conda activate YOLOV77
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV7
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
 pip install -r requirements.txt
 pip install wandb
 
 #activate 
 conda activate YOLOV77
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV7
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV7
 
 #train
-python train.py --cfg /home/tlab4090/datasets/opt/yolov7.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 32 --name C_arm_sho
+python train.py --cfg /home/tlab4090/datasets/opt/yolov7.yaml --data /home/tlab4090/datasets/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 32 --name ct_sptitial
 
  --evolve
  
 python train.py --cfg /home/tlab1004/dataset/opt/yolov7.yaml --data /home/tlab1004/dataset/opt/coco.yaml --weights yolov7.pt --batch 32 --epochs 500 --img 512 --device 0 --workers 16 --name ctspitial_1
 
 #Test
-python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt  --workers16
+python test.py --data /home/tlab/dataset/opt/coco.yaml --img 512 --batch 32 --weights /home/tlab/results/v7/weights/best.pt  --workers 16
 
 #detect
 python detect.py --weights '/home/tlab1004/dataset/Con/results/CT_Con_YOLOV7_nontransfer/weights/best.pt' --source '/home/tlab1004/dataset/Con/images/*.tif' --device 0 --save-conf --save-txt --conf-thres 0.6 --name 'con0.6' 
@@ -131,16 +141,30 @@ python train.py --data data/coco_kpts.yaml --cfg cfg/yolov7-w6-pose.yaml --weigh
 python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --weights yolov7-w6-pose.pt --kpt-label
 
 #Pose detect
-python detect.py --weights yolov7-w6-pose.pt --source /home/tlab1004/Tlabb/ObjectDetection/YOLOV7_P/data/IMG_0413.MP4 --kpt-label --line-thickness 8 --hide-labels --hide-conf --nobbox
+python detect.py --weights '/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Spitial/Object/yolov7/weights/best.pt' --source '/home/tlab4090/datasets/opt/test.txt' --conf-thres 0.5 --iou-thres 0.3 --save-txt --save-conf --name contrast
+
+
+
+########################################YOLOV8_module
+conda create -n YOLO_8_m python=3.8
+conda activate YOLO_8_m
+cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+pip install -r requirements.txt
+pip install timm 
+python /home/tlab4090/Tlabb/ObjectDetection/myyolo/train.py
+
 
 ########################################YOLOV8
+
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
 cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
 cd /home/tlab1004/Tlabb/ObjectDetection/myyolo
 pip install ultralytics
 
-conda activate YOLOV8
+#custom train
+python train.py
 
 #사용법
 yolo TASK MODE ARGS
@@ -148,13 +172,32 @@ yolo TASK MODE ARGS
  MODE : [train, val, predict, export, track, benchmark]
  ARGS : options
 
-#train
+#normal train
 yolo train model=None data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=gauze_normal
 
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 name=c_arm_needle save=True
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=/home/tlab4090/datasets/opt/yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8cbam.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_spitial save=True
+yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Spitial/Object/yolov7/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.5 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=spitial
+
+yolo detect train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=gauze save=True verbose=True plots=True
+
+
+
+yolo detect val data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/Tlabb/runs/detect/gauze_netinex/weights/best.pt' imgsz=512 batch=32 device=0 name=gauze save_json=True conf=0.1 name=conf0.1_0.85 iou=0.85
 
 #detect
-yolo detect predict model='/home/tlab4090/Tlabb/ObjectDetection/myyolo/runs/detect/c_arm_needle_6/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.7 device=0 save_txt=True save_conf=True save_crop=True line_thickness=2 save=True iou=0.45 workers=16 name=test
+yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Contrast/Object/yolov8/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.3 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=Contrast
 
 #seg_train
 yolo segment train data=/home/tlab4090/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True cache=True patience=0
@@ -287,8 +330,8 @@ python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3
 ########################################MMLAb
 
 cd /home/tlab4090/Tlabb/Pose/mmpose
-conda create --name seg1 python=3.8 -y
-conda activate seg1
+conda create --name segmmlab python=3.8 -y
+conda activate segmmlab
 conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
 pip install -U openmim
 mim install mmengine
@@ -300,7 +343,7 @@ pip install -v -e .
 # demo test
 wget https://download.openmmlab.com/mmsegmentation/v0.5/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth
 
-python demo/image_demo.py --img demo/demo.png --config configs/pspnet/pspnet_r50-d8_4xb2-40k_cityscapes-512x1024.py pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth --device cuda:0 --out result.jpg
+
 
 ========================pose=================
 python demo/top_down_img_demo_with_mmdet.py \
@@ -334,33 +377,56 @@ cd mmsegmentation
 pip install -v -e .
 
 #activate 
-conda acitvate segman
+conda activate segman
 cd /home/tlab4090/Tlabb/segman/mmlab
 
-#test
+#detect_test
 mim download mmsegmentation --config pspnet_r50-d8_4xb2-40k_cityscapes-512x1024 --dest .
 
 python demo/image_demo.py demo/demo.png configs/pspnet/pspnet_r50-d8_4xb2-40k_cityscapes-512x1024.py pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth --device cuda:0 --out-file result.jpg
 
-
+#train_test
+python tools/train.py --config '/home/tlab4090/Tlabb/segman/mmlab/configs/deeplabv3plus/deeplabv3plus_r50-d8_4xb2-40k_cityscapes-769x769.py' --amp
 
 #dataset(based on cityscapes)
-python tools/dataset_converters/cityscapes.py data/cityscapes --nproc 8
+python tools/dataset_converters/cityscapes.py data/spine --nproc 8
+python tools/dataset_converters/cityscapes.py data/cityscapes
 
-#dataset_basedon_HRF
-python tools/dataset_converters/hrf.py data/HRF/healthy.zip data/HRF/healthy_manualsegm.zip data/HRF/glaucoma.zip data/HRF/glaucoma_manualsegm.zip data/HRF/diabetic_retinopathy.zip data/HRF/diabetic_retinopathy_manualsegm.zip
 
-#train(based on cityscapes)
-python tools/train.py /home/tlab1004/Tlabb/segman/mmlab/configs/deeplabv3plus/deeplabv3plus_r50-d8_4xb2-80k_cityscapes-512x1024.py --amp
 
-###
-edit
-####
-/home/tlab1004/Tlabb/segman/mmlab/configs/deeplabv3plus/deeplabv3plus_r50-d8_4xb2-80k_cityscapes-512x1024.py
-#
-#train(asedon_HRF)
-python tools/train.py /home/tlab1004/Tlabb/segman/mmlab/configs/unet/unet-s5-d16_pspnet_4xb4-40k_hrf-256x256.py
+#train
+python tools/train.py --config '/home/tlab4090/Tlabb/segman/mmlab/configs/deeplabv3plus/deeplabv3plus_80k_spine_512x512.py' --amp
+python tools/train.py --config '/home/tlab4090/Tlabb/segman/mmlab/configs/hrnet/fcn_hr18_4xb2-80k_spine_512x512.py' --amp
+python tools/train.py --config '/home/tlab4090/Tlabb/segman/mmlab/configs/mobilenet_v3/mobilenet-v3-d8_lraspp_4xb4-160k_spine-512x512.py' --amp
+python tools/train.py --config '/home/tlab4090/Tlabb/segman/mmlab/configs/unet/unet-s5-d16_fcn_4xb4-160k_spine-512x512.py' --amp
 
+python demo/image_demo.py data/spine/images/test/ap/0002.png work_dirs/fcn_hr18_4xb2-10k_spine_512x512.py work_dirs/fcn_hr18_4xb2-10k_spine_512x512/iter_10000.pth --device cuda:0 --out-file result.jpg
+
+#detect
+python demo/image_demo.py --img /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/test/ap/0002.png --config /home/tlab4090/Tlabb/segman/mmlab/work_dirs/deeplabv3plus_80k_spine_512x512/deeplabv3plus_80k_spine_512x512.py --checkpoint /home/tlab4090/Tlabb/segman/mmlab/work_dirs/deeplabv3plus_80k_spine_512x512/iter_80000.pth --device cuda:0 --out-file /home/tlab4090/Tlabb/segman/mmlab/work_dirs/result.png
+
+#######################################################
+이름바꾸기
+1. 확인
+cd /home/tlab4090/datasets/cityscapes/gtFine/ap
+cd /home/tlab4090/datasets/cityscapes/gtFine/lat
+rename -n 's/.png/.txt/' *.png
+2. 실행
+rename 's/.png/.txt/' *.png
+rename 's/.txt/.png/' *.txt
+
+find . -type f -name "*.doc" -exec rename .doc .txt {} \;
+
+
+3. 데이터 파일 리스트 만들기
+find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
+
+
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/test/ap -name '*.png' -type f > test.txt
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/train/ap -name '*.png' -type f > train.txt
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/val/ap -name '*.png' -type f > val.txt
+
+#######################################################
 
 
 #detect
@@ -409,12 +475,10 @@ Evaluation
 python main.py --batch_size 2 --no_aux_loss --eval --resume /home/tlab/Tlabb/ObjectDetection/DETR/runs/train/eval/latest.pth --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial
 
 ====================================================Unet
-conda acitvate segman
+conda acitvate YOLOV77
 cd /home/tlab4090/Tlabb/segman/unet
 
-python train.py --coco_path /home/tlab/Tlabb/editdata/yolo2coco/tutorial --epochs 300 --num_workers 16
-
-
+python train.py
 
 ====================================================HR-net
 conda create -n HRnet python=3.8
@@ -425,6 +489,8 @@ pip install -r requirements.txt
 
 conda activate HRnet
 cd /home/tlab4090/Tlabb/segman/HRNet
+
+python tools/train.py --cfg experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
 
 python -m torch.distributed.launch --nproc_per_node=1 tools/train.py --cfg /home/tlab4090/Tlabb/segman/HRNet/experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
 
@@ -466,21 +532,36 @@ python main.py --plot
 
 python main.py --download-models --eval-individual-models --uniform-soup --greedy-soup --plot --data-location <where data is stored> --model-location <where models are stored>
 
-
+2048 1024
 =========================================================
 이름바꾸기
 1. 확인
-rename -n 's/.png/.txt/' *.png
-2. 실행
-rename 's/.txt/.png/' *.txt
+cd /home/tlab4090/datasets/cityscapes/gtFine/ap
+cd /home/tlab4090/datasets/cityscapes/gtFine/lat
 
+rename -n 's/.png/.txt/' *.png
+rename -n 's/^/ap_/' *.png
+rename -n 's/^/lat_/' *.png
+
+2. 실행
+rename 's/.png/.txt/' *.png
+rename 's/.txt/.png/' *.txt
 find . -type f -name "*.doc" -exec rename .doc .txt {} \;
 
+rename 's/^/ap_/' *.png
+rename 's/^/lat_/' *.png
 
 3. 데이터 파일 리스트 만들기
 find /home/tlab/Tlabb/editdata/yolo2coco/tutorial/val -name '*.jpg' -type f > val.txt
+
+
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/test/ap -name '*.png' -type f > test.txt
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/train/ap -name '*.png' -type f > train.txt
+find /home/tlab4090/Tlabb/segman/mmlab/data/spine/images/val/ap -name '*.png' -type f > val.txt
+
+
 4. 삭제
-conda env remove -n HR
+conda env remove -n YOLOV88
 =========================================================
 LaTex
 texmaker

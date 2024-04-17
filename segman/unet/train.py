@@ -1,16 +1,19 @@
 import os
+import numpy as np
 import time
 from glob import glob
-
 import torch
 from torch.utils.data import DataLoader
 import torch.nn as nn
-
+from sklearn.model_selection import train_test_split
 from data import DriveDataset
 from model import build_unet
-from loss import DiceLoss, DiceBCELoss
+from loss import IoULoss, DiceBCELoss
 from utils import seeding, create_dir, epoch_time
+from sklearn.metrics import jaccard_score,confusion_matrix
+import datetime
 
+start = time.time()
 def train(model, loader, optimizer, loss_fn, device):
     epoch_loss = 0.0
 
@@ -52,25 +55,26 @@ if __name__ == "__main__":
     """ Directories """
     create_dir("files")
 
+    # """ Load dataset """
+    # data_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/image/*"))
+    # data_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/masks/*"))
+
     """ Load dataset """
-    train_x = sorted(glob("../new_data/train/image/*"))
-    train_y = sorted(glob("../new_data/train/mask/*"))
-
-    valid_x = sorted(glob("../new_data/test/image/*"))
-    valid_y = sorted(glob("../new_data/test/mask/*"))
-
-    data_str = f"Dataset Size:\nTrain: {len(train_x)} - Valid: {len(valid_x)}\n"
-    print(data_str)
+    data_x = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/image/*"))
+    data_y = sorted(glob("/home/tlab4090/Tlabb/segman/unet/files/Spine_PC_ap/Train/masks/*"))
 
     """ Hyperparameters """
     H = 512
     W = 512
     size = (H, W)
     batch_size = 2
-    num_epochs = 50
-    lr = 1e-4
+    num_epochs = 200
+    lr = 1e-3
     checkpoint_path = "files/checkpoint.pth"
-
+    
+    train_x,valid_x,train_y,valid_y=train_test_split(data_x,data_y, test_size=0.25)
+    data_str = f"Dataset Size:\nTrain: {len(train_x)} - Valid: {len(valid_x)}\n"
+    print(data_str)
     """ Dataset and loader """
     train_dataset = DriveDataset(train_x, train_y)
     valid_dataset = DriveDataset(valid_x, valid_y)
@@ -79,14 +83,14 @@ if __name__ == "__main__":
         dataset=train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=2
+        num_workers=32
     )
 
     valid_loader = DataLoader(
         dataset=valid_dataset,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=2
+        num_workers=32
     )
 
     device = torch.device('cuda')   ## GTX 1060 6GB
@@ -95,8 +99,9 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, verbose=True)
-    loss_fn = DiceBCELoss()
-
+    #수정
+    loss_fn = IoULoss()#DiceBCELoss
+    
     """ Training the model """
     best_valid_loss = float("inf")
 
@@ -121,3 +126,13 @@ if __name__ == "__main__":
         data_str += f'\tTrain Loss: {train_loss:.3f}\n'
         data_str += f'\t Val. Loss: {valid_loss:.3f}\n'
         print(data_str)
+        
+end = time.time()
+print(f"{end - start:.5f} 초")
+
+sec = (end - start)
+result = datetime.timedelta(seconds=sec)
+print(result)
+result_list = str(datetime.timedelta(seconds=sec)).split(".")
+print(result_list[0])
+

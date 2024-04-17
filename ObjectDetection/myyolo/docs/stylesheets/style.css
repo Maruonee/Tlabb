@@ -31,3 +31,14 @@ th, td {
     background-color: hsla(var(--md-hue),25%,25%,1)
 }
 /* Table format like GitHub ----------------------------------------------------------------------------------------- */
+
+/* Code block vertical scroll */
+div.highlight {
+    max-height: 20rem;
+    overflow-y: auto; /* for adding a scrollbar when needed */
+}
+
+/* Set content width */
+.md-grid {
+  max-width: 1440px;
+}
