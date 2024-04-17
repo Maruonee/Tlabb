@@ -12,7 +12,7 @@ input/
         ...
     ...
 """
-input_folder = '/home/tlab4090/datasets/labeled/spine'
+input_folder = '/home/tlab1004/datasets/Class/Spatial'
 #아웃풋 폴더
 """
 output/
@@ -46,8 +46,8 @@ val_ratio = 0.2
 #테스트비율
 test_ratio = 0.2
 #라벨링 폴더와 같이있으면 2 없으면 None
-anno_set = 2 #2 , None
+anno_set = None #2 , None
 #파일을 복사하지않고 움직일경우 True, 아니면 False
-move_opt = True
+move_opt = False
 
 splitfolders.ratio(input_folder,output=out_foloder, seed =74, ratio=(train_ratio,val_ratio,test_ratio), group_prefix=anno_set, move=move_opt)
