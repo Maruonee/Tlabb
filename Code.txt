@@ -150,6 +150,8 @@ conda create -n YOLO_8_m python=3.8
 conda activate YOLO_8_m
 cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
 conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
 pip install -r requirements.txt
 pip install timm 
 python /home/tlab4090/Tlabb/ObjectDetection/myyolo/train.py
@@ -195,6 +197,29 @@ yolo detect train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab
 
 
 yolo detect val data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/Tlabb/runs/detect/gauze_netinex/weights/best.pt' imgsz=512 batch=32 device=0 name=gauze save_json=True conf=0.1 name=conf0.1_0.85 iou=0.85
+
+falldown
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=1 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov5.yaml' name=yolov5
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov7.yaml' name=yolov7
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov7.yaml' name=yolov7
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov8l name=yolov8l
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9m name=yolov9m
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9c name=yolov9c
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9c name=yolov9e
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov8cbam.yaml' name=yolov8cbam
+
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov8cbamswin.yaml' name=yolov8cbamswin
+
 
 #detect
 yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Contrast/Object/yolov8/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.3 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=Contrast

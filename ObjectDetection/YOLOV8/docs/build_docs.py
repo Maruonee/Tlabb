@@ -23,6 +23,7 @@ Usage:
 Note:
 - This script is built to be run in an environment where Python and MkDocs are installed and properly configured.
 """
+
 import os
 import re
 import shutil
@@ -31,6 +32,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
+os.environ["JUPYTER_PLATFORM_DIRS"] = "1"  # fix DeprecationWarning: Jupyter is migrating to use standard platformdirs
 DOCS = Path(__file__).parent.resolve()
 SITE = DOCS.parent / "site"
 
@@ -56,7 +58,7 @@ def build_docs(clone_repos=True):
 
     # Build the main documentation
     print(f"Building docs from {DOCS}")
-    subprocess.run(f"mkdocs build -f {DOCS.parent}/mkdocs.yml", check=True, shell=True)
+    subprocess.run(f"mkdocs build -f {DOCS.parent}/mkdocs.yml --strict", check=True, shell=True)
     print(f"Site built at {SITE}")
 
 
@@ -115,7 +117,7 @@ def update_subdir_edit_links(subdir="", docs_url=""):
 
 
 def main():
-    # Build the docs
+    """Builds docs, updates titles and edit links, and prints local server command."""
     build_docs()
 
     # Update titles
