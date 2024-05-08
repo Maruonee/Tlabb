@@ -194,32 +194,15 @@ yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/
 
 yolo detect train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=gauze save=True verbose=True plots=True
 
-
-
 yolo detect val data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/Tlabb/runs/detect/gauze_netinex/weights/best.pt' imgsz=512 batch=32 device=0 name=gauze save_json=True conf=0.1 name=conf0.1_0.85 iou=0.85
 
-falldown
 
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=1 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov5.yaml' name=yolov5
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov7.yaml' name=yolov7
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov7.yaml' name=yolov7
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov8l name=yolov8l
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9m name=yolov9m
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9c name=yolov9c
-
-yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov9c name=yolov9e
+########################################falldown
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov3n.pt name=yolov3; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=/home/tlab4090/datasets/opt/yolov5.yaml name=yolov5; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov6.yaml' name=yolov6; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True name=yolov8; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov8l name=yolov8l; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model=yolov8x name=yolov8x; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov9.yaml' name=yolov9m; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov9c.yaml' name=yolov9c; yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov9e.yaml' name=yolov9e
 
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov8cbam.yaml' name=yolov8cbam
-
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True model='/home/tlab4090/datasets/opt/yolov8cbamswin.yaml' name=yolov8cbamswin
-
 
 #detect
 yolo detect predict model='/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Contrast/Object/yolov8/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' conf=0.3 device=0 save_txt=True save_conf=True save_crop=True line_width=2 save=True iou=0.1 workers=16 name=Contrast
