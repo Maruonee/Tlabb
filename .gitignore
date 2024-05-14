@@ -269,3 +269,4 @@ Pose/Mediapose.ipynb
 *.tmp
 *.gz
 *.1
+ObjectDetection/YOLOV7/wandb/latest-run
