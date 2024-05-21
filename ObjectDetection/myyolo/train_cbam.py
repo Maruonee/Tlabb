@@ -6,11 +6,7 @@ import wandb
 image_size = 512
 batch_size = 32
 custom_epochs = 300
-# custom_model = "/home/tlab4090/datasets/opt/yolov8.yaml" #base
-custom_model = "/home/tlab4090/datasets/opt/yolov8cbam.yaml"  #CBAM
-#custom_model = "/home/tlab4090/datasets/opt/yolov8cbamswin.yaml" #SWIN
-#custom_model = "/home/tlab4090/datasets/opt/yolov8swin.yaml" #CBAM_SWIN
-# pretrain_model = 'yolov8n.pt'
+custom_model = "/home/tlab4090/datasets/opt/yolov8cbam.yaml"
 data_adr = "/home/tlab4090/datasets/opt/coco.yaml"
 test_list = "/home/tlab4090/datasets/opt/test.txt"
 # Load a model
@@ -29,12 +25,12 @@ model.train(
     pretrained = False,
     verbose = True
     ) # train the model
-# # Validate the model
-# metrics = model.val()  # no arguments needed, dataset and settings remembered
-# metrics.box.map    # map50-95
-# metrics.box.map50  # map50
-# metrics.box.map75  # map75
-# metrics.box.maps   # a list contains map50-95 of each category
+# Validate the model
+metrics = model.val()  # no arguments needed, dataset and settings remembered
+metrics.box.map    # map50-95
+metrics.box.map50  # map50
+metrics.box.map75  # map75
+metrics.box.maps   # a list contains map50-95 of each category
     
 path = model.export(format="onnx")  # export the model to ONNX format
 
