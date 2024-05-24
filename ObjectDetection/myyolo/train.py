@@ -5,7 +5,7 @@ import wandb
 # This will work for training, evaluation and prediction
 image_size = 512
 batch_size = 32
-custom_epochs = 500
+custom_epochs = 300
 # custom_model = "/home/tlab4090/datasets/opt/yolov8.yaml" #base
 custom_model = "/home/tlab4090/datasets/opt/yolov8cbam.yaml"  #CBAM
 #custom_model = "/home/tlab4090/datasets/opt/yolov8cbamswin.yaml" #SWIN

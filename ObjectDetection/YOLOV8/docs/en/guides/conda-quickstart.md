@@ -70,9 +70,9 @@ With Ultralytics installed, you can now start using its robust features for obje
 ```python
 from ultralytics import YOLO
 
-model = YOLO('yolov8n.pt')  # initialize model
-results = model('path/to/image.jpg')  # perform inference
-results.show()  # display results
+model = YOLO("yolov8n.pt")  # initialize model
+results = model("path/to/image.jpg")  # perform inference
+results[0].show()  # display results for the first image
 ```
 
 ---

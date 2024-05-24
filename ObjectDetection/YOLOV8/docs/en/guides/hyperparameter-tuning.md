@@ -23,7 +23,7 @@ Hyperparameters are high-level, structural settings for the algorithm. They are 
   <img width="640" src="https://user-images.githubusercontent.com/26833433/263858934-4f109a2f-82d9-4d08-8bd6-6fd1ff520bcd.png" alt="Hyperparameter Tuning Visual">
 </p>
 
-For a full list of augmentation hyperparameters used in YOLOv8 please refer to the [configurations page](../usage/cfg.md#augmentation).
+For a full list of augmentation hyperparameters used in YOLOv8 please refer to the [configurations page](../usage/cfg.md#augmentation-settings).
 
 ### Genetic Evolution and Mutation
 
@@ -77,10 +77,10 @@ Here's how to use the `model.tune()` method to utilize the `Tuner` class for hyp
         from ultralytics import YOLO
 
         # Initialize the YOLO model
-        model = YOLO('yolov8n.pt')
+        model = YOLO("yolov8n.pt")
 
         # Tune hyperparameters on COCO8 for 30 epochs
-        model.tune(data='coco8.yaml', epochs=30, iterations=300, optimizer='AdamW', plots=False, save=False, val=False)
+        model.tune(data="coco8.yaml", epochs=30, iterations=300, optimizer="AdamW", plots=False, save=False, val=False)
         ```
 
 ## Results
