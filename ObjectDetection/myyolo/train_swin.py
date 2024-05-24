@@ -6,7 +6,7 @@ import wandb
 image_size = 512
 batch_size = 32
 custom_epochs = 300
-custom_model = "/home/tlab4090/datasets/opt/yolov8swin.yaml" #SWIN
+custom_model = "/home/tlab4090/datasets/opt/yolov8lswin.yaml" #SWIN
 # pretrain_model = 'yolov8n.pt'
 data_adr = "/home/tlab4090/datasets/opt/coco.yaml"
 test_list = "/home/tlab4090/datasets/opt/test.txt"

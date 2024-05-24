@@ -6,7 +6,7 @@ import wandb
 image_size = 512
 batch_size = 32
 custom_epochs = 300
-custom_model = "/home/tlab4090/datasets/opt/yolov8CTA.yaml"  #CBAM
+custom_model = "/home/tlab4090/datasets/opt/yolov8lCTA.yaml"  #CBAM
 data_adr = "/home/tlab4090/datasets/opt/coco.yaml"
 test_list = "/home/tlab4090/datasets/opt/test.txt"
 # Load a model
