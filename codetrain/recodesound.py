@@ -1,3 +1,6 @@
+#설치 라이브러리
+#pip install sounddevice scipy dropbox tqdm
+
 import sounddevice as sd
 from scipy.io.wavfile import write
 import os
