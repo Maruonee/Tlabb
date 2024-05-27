@@ -270,3 +270,4 @@ Pose/Mediapose.ipynb
 *.gz
 *.1
 ObjectDetection/YOLOV7/wandb/latest-run
+*.onnx
