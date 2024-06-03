@@ -4,9 +4,8 @@ import time
 import threading
 from datetime import datetime
 import serial
-from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QFileDialog, QProgressBar, QTextEdit, QComboBox)
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject, QThread
-from tqdm import tqdm
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QFileDialog, QProgressBar, QTextEdit)
+from PyQt5.QtCore import  pyqtSignal, QObject, QThread
 
 class Logger(QObject):
     log_signal = pyqtSignal(str)
