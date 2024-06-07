@@ -14,7 +14,7 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer
 
 machine_error = 1 # 0 = 정상 1 = 고장예측 2 = 고장
 
-#하단 로깅 세팅
+# 로그 메시지를 UI로 전달
 class Logger(QObject):
     log_signal = pyqtSignal(str)
 
@@ -33,13 +33,13 @@ class RecorderWorker(QObject):
 
     def __init__(self, duration, samplerate, channels, folder_path, repeat_num, exp_date, exp_num, stop_event):
         super().__init__()
-        self.duration = duration # 녹음시간
+        self.duration = duration # 녹음 시간
         self.samplerate = samplerate # 샘플레이트
         self.channels = channels # 채널 (기본 스테레오)
-        self.folder_path = folder_path # 저장위치
-        self.repeat_num = repeat_num # 반복횟수
+        self.folder_path = folder_path # 저장 위치
+        self.repeat_num = repeat_num # 반복 횟수
         self.exp_date = exp_date # 실험일
-        self.exp_num = exp_num # 실험번호
+        self.exp_num = exp_num # 실험 번호
         self.stop_event = stop_event # 정지
 
     def run(self):
@@ -85,14 +85,14 @@ class DataCollectorWorker(QObject):
 
     def __init__(self, duration, baud_rate, serial_port, folder_path, repeat_num, exp_date, exp_num, stop_event):
         super().__init__()
-        self.duration = duration
-        self.baud_rate = baud_rate
-        self.serial_port = serial_port
-        self.folder_path = folder_path
-        self.repeat_num = repeat_num
-        self.exp_date = exp_date
-        self.exp_num = exp_num
-        self.stop_event = stop_event
+        self.duration = duration # 데이터 획득 주기
+        self.baud_rate = baud_rate # 보드레이트
+        self.serial_port = serial_port # 시리얼 포트번호
+        self.folder_path = folder_path # 저장위치
+        self.repeat_num = repeat_num # 반복 횟수
+        self.exp_date = exp_date # 실험일
+        self.exp_num = exp_num # 실험 번호
+        self.stop_event = stop_event # 정리
 
     def run(self):
         try:
@@ -340,7 +340,6 @@ class DataCollectorApp(QWidget):
         self.exp_num = int(self.exp_num_input.text())
         self.exp_date = self.exp_date_input.text()
         self.audio_samplerate = int(self.audio_samplerate_input.text())
-        self.audio_duration = int(self.duration_input.text())
         
         self.sensor_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sensors')
         self.audio_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sound')
@@ -358,7 +357,7 @@ class DataCollectorApp(QWidget):
             self.timer.start(100)  # 0.1초 간격으로 상태 업데이트
         
         #음향
-        self.recorder_worker = RecorderWorker(self.audio_duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event) #2 = 스테레오
+        self.recorder_worker = RecorderWorker(self.duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event) #2 = 스테레오
         self.recorder_thread = QThread()
         self.recorder_worker.moveToThread(self.recorder_thread)
         self.recorder_worker.progress_signal.connect(self.update_progress)
@@ -375,12 +374,9 @@ class DataCollectorApp(QWidget):
         self.data_collector_worker.log_signal.connect(self.logger.log)
         self.data_collector_worker.finished_signal.connect(self.collection_finished)
          
-         
-         
         #각 스래드로 시작
         self.data_collector_thread.started.connect(self.data_collector_worker.run)
         self.recorder_thread.started.connect(self.recorder_worker.run)
-        
         self.data_collector_thread.start()
         self.recorder_thread.start()
 
