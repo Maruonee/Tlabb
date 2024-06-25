@@ -1,4 +1,5 @@
 {
     "notebook.output.textLineLimit": 9999,
-    "C_Cpp.default.compilerPath": ""
+    "C_Cpp.default.compilerPath": "",
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }
