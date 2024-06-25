@@ -159,10 +159,13 @@ pip install -r requirements.txt
 pip install timm 
 python /home/tlab4090/Tlabb/ObjectDetection/myyolo/train.py
 
-
 ########################################YOLOV8
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
+cd /home/tlab4090/Tlabb/ObjectDetection/CTA_YOLO
+python /home/tlab4090/Tlabb/ObjectDetection/CTA_YOLO/train.py
+
+
 cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
 cd /home/tlab1004/Tlabb/ObjectDetection/myyolo
 pip install ultralytics
