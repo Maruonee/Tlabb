@@ -272,3 +272,4 @@ Pose/Mediapose.ipynb
 ObjectDetection/YOLOV7/wandb/latest-run
 *.onnx
 codetrain/nomad/teseee.py
+*.md
