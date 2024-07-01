@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButt
 from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer  # PyQt5 핵심 모듈
 
 machine_error = 0  # 기계 오류 상태
+tap_op = 20000 # 탭 동작횟수
 tap_position = 5  # 탭 위치
 tap_voltage = 0  # 탭 전압
 tap_up = 0  # 탭 업 상태
@@ -201,73 +202,58 @@ class DataCollectorApp(QWidget):
 
     def initUI(self):
         self.setWindowTitle('ECOTAP Diagnosis System by Tlab')  # 윈도우 제목 설정
-        self.resize(1200, 600)  # 윈도우 크기 설정
-    
+        self.resize(1800, 1000)  # 윈도우 크기 설정
+
         main_layout = QHBoxLayout(self)  # 메인 레이아웃 설정
-    
+
         left_panel_layout = QVBoxLayout()  # 좌측 패널 레이아웃 설정
+        left_panel_layout.setSpacing(10)  # 패널 간격 설정
+
         # Diagnosis Results 프레임을 좌측 패널로 이동
         status_frame = QGroupBox('Diagnosis Results')  # 상태 프레임 설정
         status_frame.setStyleSheet('background-color: white')  # 배경 색상 설정
-        status_layout = QVBoxLayout()  # 상태 레이아웃 설정
-        self.status_label = QLabel('')  # 상태 라벨 설정
+        self.status_label = QLabel('ECOTAP\nDiagnosis\nStatus')  # 상태 라벨 설정
         self.status_label.setAlignment(Qt.AlignCenter)  # 상태 라벨 정렬 설정
-        self.status_label.setStyleSheet('font-size: 24px')  # 상태 라벨 폰트 크기 설정
-        status_layout.addWidget(self.status_label)  # 상태 레이아웃에 상태 라벨 추가
-        status_frame.setLayout(status_layout)  # 상태 프레임에 상태 레이아웃 설정
+        self.status_label.setStyleSheet('font-size: 100px')  # 상태 라벨 폰트 크기 설정
+        status_frame_layout = QVBoxLayout()  # 상태 프레임 레이아웃 설정
+        status_frame_layout.addWidget(self.status_label)  # 상태 프레임 레이아웃에 상태 라벨 추가
+        status_frame.setLayout(status_frame_layout)  # 상태 프레임에 레이아웃 설정
         left_panel_layout.addWidget(status_frame)  # 좌측 패널 레이아웃에 상태 프레임 추가
-    
+
         # ECOTAP Status 프레임을 좌측 패널로 이동
         ecotap_status_frame = QGroupBox('ECOTAP Status')  # ECOTAP 상태 프레임 설정
-        ecotap_status_layout = QVBoxLayout()  # ECOTAP 상태 레이아웃 설정
-        tap_position_layout = QHBoxLayout()  # 탭 위치 레이아웃 설정
+        ecotap_status_layout = QVBoxLayout()  
+        self.tap_op_label = QLabel(f'Tap Operations: {tap_op}')  # 탭 위치 라벨 설정
+        ecotap_status_layout.addWidget(self.tap_op_label)  # 탭 위치 레이아웃에 라벨 추가
         self.tap_position_label = QLabel(f'Tap position: {tap_position}')  # 탭 위치 라벨 설정
-        tap_position_layout.addWidget(self.tap_position_label)  # 탭 위치 레이아웃에 라벨 추가
+        ecotap_status_layout.addWidget(self.tap_position_label)  # 탭 위치 레이아웃에 라벨 추가
+        self.tap_voltage_label = QLabel(f'Tap voltage: {tap_voltage}')  # 탭 전압 라벨 설정
+        ecotap_status_layout.addWidget(self.tap_voltage_label)  # 탭 전압 라벨 추가
         self.tap_up_button = QPushButton('Tap Up', self)  # 탭 업 버튼 설정
         self.tap_up_button.clicked.connect(self.tap_up_action)  # 버튼 클릭 연결
+        ecotap_status_layout.addWidget(self.tap_up_button)  # 탭 업 버튼 추가
         self.tap_down_button = QPushButton('Tap Down', self)  # 탭 다운 버튼 설정
         self.tap_down_button.clicked.connect(self.tap_down_action)  # 버튼 클릭 연결
-        tap_position_layout.addWidget(self.tap_up_button)  # 탭 위치 레이아웃에 버튼 추가
-        tap_position_layout.addWidget(self.tap_down_button)  # 탭 위치 레이아웃에 버튼 추가
-        ecotap_status_layout.addLayout(tap_position_layout)  # ECOTAP 상태 레이아웃에 탭 위치 레이아웃 추가
-        self.tap_voltage_label = QLabel(f'Tap voltage: {tap_voltage}')  # 탭 전압 라벨 설정
-        ecotap_status_layout.addWidget(self.tap_voltage_label)  # ECOTAP 상태 레이아웃에 탭 전압 라벨 추가
+        ecotap_status_layout.addWidget(self.tap_down_button)  # 탭 다운 버튼 추가
         ecotap_status_frame.setLayout(ecotap_status_layout)  # ECOTAP 상태 프레임에 레이아웃 설정
         left_panel_layout.addWidget(ecotap_status_frame)  # 좌측 패널 레이아웃에 ECOTAP 상태 프레임 추가
-    
+
+        mid_panel_layout = QVBoxLayout()
+        mid_panel_layout.setSpacing(10)  # 패널 간격 설정
+
         desktop_path = os.path.join(os.path.expanduser("~"), 'downloads')  # 기본 저장 경로 설정
-        savedir_layout = QHBoxLayout()  # 저장 경로 레이아웃 설정
         self.savedir_label = QLabel('Folder path')  # 저장 경로 라벨 설정
         self.savedir_input = QLineEdit(self)  # 저장 경로 입력란 설정
         self.savedir_input.setText(desktop_path)  # 기본 저장 경로 입력란에 설정
         self.savedir_button = QPushButton('Browse', self)  # 저장 경로 버튼 설정
+        self.savedir_button.setFixedWidth(self.savedir_button.fontMetrics().width('Browse') + 20)  # 버튼 길이 설정
         self.savedir_button.clicked.connect(self.browse_folder)  # 버튼 클릭 연결
-        savedir_layout.addWidget(self.savedir_label)  # 저장 경로 레이아웃에 라벨 추가
+        savedir_layout = QHBoxLayout()  # 저장 경로 레이아웃 설정
         savedir_layout.addWidget(self.savedir_input)  # 저장 경로 레이아웃에 입력란 추가
         savedir_layout.addWidget(self.savedir_button)  # 저장 경로 레이아웃에 버튼 추가
-        left_panel_layout.addLayout(savedir_layout)  # 좌측 패널 레이아웃에 저장 경로 레이아웃 추가
-    
-        duration_frame = QGroupBox('Diagnosis setup')  # 진단 설정 프레임 설정
-        duration_layout = QHBoxLayout()  # 진단 설정 레이아웃 설정
-        self.duration_label = QLabel('Cycle(sec)')  # 주기 라벨 설정
-        self.duration_input = QLineEdit(self)  # 주기 입력란 설정
-        self.duration_input.setText('60')  # 기본 주기 설정
-        self.minute_checkbox = QCheckBox("1 min")  # 1분 체크박스 설정
-        self.minute_checkbox.stateChanged.connect(self.toggle_minute_checkbox)  # 체크박스 상태 변경 연결
-        self.repeat_num_label = QLabel('Repeat')  # 반복 횟수 라벨 설정
-        self.repeat_num_input = QLineEdit(self)  # 반복 횟수 입력란 설정
-        self.repeat_num_input.setText('60')  # 기본 반복 횟수 설정
-        self.month_checkbox = QCheckBox("1 month")  # 1개월 체크박스 설정
-        self.month_checkbox.stateChanged.connect(self.toggle_month_checkbox)  # 체크박스 상태 변경 연결
-        duration_layout.addWidget(self.duration_label)  # 진단 설정 레이아웃에 라벨 추가
-        duration_layout.addWidget(self.duration_input)  # 진단 설정 레이아웃에 입력란 추가
-        duration_layout.addWidget(self.minute_checkbox)  # 진단 설정 레이아웃에 체크박스 추가
-        duration_layout.addWidget(self.repeat_num_label)  # 진단 설정 레이아웃에 라벨 추가
-        duration_layout.addWidget(self.repeat_num_input)  # 진단 설정 레이아웃에 입력란 추가
-        duration_layout.addWidget(self.month_checkbox)  # 진단 설정 레이아웃에 체크박스 추가
-        duration_frame.setLayout(duration_layout)  # 진단 설정 프레임에 레이아웃 설정
-        left_panel_layout.addWidget(duration_frame)  # 좌측 패널 레이아웃에 진단 설정 프레임 추가
-    
+        mid_panel_layout.addWidget(self.savedir_label)  # 저장 경로 레이아웃에 라벨 추가
+        mid_panel_layout.addLayout(savedir_layout)  # 저장 경로 레이아웃 추가
+
         vibration_frame = QGroupBox('Vibration')  # 진동 설정 프레임 설정
         vibration_layout = QHBoxLayout()  # 진동 설정 레이아웃 설정
         self.serial_port_label = QLabel('COM Port')  # 시리얼 포트 라벨 설정
@@ -284,8 +270,8 @@ class DataCollectorApp(QWidget):
         vibration_layout.addWidget(self.baud_rate_input)  # 진동 설정 레이아웃에 입력란 추가
         vibration_layout.addWidget(self.no_vibration_sensor_checkbox)  # 진동 설정 레이아웃에 체크박스 추가
         vibration_frame.setLayout(vibration_layout)  # 진동 설정 프레임에 레이아웃 설정
-        left_panel_layout.addWidget(vibration_frame)  # 좌측 패널 레이아웃에 진동 설정 프레임 추가
-    
+        mid_panel_layout.addWidget(vibration_frame)  # 좌측 패널 레이아웃에 진동 설정 프레임 추가
+
         audio_frame = QGroupBox('Sound')  # 사운드 설정 프레임 설정
         audio_layout = QHBoxLayout()  # 사운드 설정 레이아웃 설정
         self.audio_samplerate_label = QLabel('Sampling Rate(Hz)')  # 샘플링 레이트 라벨 설정
@@ -294,8 +280,8 @@ class DataCollectorApp(QWidget):
         audio_layout.addWidget(self.audio_samplerate_label)  # 사운드 설정 레이아웃에 라벨 추가
         audio_layout.addWidget(self.audio_samplerate_input)  # 사운드 설정 레이아웃에 입력란 추가
         audio_frame.setLayout(audio_layout)  # 사운드 설정 프레임에 레이아웃 설정
-        left_panel_layout.addWidget(audio_frame)  # 좌측 패널 레이아웃에 사운드 설정 프레임 추가
-    
+        mid_panel_layout.addWidget(audio_frame)  # 좌측 패널 레이아웃에 사운드 설정 프레임 추가
+
         exp_frame = QGroupBox('Data name')  # 데이터 이름 설정 프레임 설정
         exp_layout = QHBoxLayout()  # 데이터 이름 설정 레이아웃 설정
         self.exp_date_label = QLabel('YYMMDD')  # 날짜 라벨 설정
@@ -309,8 +295,29 @@ class DataCollectorApp(QWidget):
         exp_layout.addWidget(self.exp_num_label)  # 데이터 이름 설정 레이아웃에 라벨 추가
         exp_layout.addWidget(self.exp_num_input)  # 데이터 이름 설정 레이아웃에 입력란 추가
         exp_frame.setLayout(exp_layout)  # 데이터 이름 설정 프레임에 레이아웃 설정
-        left_panel_layout.addWidget(exp_frame)  # 좌측 패널 레이아웃에 데이터 이름 설정 프레임 추가
-    
+        mid_panel_layout.addWidget(exp_frame)  # 좌측 패널 레이아웃에 데이터 이름 설정 프레임 추가
+        
+        duration_frame = QGroupBox('Diagnosis setup')  # 진단 설정 프레임 설정
+        duration_layout = QHBoxLayout()  # 진단 설정 레이아웃 설정
+        self.duration_label = QLabel('Sec')  # 주기 라벨 설정
+        self.duration_input = QLineEdit(self)  # 주기 입력란 설정
+        self.duration_input.setText('60')  # 기본 주기 설정
+        self.minute_checkbox = QCheckBox("1min /")  # 1분 체크박스 설정
+        self.minute_checkbox.stateChanged.connect(self.toggle_minute_checkbox)  # 체크박스 상태 변경 연결
+        self.repeat_num_label = QLabel('Rep')  # 반복 횟수 라벨 설정
+        self.repeat_num_input = QLineEdit(self)  # 반복 횟수 입력란 설정
+        self.repeat_num_input.setText('60')  # 기본 반복 횟수 설정
+        self.month_checkbox = QCheckBox("month")  # 1개월 체크박스 설정
+        self.month_checkbox.stateChanged.connect(self.toggle_month_checkbox)  # 체크박스 상태 변경 연결
+        duration_layout.addWidget(self.duration_label)  # 진단 설정 레이아웃에 라벨 추가
+        duration_layout.addWidget(self.duration_input)  # 진단 설정 레이아웃에 입력란 추가
+        duration_layout.addWidget(self.minute_checkbox)  # 진단 설정 레이아웃에 체크박스 추가
+        duration_layout.addWidget(self.repeat_num_label)  # 진단 설정 레이아웃에 라벨 추가
+        duration_layout.addWidget(self.repeat_num_input)  # 진단 설정 레이아웃에 입력란 추가
+        duration_layout.addWidget(self.month_checkbox)  # 진단 설정 레이아웃에 체크박스 추가
+        duration_frame.setLayout(duration_layout)  # 진단 설정 프레임에 레이아웃 설정
+        mid_panel_layout.addWidget(duration_frame)  # 좌측 패널 레이아웃에 진단 설정 프레임 추가
+        
         progress_frame = QGroupBox('Progress')  # 진행률 프레임 설정
         progress_layout = QVBoxLayout()  # 진행률 레이아웃 설정
         self.progress_label = QLabel('Cycle')  # 주기 라벨 설정
@@ -326,47 +333,51 @@ class DataCollectorApp(QWidget):
         progress_layout.addWidget(self.total_progress_label)  # 진행률 레이아웃에 라벨 추가
         progress_layout.addWidget(self.total_progress_bar)  # 진행률 레이아웃에 총 진행률 바 추가
         progress_frame.setLayout(progress_layout)  # 진행률 프레임에 레이아웃 설정
-        left_panel_layout.addWidget(progress_frame)  # 좌측 패널 레이아웃에 진행률 프레임 추가
-    
+        mid_panel_layout.addWidget(progress_frame)  # 좌측 패널 레이아웃에 진행률 프레임 추가
+
         button_layout = QHBoxLayout()  # 버튼 레이아웃 설정
         self.start_button = QPushButton('Start', self)  # 시작 버튼 설정
         self.start_button.clicked.connect(self.start_collection)  # 버튼 클릭 연결
-        self.start_button.setFixedSize(60, 30)  # 버튼 크기 설정
         self.stop_button = QPushButton('Stop', self)  # 중지 버튼 설정
         self.stop_button.clicked.connect(self.stop_collection)  # 버튼 클릭 연결
-        self.stop_button.setFixedSize(60, 30)  # 버튼 크기 설정
         self.stop_button.setEnabled(False)  # 중지 버튼 비활성화
         button_layout.addWidget(self.start_button)  # 버튼 레이아웃에 시작 버튼 추가
         button_layout.addWidget(self.stop_button)  # 버튼 레이아웃에 중지 버튼 추가
-        left_panel_layout.addLayout(button_layout)  # 좌측 패널 레이아웃에 버튼 레이아웃 추가
-    
+        mid_panel_layout.addLayout(button_layout)  # 중간 패널 레이아웃에 버튼 레이아웃 추가
+
         self.log_output = QTextEdit(self)  # 로그 출력란 설정
         self.log_output.setReadOnly(True)  # 로그 출력란 읽기 전용 설정
-        left_panel_layout.addWidget(self.log_output)  # 좌측 패널 레이아웃에 로그 출력란 추가
-    
-        main_layout.addLayout(left_panel_layout)  # 메인 레이아웃에 좌측 패널 레이아웃 추가
-    
+        mid_panel_layout.addWidget(self.log_output)  # 좌측 패널 레이아웃에 로그 출력란 추가
+
         plot_layout = QVBoxLayout()  # 그래프 레이아웃 설정
+        plot_layout.setSpacing(10)  # 패널 간격 설정
+
         self.sound_plot = PlotCanvas(self, title="Sound")  # 사운드 그래프 설정
         self.vibration_plot = PlotCanvas(self, title="Vibration")  # 진동 그래프 설정
         self.voltage_plot = PlotCanvas(self, title="Voltage")  # 전압 그래프 설정
         self.current_plot = PlotCanvas(self, title="Current")  # 전류 그래프 설정
+
         plot_layout.addWidget(self.sound_plot)  # 그래프 레이아웃에 사운드 그래프 추가
         plot_layout.addWidget(self.vibration_plot)  # 그래프 레이아웃에 진동 그래프 추가
         plot_layout.addWidget(self.voltage_plot)  # 그래프 레이아웃에 전압 그래프 추가
         plot_layout.addWidget(self.current_plot)  # 그래프 레이아웃에 전류 그래프 추가
-        main_layout.addLayout(plot_layout)  # 메인 레이아웃에 그래프 레이아웃 추가
-    
+
+        # 동일한 너비로 설정
+        main_layout.addLayout(left_panel_layout, stretch=1)
+        main_layout.addLayout(mid_panel_layout, stretch=1)
+        main_layout.addLayout(plot_layout, stretch=1)
+
         self.setLayout(main_layout)  # 메인 레이아웃 설정
+
     def tap_up_action(self):
         global tap_up
         tap_up = 999  # 탭 업 상태 설정
-        self.logger.log(f"Tap up pressed. tap_up is now {tap_up}")  # 로그 출력
+        self.logger.log(f"Tap up pressed.")  # 로그 출력
 
     def tap_down_action(self):
         global tap_down
         tap_down = 999  # 탭 다운 상태 설정
-        self.logger.log(f"Tap down pressed. tap_down is now {tap_down}")  # 로그 출력
+        self.logger.log(f"Tap down pressed.")  # 로그 출력
 
     def toggle_minute_checkbox(self):
         if self.minute_checkbox.isChecked():  # 1분 체크박스가 체크되면
@@ -491,19 +502,19 @@ class DataCollectorApp(QWidget):
                 self.status_label.setText('Normal')  # 상태 라벨에 "Normal" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: green; font-size: 24px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: green; font-size: 120px')  # 상태 라벨 스타일 설정
         elif self.machine_error == 1:
             if self.status_visible:
-                self.status_label.setText('Predictive Maintenance Required')  # 상태 라벨에 "Predictive Maintenance Required" 설정
+                self.status_label.setText('Maintenance\nRequired')  # 상태 라벨에 "Predictive Maintenance Required" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: orange; font-size: 24px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: orange; font-size: 80px')  # 상태 라벨 스타일 설정
         elif self.machine_error == 2:
             if self.status_visible:
                 self.status_label.setText('Error')  # 상태 라벨에 "Error" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: red; font-size: 24px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: red; font-size: 120px')  # 상태 라벨 스타일 설정
 
         self.status_visible = not self.status_visible  # 상태 가시성 토글
 
