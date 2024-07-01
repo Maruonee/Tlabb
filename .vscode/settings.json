@@ -1,5 +1,6 @@
 {
     "notebook.output.textLineLimit": 9999,
     "C_Cpp.default.compilerPath": "",
-    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "cmake.sourceDirectory": "C:/Users/tlab/Documents/GitHub/Tlabb/OLTC/OLTC_Tlab_c"
 }
