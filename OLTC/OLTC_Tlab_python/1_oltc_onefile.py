@@ -17,7 +17,7 @@ class Logger(QObject):
 
     def __init__(self):
         super().__init__()
-
+    
     # 로그 메시지를 방출하는 메서드
     def log(self, message):
         self.log_signal.emit(message)

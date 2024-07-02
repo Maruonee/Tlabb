@@ -1,4 +1,4 @@
-import sys  # 시스템 관련 모듈
+import sys  # 시스템  관련 모듈
 import os  # 운영체제 관련 모듈
 import time  # 시간 관련 모듈
 import threading  # 멀티스레딩 관련 모듈
@@ -13,7 +13,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QProgressBar, QTextEdit, QGroupBox, QCheckBox)  # PyQt5 위젯들
 from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer  # PyQt5 핵심 모듈
 
-machine_error = 0  # 기계 오류 상태
+machine_error = 2  # 기계 오류 상태
 tap_op = 20000 # 탭 동작횟수
 tap_position = 5  # 탭 위치
 tap_voltage = 0  # 탭 전압
