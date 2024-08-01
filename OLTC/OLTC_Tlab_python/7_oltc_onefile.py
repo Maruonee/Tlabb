@@ -222,7 +222,16 @@ class ModbusRTUClient:
         tap_de_voltage = holding_registers[6] # 탭 원하는 전압
         tap_position = holding_registers[1]  # 탭 위치
         tap_voltage = input_registers[0] / 2  # 탭 전압        
-        return tap_op, tap_de_voltage, tap_position, tap_voltage
+        tap_mode_raw = holding_registers[0]
+        if  tap_mode_raw == 1:
+            tap_mode = "AVR AUTO"
+        elif tap_mode_raw == 2:
+            tap_mode = "AVR MANUAL"
+        elif tap_mode_raw == 3:
+            tap_mode = "EXTERNAL CONTROL"
+        else:
+            tap_mode = "INVALID MODE"
+        return tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode
 
     def start_reading(self):
         self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
@@ -231,7 +240,7 @@ class ModbusRTUClient:
 
     def _update_registers(self):
         while not self.stop_event.is_set():
-            tap_op, tap_de_voltage, tap_position, tap_voltage = self.read_registers()
+            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode = self.read_registers()
             self.save_to_file(tap_op, tap_de_voltage, tap_position, tap_voltage)
             time.sleep(0.5)
         self.stop_event.set()  # 작업이 완료되면 스레드를 중지시킴
@@ -241,7 +250,7 @@ class ModbusRTUClient:
         folder_name = f"{self.exp_date}_{self.exp_num}_ecotap"  # 폴더 이름 생성
         filename = os.path.join(self.folder_path, f'{folder_name}.txt')  # 파일 경로 생성
         with open(filename, "a") as f:
-            f.write(f"{timestamp}, Desire Voltage: {tap_de_voltage}V, Tap Operations counter: {tap_op}, Current Tap position: {tap_position}, Current Tap voltage: {tap_voltage}V\n")
+            f.write(f"{timestamp}, Desire Voltage: {tap_de_voltage}V, Tap Operations Counter: {tap_op}, Current Tap Position: {tap_position}, Current Tap Voltage: {tap_voltage}V\n")
         
     def stop_reading(self):
         self.stop_event.set()
@@ -272,6 +281,7 @@ class DataCollectorApp(QWidget):
         self.tap_position = 0  # Tap Position 초기값 설정
         self.tap_voltage = 0  # Tap Voltage 초기값 설정
         self.tap_de_voltage = 0
+        self.tap_mode = ''
         self.ecotap_port = ''  # ecotap_port 초기값 설정
         self.initUI()  # UI 초기화
         self.logger = Logger()  # 로그 객체 생성
@@ -284,22 +294,22 @@ class DataCollectorApp(QWidget):
         # ECOTAP 데이터 업데이트를 위한 타이머 설정
         self.ecotap_timer = QTimer(self)
         self.ecotap_timer.timeout.connect(self.update_ecotap_status)
-
+    
     def initUI(self):
         self.setWindowTitle('ECOTAP Diagnosis System by Tlab')  # 윈도우 제목 설정
-        self.resize(1800, 1000)  # 윈도우 크기 설정
+        self.resize(1500, 800)  # 윈도우 크기 설정
         
         main_layout = QHBoxLayout(self)  # 메인 레이아웃 설정
         
         left_panel_layout = QVBoxLayout()  # 좌측 패널 레이아웃 설정
-        left_panel_layout.setSpacing(10)  # 패널 간격 설정
+        left_panel_layout.setSpacing(0)  # 패널 간격 설정
 
         # Diagnosis Results 프레임을 좌측 패널로 이동
         status_frame = QGroupBox('Diagnosis Results')  # 상태 프레임 설정
         status_frame.setStyleSheet('background-color: white')  # 배경 색상 설정
         self.status_label = QLabel('ECOTAP\nDiagnosis\nStatus')  # 상태 라벨 설정
         self.status_label.setAlignment(Qt.AlignCenter)  # 상태 라벨 정렬 설정
-        self.status_label.setStyleSheet('font-size: 100px')  # 상태 라벨 폰트 크기 설정
+        self.status_label.setStyleSheet('font-size: 50px')  # 상태 라벨 폰트 크기 설정
         status_frame_layout = QVBoxLayout()  # 상태 프레임 레이아웃 설정
         status_frame_layout.addWidget(self.status_label)  # 상태 프레임 레이아웃에 상태 라벨 추가
         status_frame.setLayout(status_frame_layout)  # 상태 프레임에 레이아웃 설정
@@ -311,9 +321,11 @@ class DataCollectorApp(QWidget):
         self.ecotap_port_label = QLabel('ECOTAP Port')  # ecotap_port 라벨 설정
         self.ecotap_port_input = QLineEdit(self)  # ecotap_port 입력란 설정
         self.ecotap_port_input.setText('COM20')  # 기본 시리얼 포트 설정
-        self.tap_op_label = QLabel(f'Tap Operations: {self.tap_op}')  # 탭 위치 라벨 설정
         ecotap_status_layout.addWidget(self.ecotap_port_label)  # ecotap_port 라벨 추가
-        ecotap_status_layout.addWidget(self.ecotap_port_input)  # ecotap_port 입력란 추가
+        ecotap_status_layout.addWidget(self.ecotap_port_input)  # ecotap_port 입력란 추가   
+        self.tap_mode_label = QLabel(f'Operating mode : {self.tap_mode}')  # 탭 위치 라벨 설정
+        ecotap_status_layout.addWidget(self.tap_mode_label)  # 탭 위치 레이아웃에 라벨 추가
+        self.tap_op_label = QLabel(f'Tap Operations: {self.tap_op}')  # 탭 위치 라벨 설정
         ecotap_status_layout.addWidget(self.tap_op_label)  # 탭 위치 레이아웃에 라벨 추가
         self.tap_position_label = QLabel(f'Tap Position: {self.tap_position}')  # 탭 위치 라벨 설정
         ecotap_status_layout.addWidget(self.tap_position_label)  # 탭 위치 레이아웃에 라벨 추가
@@ -321,15 +333,26 @@ class DataCollectorApp(QWidget):
         ecotap_status_layout.addWidget(self.tap_de_voltage_label)  # 탭 전압 라벨 추가
         self.tap_voltage_label = QLabel(f'Tap Voltage: {self.tap_voltage}')  # 탭 전압 라벨 설정
         ecotap_status_layout.addWidget(self.tap_voltage_label)  # 탭 전압 라벨 추가
+        
+        tap_button_layout = QHBoxLayout()
         self.tap_up_button = QPushButton('Tap Up', self)  # 탭 업 버튼 설정
         self.tap_up_button.clicked.connect(self.tap_up_action)  # 버튼 클릭 연결
-        ecotap_status_layout.addWidget(self.tap_up_button)  # 탭 업 버튼 추가
+        tap_button_layout.addWidget(self.tap_up_button)  # 탭 업 버튼 추가
         self.tap_down_button = QPushButton('Tap Down', self)  # 탭 다운 버튼 설정
         self.tap_down_button.clicked.connect(self.tap_down_action)  # 버튼 클릭 연결
-        ecotap_status_layout.addWidget(self.tap_down_button)  # 탭 다운 버튼 추가
+        tap_button_layout.addWidget(self.tap_down_button)  # 탭 다운 버튼 추가
+        # Add Test 1 and Test 2 buttons next to Tap Up and Tap Down
+        self.test_1_button = QPushButton('Test 1', self)  # Test 1 버튼 설정
+        self.test_1_button.clicked.connect(self.tap_test_control_1)  # 버튼 클릭 연결
+        tap_button_layout.addWidget(self.test_1_button)  # Test 1 버튼 추가
+        self.test_2_button = QPushButton('Test 2', self)  # Test 2 버튼 설정
+        self.test_2_button.clicked.connect(self.tap_test_control_2)  # 버튼 클릭 연결
+        tap_button_layout.addWidget(self.test_2_button)  # Test 2 버튼 추가
+        ecotap_status_layout.addLayout(tap_button_layout)  # 버튼 레이아웃 추가
+
         self.no_modbus_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
         self.no_modbus_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
-        ecotap_status_layout.addWidget(self.no_modbus_checkbox)  # Modbus 미연결 체크박스 추가
+        ecotap_status_layout.addWidget(self.no_modbus_checkbox)  # Modbus 미연결 체크박스 추가  
         ecotap_status_frame.setLayout(ecotap_status_layout)  # ECOTAP 상태 프레임에 레이아웃 설정
         left_panel_layout.addWidget(ecotap_status_frame)  # 좌측 패널 레이아웃에 ECOTAP 상태 프레임 추가
 
@@ -352,7 +375,7 @@ class DataCollectorApp(QWidget):
 
         # Plot 영역 추가
         plot_layout = QVBoxLayout()  # 그래프 레이아웃 설정
-        plot_layout.setSpacing(10)  # 패널 간격 설정
+        plot_layout.setSpacing(8)  # 패널 간격 설정
 
         self.sound_plot = PlotCanvas(self, title="Sound")  # 사운드 그래프 설정
         self.vibration_plot = PlotCanvas(self, title="Vibration")  # 진동 그래프 설정
@@ -368,7 +391,7 @@ class DataCollectorApp(QWidget):
         vibration_layout = QHBoxLayout()  # 진동 설정 레이아웃 설정
         self.serial_port_label = QLabel('COM Port')  # 시리얼 포트 라벨 설정
         self.serial_port_input = QLineEdit(self)  # 시리얼 포트 입력란 설정
-        self.serial_port_input.setText('COM3')  # 기본 시리얼 포트 설정
+        self.serial_port_input.setText('COM19')  # 기본 시리얼 포트 설정
         self.baud_rate_label = QLabel('Baud Rate')  # 보드 레이트 라벨 설정
         self.baud_rate_input = QLineEdit(self)  # 보드 레이트 입력란 설정
         self.baud_rate_input.setText('19200')  # 기본 보드 레이트 설정
@@ -481,17 +504,108 @@ class DataCollectorApp(QWidget):
 
     def tap_up_action(self):
         def run_tap_up():
-            self.logger.log("Tap Up change value.")# address 0 의값을 1로 변경
+            self.logger.log("Tap Up")  # address 0 의 값을 1로 변경
             self.modbus_client.tap_up()
-            self.logger.log("Reset Tap Up value.")# address 0 의값을 0로 변경
+
+        # Tap Up 버튼 비활성화
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
+
+        # Tap Up 작업 실행
         threading.Thread(target=run_tap_up).start()
+
+        # 3초 후에 버튼을 다시 활성화하는 타이머 설정
+        QTimer.singleShot(5000, lambda: self.tap_up_button.setEnabled(True))
+        QTimer.singleShot(5000, lambda: self.tap_down_button.setEnabled(True))
+
 
     def tap_down_action(self):
         def run_tap_down():
-            self.logger.log("Tap Down change value.")# address 1 의값을 1로 변경
+            self.logger.log("Tap Down")  # address 1 의 값을 1로 변경
             self.modbus_client.tap_down()
-            self.logger.log("Reset Tap Down value.")# address 1 의값을 1로 변경
+
+        # Tap Down 버튼 비활성화
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
+
+        # Tap Down 작업 실행
         threading.Thread(target=run_tap_down).start()
+
+        # 3초 후에 버튼을 다시 활성화하는 타이머 설정
+        QTimer.singleShot(5000, lambda: self.tap_up_button.setEnabled(True))
+        QTimer.singleShot(5000, lambda: self.tap_down_button.setEnabled(True))
+
+#실험변경
+    def tap_test_control_1(self):
+        self.logger.log("tap_test_control_1")
+    #     # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
+    #     self.test_1_button.setEnabled(False)
+    #     self.tap_up_button.setEnabled(False)
+    #     self.tap_down_button.setEnabled(False)
+
+    #     def alternate_tap_actions(up_down_count, total_count):
+    #         if total_count > 0:
+    #             if up_down_count > 0:
+    #                 self.tap_up_action()  # Tap Up 실행
+    #                 self.logger.log(f"Tap Up")
+    #                 QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count - 1, total_count))
+    #             else:
+    #                 # Tap Down을 9번 실행
+    #                 def execute_tap_down(down_count):
+    #                     if down_count > 0:
+    #                         self.tap_down_action()  # Tap Down 실행
+    #                         self.logger.log(f"Tap Down ")
+    #                         QTimer.singleShot(5000, lambda: execute_tap_down(down_count - 1))
+    #                     else:
+    #                         # Tap Up과 Tap Down을 한번의 루틴으로 완료한 후 total_count를 줄인다.
+    #                         self.logger.log(f"Completed cycle {total_count-1}.")
+    #                         QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count, total_count - 1))
+
+    #                 execute_tap_down(up_down_count)
+    #         else:
+    #             # 모든 작업이 끝나면 버튼을 다시 활성화
+    #             self.logger.log("All actions completed.")
+    #             self.test_1_button.setEnabled(True)
+    #             self.tap_up_button.setEnabled(True)
+    #             self.tap_down_button.setEnabled(True)
+
+    #     # Tap Up을 9번, Tap Down을 9번 실행한 루틴을 50번 반복
+    #     alternate_tap_actions(9, 10)
+
+    def tap_test_control_2(self):
+        self.logger.log("tap_test_control_2")
+
+    #     # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
+    #     self.test_2_button.setEnabled(False)
+    #     self.tap_up_button.setEnabled(False)
+    #     self.tap_down_button.setEnabled(False)
+        
+    #     def tap_down_actions(up_down_count, total_count):
+    #         self.tap_down_action()  # Tap Down 실행
+    #         self.logger.log(f"Tap Down")
+        
+    #         QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count - 1, total_count))  # 1초 후 Tap Up 실행
+            
+    #     def alternate_tap_actions(up_down_count, total_count):
+    #         if total_count > 0:
+    #             if up_down_count > 0:
+    #                 self.tap_up_action()  # Tap Up 실행
+    #                 self.logger.log(f"Tap Up")
+
+    #                 QTimer.singleShot(5000, lambda: tap_down_actions(up_down_count, total_count))  # 1초 후 Tap Down 실행
+    #             else:
+    #                 # Tap Up과 Tap Down이 한 번의 루틴으로 완료되었음을 표시하고, 다음 루틴으로 진행
+    #                 self.logger.log(f"Completed cycle {total_count}.")
+    #                 QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count, total_count - 1))
+    #         else:
+    #             # 모든 작업이 끝나면 버튼을 다시 활성화
+    #             self.logger.log("All actions completed.")
+    #             self.test_2_button.setEnabled(True)
+    #             self.tap_up_button.setEnabled(True)
+    #             self.tap_down_button.setEnabled(True)
+                
+    #     alternate_tap_actions(9, 10)
+
 
     def toggle_minute_checkbox(self):
         if self.minute_checkbox.isChecked():  # 1분 체크박스가 체크되면
@@ -520,10 +634,14 @@ class DataCollectorApp(QWidget):
             self.ecotap_port_input.setEnabled(False)  # Modbus 포트 입력란 비활성화
             self.tap_up_button.setEnabled(False)  # Tap Up 버튼 비활성화
             self.tap_down_button.setEnabled(False)  # Tap Down 버튼 비활성화
+            self.test_1_button.setEnabled(False) 
+            self.test_2_button.setEnabled(False) 
         else:
             self.ecotap_port_input.setEnabled(True)  # Modbus 포트 입력란 활성화
             self.tap_up_button.setEnabled(True)  # Tap Up 버튼 활성화
             self.tap_down_button.setEnabled(True)  # Tap Down 버튼 활성화
+            self.test_1_button.setEnabled(True)
+            self.test_2_button.setEnabled(True)
 
     def browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, 'Select Directory')  # 디렉토리 선택 대화상자 열기
@@ -635,25 +753,26 @@ class DataCollectorApp(QWidget):
                 self.status_label.setText('Normal')  # 상태 라벨에 "Normal" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: green; font-size: 120px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: green; font-size: 60px')  # 상태 라벨 스타일 설정
         elif self.machine_error == 1:
             if self.status_visible:
                 self.status_label.setText('Maintenance\nRequired')  # 상태 라벨에 "Predictive Maintenance Required" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: orange; font-size: 80px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: orange; font-size: 40px')  # 상태 라벨 스타일 설정
         elif self.machine_error == 2:
             if self.status_visible:
                 self.status_label.setText('Error')  # 상태 라벨에 "Error" 설정
             else:
                 self.status_label.setText('')  # 상태 라벨 초기화
-            self.status_label.setStyleSheet('color: red; font-size: 120px')  # 상태 라벨 스타일 설정
+            self.status_label.setStyleSheet('color: red; font-size: 60px')  # 상태 라벨 스타일 설정
 
         self.status_visible = not self.status_visible  # 상태 가시성 토글
 
     def update_ecotap_status(self):
         if hasattr(self, 'modbus_client'):
-            tap_op, tap_de_voltage, tap_position, tap_voltage = self.modbus_client.get_latest_data()
+            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode= self.modbus_client.get_latest_data()
+            self.tap_mode_label.setText(f'Operating mode: {tap_mode}')
             self.tap_op_label.setText(f'Tap Operations: {tap_op}')
             self.tap_position_label.setText(f'Tap Position: {tap_position}')
             self.tap_voltage_label.setText(f'Tap Voltage: {tap_voltage}')
