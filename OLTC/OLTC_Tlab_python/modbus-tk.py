@@ -8,8 +8,7 @@ import threading
 import datetime
 
 class ModbusRTUClient:
-    def __init__(self, port, folder_path, exp_date, exp_num):
-
+    def __init__(self, port, folder_path, exp_date, exp_num, interval=0.1):
         # 시리얼 포트 설정
         self.serial_port = serial.Serial(
             port=port,            
@@ -24,14 +23,17 @@ class ModbusRTUClient:
         self.master.set_timeout(0.1) 
         self.master.set_verbose(True) 
         self.stop_event = threading.Event() 
-        self.save_count = 0 
 
         self.folder_path = folder_path  # 데이터 저장 폴더 경로
         self.exp_date = exp_date  # 실험 날짜
         self.exp_num = exp_num  # 실험 번호
+        self.interval = interval  # 읽기 간격
 
         if not os.path.exists(self.folder_path):
             os.makedirs(self.folder_path)  # 폴더가 없으면 생성
+
+        # 데이터 읽기 시작
+        self.start_reading()
 
     def read_registers(self):
         try:
@@ -43,7 +45,7 @@ class ModbusRTUClient:
             tap_op = holding_registers[3]  # 탭 동작횟수
             tap_de_voltage = holding_registers[6] # 탭 원하는 전압
             tap_position = holding_registers[1]  # 탭 위치
-            tap_voltage = input_registers[0]/2  # 탭 전압
+            tap_voltage = input_registers[0] / 2  # 탭 전압
 
             print(f"Desire Voltage: {tap_de_voltage} V, Tap Operations counter: {tap_op}, Current Tap position: {tap_position}, Current Tap voltage: {tap_voltage} V")
         
@@ -56,45 +58,39 @@ class ModbusRTUClient:
         # 읽어온 레지스터 값 반환
         return tap_op, tap_de_voltage, tap_position, tap_voltage
 
-    def start_reading(self, interval=0.1, save_interval=60, save_count_limit=98):
-        self.save_count = 0  # 저장 횟수 초기화
+    def start_reading(self):
         self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
-        self.thread = threading.Thread(target=self._update_registers, args=(interval, save_interval, save_count_limit))
+        self.thread = threading.Thread(target=self._update_registers, args=(self.interval,))
         self.thread.start()
 
-    def _update_registers(self, interval, save_interval, save_count_limit):
-        last_save_time = time.time()
-        while not self.stop_event.is_set() and self.save_count < save_count_limit:
+    def _update_registers(self, interval):
+        while not self.stop_event.is_set():
             tap_op, tap_de_voltage, tap_position, tap_voltage = self.read_registers()
-            if time.time() - last_save_time >= save_interval:
-                self.save_to_file(tap_op, tap_de_voltage, tap_position, tap_voltage)
-                last_save_time = time.time()
-                self.save_count += 1
+            self.save_to_file(tap_op, tap_de_voltage, tap_position, tap_voltage)
             time.sleep(interval)
         self.stop_event.set()  # 작업이 완료되면 스레드를 중지시킴
 
     def save_to_file(self, tap_op, tap_de_voltage, tap_position, tap_voltage):
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")  # 현재 시간을 타임스탬프로 저장
-        folder_name = f"{self.exp_date}_{self.exp_num}_sound"  # 폴더 이름 생성
-        filename = os.path.join(self.folder_path, f'{folder_name}_{timestamp}.txt')  # 파일 경로 생성
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H:%M:%S")  # 현재 시간을 타임스탬프로 저장
+        folder_name = f"{self.exp_date}_{self.exp_num}_ECOTAP"  # 폴더 이름 생성
+        filename = os.path.join(self.folder_path, f'{folder_name}.txt')  # 파일 경로 생성
         with open(filename, "a") as f:
-            f.write(f"{timestamp}, {tap_op}, {tap_de_voltage}, {tap_position}, {tap_voltage}\n")
-
+            f.write(f"{timestamp}, Desire Voltage: {tap_de_voltage}V, Tap Operations counter: {tap_op}, Current Tap position: {tap_position}, Current Tap voltage: {tap_voltage}V\n")
+        
     def stop_reading(self):
         self.stop_event.set()
         self.thread.join()
 
-사용 예제
+# 사용 예제
 if __name__ == "__main__":
     # ModbusRTUClient 인스턴스 생성 및 설정
     client = ModbusRTUClient(
-        port='COM5',
-        folder_path='C:\\Users\\vole9\\Downloads\\',  # 데이터 저장 폴더 경로
-        exp_date='20230730',  # 실험 날짜
-        exp_num='01'  # 실험 번호
+        port='COM20',
+        folder_path='C:\\Users\\tlab\\Downloads',  # 데이터 저장 폴더 경로
+        exp_date=datetime.datetime.now().strftime("%Y%m%d_%H%M%S"),  # 실험 날짜
+        exp_num='01',  # 실험 번호
+        interval=0.1  # 읽기 간격
     )
-    # 레지스터 읽기 실행 (0.1초 간격으로)
-    client.start_reading(interval=0.1, save_interval=60, save_count_limit=98)
 
     # 작업이 완료될 때까지 대기
     client.thread.join()
