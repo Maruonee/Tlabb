@@ -22,8 +22,8 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer  # PyQt5 핵�
 import time
 import serial
 import modbus_tk.defines as cst
-from modbus_tk import modbus_rtu
-# from modbus_tk import modbus_tcp
+from modbus_tk import modbus_tcp
+# from modbus_tk import modbus_rtu
 
 machine_error = 0  # 기계 오류 상태
 
@@ -193,23 +193,23 @@ class ModbusRTUClient:
     def __init__(self, ecotap_port, folder_path, exp_date, exp_num, ip_address='192.168.0.173', interval=0.1):
         super().__init__()
         ## 시리얼 포트 설정
-        self.serial_port = serial.Serial(
-            port=ecotap_port,            
-            baudrate=38400,       
-            parity=serial.PARITY_EVEN,
-            stopbits=serial.STOPBITS_ONE, 
-            bytesize=serial.EIGHTBITS,
-            timeout=0.1 
-        )
-        self.master = modbus_rtu.RtuMaster(self.serial_port) 
+        # self.serial_port = serial.Serial(
+        #     port=ecotap_port,            
+        #     baudrate=38400,       
+        #     parity=serial.PARITY_EVEN,
+        #     stopbits=serial.STOPBITS_ONE, 
+        #     bytesize=serial.EIGHTBITS,
+        #     timeout=0.1 
+        # )
+        # self.master = modbus_rtu.RtuMaster(self.serial_port) 
         
-        ## TCP/IP 설정
-        # self.master = modbus_tcp.TcpMaster(host=ip_address)
-        # self.interval = interval  # 읽기 간격
+        # TCP/IP 설정
+        self.master = modbus_tcp.TcpMaster(host=ip_address)
+        self.interval = interval  # 읽기 간격
 
-        self.master.set_timeout(0.1) 
-        self.master.set_verbose(True) 
-        self.stop_event = threading.Event() 
+        self.master.set_timeout(1.0)
+        self.master.set_verbose(True)
+        self.stop_event = threading.Event()
         
         self.folder_path = folder_path  # 데이터 저장 폴더 경로
         self.exp_date = exp_date  # 실험 날짜
@@ -229,7 +229,7 @@ class ModbusRTUClient:
         tap_op = holding_registers[3]  # 탭 동작횟수
         tap_de_voltage = holding_registers[6] # 탭 원하는 전압
         tap_position = holding_registers[1]  # 탭 위치
-        tap_voltage = input_registers[0] / 2  # 탭 전압        
+        tap_voltage = input_registers[0] / 2  # 탭 전압         
         tap_mode_raw = holding_registers[0]
         if  tap_mode_raw == 1:
             tap_mode = "AVR AUTO"
@@ -243,10 +243,10 @@ class ModbusRTUClient:
 
     def start_reading(self):
         self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
-        ## TCP/IP 설정
-        # self.thread = threading.Thread(target=self._update_registers, args=(self.interval,))
-        # 시리얼 포트 설정
-        self.thread = threading.Thread(target=self._update_registers)
+        # TCP/IP 설정
+        self.thread = threading.Thread(target=self._update_registers, args=(self.interval,))
+        ## 시리얼 포트 설정
+        # self.thread = threading.Thread(target=self._update_registers)
         
         self.thread.start()
 
@@ -267,10 +267,10 @@ class ModbusRTUClient:
     def stop_reading(self):
         self.stop_event.set()
         self.thread.join()
-        # 시리얼 포트 설정
-        self.serial_port.close()
-        ## TCP/IP 설정
-        # self.master._do_close() 
+        ## 시리얼  포트설정
+        # self.serial_port.close()
+        # TCP/IP 설정
+        self.master._do_close() 
     
     def get_latest_data(self):
         return self.read_registers()
