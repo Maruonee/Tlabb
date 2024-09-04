@@ -56,7 +56,6 @@ class RecorderWorker(QObject):
     def run(self):
         for i in range(self.repeat_num):  # 반복 횟수 만큼 녹음 실행
             if self.stop_event.is_set():  # 중지 이벤트가 설정되면
-                self.log_signal.emit("Diagnosis(sound) stop.")  # 중지 로그 출력
                 break
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # 현재 시간을 타임스탬프로 저장
             folder_name = f"{self.exp_date}_{self.exp_num}_sound"  # 폴더 이름 생성
@@ -80,7 +79,6 @@ class RecorderWorker(QObject):
 
             threading.Thread(target=self.plot_sound, args=(filename,)).start()  # 별도 스레드에서 그래프 그리기
         
-        self.log_signal.emit("Diagnosis(sound) done.")  # 녹음 완료 로그 출력
         self.finished_signal.emit()  # 완료 신호 방출
 
     def plot_sound(self, filename):
@@ -126,8 +124,6 @@ class DataCollectorWorker(QObject):
                         with lock:
                             txt_file_ref[0].write(f'{data}\n')  # 데이터 파일에 쓰기
                             txt_file_ref[0].flush()  # 버퍼 비우기
-        except KeyboardInterrupt:
-            self.log_signal.emit("Diagnosis(Vibration) stop.")  # 중지 로그 출력
         finally:
             with lock:
                 txt_file_ref[0].close()  # 파일 닫기
@@ -155,8 +151,6 @@ class DataCollectorWorker(QObject):
             self.total_progress_signal.emit(int(((i + 1) / self.repeat_num) * 100), 100)  # 총 진행률 업데이트
 
             threading.Thread(target=self.plot_vibration, args=(filename,)).start()  # 별도 스레드에서 그래프 그리기
-        
-        self.log_signal.emit("Diagnosis(Vibration) Done.")  # 데이터 수집 완료 로그 출력
         self.finished_signal.emit()  # 완료 신호 방출
 
     def plot_vibration(self, filename):
@@ -244,7 +238,7 @@ class ModbusRTUClient:
     def start_reading(self):
         self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
         ## TCP/IP 설정
-        # self.thread = threading.Thread(target=self._update_registers, args=(self.interval,))
+        # self.thread = threading.Thread(target=self._update_registers)
         # 시리얼 포트 설정
         self.thread = threading.Thread(target=self._update_registers)
         
@@ -311,7 +305,7 @@ class DataCollectorApp(QWidget):
         self.ecotap_timer.timeout.connect(self.update_ecotap_status)
     
     def initUI(self):
-        self.setWindowTitle('ECOTAP Diagnosis System by Tlab')  # 윈도우 제목 설정
+        self.setWindowTitle('ECOTAP Diagnosis System by MICS')  # 윈도우 제목 설정
         self.resize(1500, 800)  # 윈도우 크기 설정
         
         main_layout = QHBoxLayout(self)  # 메인 레이아웃 설정
@@ -348,7 +342,7 @@ class DataCollectorApp(QWidget):
         ecotap_status_layout.addWidget(self.tap_de_voltage_label)  # 탭 전압 라벨 추가
         self.tap_voltage_label = QLabel(f'Tap Voltage: {self.tap_voltage}')  # 탭 전압 라벨 설정
         ecotap_status_layout.addWidget(self.tap_voltage_label)  # 탭 전압 라벨 추가
-        
+            
         tap_button_layout = QHBoxLayout()
         self.tap_up_button = QPushButton('Tap Up', self)  # 탭 업 버튼 설정
         self.tap_up_button.clicked.connect(self.tap_up_action)  # 버튼 클릭 연결
@@ -364,7 +358,11 @@ class DataCollectorApp(QWidget):
         self.test_2_button.clicked.connect(self.tap_test_control_2)  # 버튼 클릭 연결
         tap_button_layout.addWidget(self.test_2_button)  # Test 2 버튼 추가
         ecotap_status_layout.addLayout(tap_button_layout)  # 버튼 레이아웃 추가
-
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
+        self.test_1_button.setEnabled(False)
+        self.test_2_button.setEnabled(False)
+        
         self.no_modbus_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
         self.no_modbus_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
         ecotap_status_layout.addWidget(self.no_modbus_checkbox)  # Modbus 미연결 체크박스 추가  
@@ -549,78 +547,75 @@ class DataCollectorApp(QWidget):
         # 3초 후에 버튼을 다시 활성화하는 타이머 설정
         QTimer.singleShot(5000, lambda: self.tap_up_button.setEnabled(True))
         QTimer.singleShot(5000, lambda: self.tap_down_button.setEnabled(True))
-
-#실험변경
+        
     def tap_test_control_1(self):
-        self.logger.log("tap_test_control_1")
-    #     # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
-    #     self.test_1_button.setEnabled(False)
-    #     self.tap_up_button.setEnabled(False)
-    #     self.tap_down_button.setEnabled(False)
+        self.logger.log("Starting Test 1")
 
-    #     def alternate_tap_actions(up_down_count, total_count):
-    #         if total_count > 0:
-    #             if up_down_count > 0:
-    #                 self.tap_up_action()  # Tap Up 실행
-    #                 self.logger.log(f"Tap Up")
-    #                 QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count - 1, total_count))
-    #             else:
-    #                 # Tap Down을 9번 실행
-    #                 def execute_tap_down(down_count):
-    #                     if down_count > 0:
-    #                         self.tap_down_action()  # Tap Down 실행
-    #                         self.logger.log(f"Tap Down ")
-    #                         QTimer.singleShot(5000, lambda: execute_tap_down(down_count - 1))
-    #                     else:
-    #                         # Tap Up과 Tap Down을 한번의 루틴으로 완료한 후 total_count를 줄인다.
-    #                         self.logger.log(f"Completed cycle {total_count-1}.")
-    #                         QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count, total_count - 1))
+        # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
+        self.test_1_button.setEnabled(False)
+        self.test_2_button.setEnabled(False)
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
 
-    #                 execute_tap_down(up_down_count)
-    #         else:
-    #             # 모든 작업이 끝나면 버튼을 다시 활성화
-    #             self.logger.log("All actions completed.")
-    #             self.test_1_button.setEnabled(True)
-    #             self.tap_up_button.setEnabled(True)
-    #             self.tap_down_button.setEnabled(True)
+        def perform_tap_up_down(up_count, down_count, repeat_count):
+            if self.stop_event.is_set():# 중단 이벤트가 설정되면 종료
+                return
+            if repeat_count > 0:
+                if up_count > 0:
+                    self.tap_up_action()  # Tap Up 실행
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(up_count - 1, down_count, repeat_count))
+                elif down_count > 0:
+                    self.tap_down_action()  # Tap Down 실행
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(up_count, down_count - 1, repeat_count))
+                else:
+                    # 한 번의 Up-Down 루틴이 끝나면, 다음 루틴으로 진행
+                    self.logger.log(f"Completed cycle {60 - repeat_count + 1}")
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(8, 8, repeat_count - 1))  # up_count와 down_count를 8로 재설정
+            else:
+                # 모든 작업이 끝나면 버튼을 다시 활성화
+                self.logger.log("Test 1 completed.")
+                self.test_1_button.setEnabled(True)
+                self.test_2_button.setEnabled(True)
+                self.tap_up_button.setEnabled(True)
+                self.tap_down_button.setEnabled(True)
 
-    #     # Tap Up을 9번, Tap Down을 9번 실행한 루틴을 50번 반복
-    #     alternate_tap_actions(9, 10)
+        # Tap Up 8번, Tap Down 8번 실행하는 루틴을 60번 반복
+        perform_tap_up_down(8, 8, 60)
+
 
     def tap_test_control_2(self):
-        self.logger.log("tap_test_control_2")
+        self.logger.log("Starting Test 2")
 
-    #     # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
-    #     self.test_2_button.setEnabled(False)
-    #     self.tap_up_button.setEnabled(False)
-    #     self.tap_down_button.setEnabled(False)
-        
-    #     def tap_down_actions(up_down_count, total_count):
-    #         self.tap_down_action()  # Tap Down 실행
-    #         self.logger.log(f"Tap Down")
-        
-    #         QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count - 1, total_count))  # 1초 후 Tap Up 실행
-            
-    #     def alternate_tap_actions(up_down_count, total_count):
-    #         if total_count > 0:
-    #             if up_down_count > 0:
-    #                 self.tap_up_action()  # Tap Up 실행
-    #                 self.logger.log(f"Tap Up")
+        # 비활성화된 동안 버튼이 중복으로 눌리지 않도록 설정
+        self.test_1_button.setEnabled(False)
+        self.test_2_button.setEnabled(False)
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
 
-    #                 QTimer.singleShot(5000, lambda: tap_down_actions(up_down_count, total_count))  # 1초 후 Tap Down 실행
-    #             else:
-    #                 # Tap Up과 Tap Down이 한 번의 루틴으로 완료되었음을 표시하고, 다음 루틴으로 진행
-    #                 self.logger.log(f"Completed cycle {total_count}.")
-    #                 QTimer.singleShot(5000, lambda: alternate_tap_actions(up_down_count, total_count - 1))
-    #         else:
-    #             # 모든 작업이 끝나면 버튼을 다시 활성화
-    #             self.logger.log("All actions completed.")
-    #             self.test_2_button.setEnabled(True)
-    #             self.tap_up_button.setEnabled(True)
-    #             self.tap_down_button.setEnabled(True)
-                
-    #     alternate_tap_actions(9, 10)
+        def perform_tap_up_down(up_count, down_count, repeat_count):
+            if self.stop_event.is_set():# 중단 이벤트가 설정되면 종료
+                return
+            if repeat_count > 0:
+                if up_count > 0:
+                    self.tap_up_action()  # Tap Up 실행
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(up_count - 1, down_count, repeat_count))
+                elif down_count > 0:
+                    self.tap_down_action()  # Tap Down 실행
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(up_count, down_count - 1, repeat_count))
+                else:
+                    # 한 번의 Up-Down 루틴이 끝나면, 다음 루틴으로 진행
+                    self.logger.log(f"Completed cycle {60 - repeat_count + 1}")
+                    QTimer.singleShot(5000, lambda: perform_tap_up_down(1, 1, repeat_count - 1))  # up_count와 down_count를 1로 재설정
+            else:
+                # 모든 작업이 끝나면 버튼을 다시 활성화
+                self.logger.log("Test 2 completed.")
+                self.test_1_button.setEnabled(True)
+                self.test_2_button.setEnabled(True)
+                self.tap_up_button.setEnabled(True)
+                self.tap_down_button.setEnabled(True)
 
+        # Tap Up 1번, Tap Down 1번 실행하는 루틴을 60번 반복
+        perform_tap_up_down(1, 1, 60)
 
     def toggle_minute_checkbox(self):
         if self.minute_checkbox.isChecked():  # 1분 체크박스가 체크되면
@@ -677,7 +672,14 @@ class DataCollectorApp(QWidget):
        if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
            self.sensor_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sensors')  # 센서 데이터 저장 폴더 생성
        self.audio_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sound')  # 사운드 데이터 저장 폴더 생성
+       
+       self.tap_up_button.setEnabled(True)
+       self.tap_down_button.setEnabled(True)
+       self.test_1_button.setEnabled(True)
+       self.test_2_button.setEnabled(True)      
+       
        self.stop_event = threading.Event()  # 중지 이벤트 설정
+       
        self.logger.log(f"ECOTAP Diagnosis Start\nCycle: {self.duration} sec\nRepeat: {self.repeat_num}\nData save path: {getattr(self, 'sensor_recordings_folder_path', 'Vibration sensor not connected')}\nData save path: {self.audio_recordings_folder_path}\n")  # 시작 로그 출력
 
        if self.machine_error == 0:
@@ -736,29 +738,36 @@ class DataCollectorApp(QWidget):
 
         self.start_button.setEnabled(True)  # 시작 버튼 활성화
         self.stop_button.setEnabled(False)  # 중지 버튼 비활성화
-        self.logger.log("Diagnosis stop.")  # 중지 로그 출력
+        self.test_1_button.setEnabled(False)
+        self.test_2_button.setEnabled(False)
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
+        self.logger.log("ECOTAP Diagnosis Stop.")  # 중지 로그 출력
         self.timer.stop()  # 타이머 중지
         self.status_label.setText('')  # 상태 라벨 초기화
-
+        
     def collection_finished(self):
+        self.stop_event.set()  # 모든 작업 중지
         if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
             self.data_collector_thread.quit()  # 데이터 수집 스레드 중지
             self.data_collector_thread.wait()  # 데이터 수집 스레드 종료 대기
         self.recorder_thread.quit()  # 녹음 스레드 중지
         self.recorder_thread.wait()  # 녹음 스레드 종료 대기
+                
         self.start_button.setEnabled(True)  # 시작 버튼 활성화
         self.stop_button.setEnabled(False)  # 중지 버튼 비활성화
-        self.timer.stop()  # 타이머 중지
-        self.status_label.setText('')  # 상태 라벨 초기화
+        self.test_1_button.setEnabled(False)
+        self.test_2_button.setEnabled(False)
+        self.tap_up_button.setEnabled(False)
+        self.tap_down_button.setEnabled(False)
         
         # Modbus RTU 종료
         if hasattr(self, 'modbus_client'):
             self.modbus_client.stop_reading()
             self.ecotap_timer.stop()
-
-        self.start_button.setEnabled(True)  # 시작 버튼 활성화
-        self.stop_button.setEnabled(False)  # 중지 버튼 비활성화
+            
         self.timer.stop()  # 타이머 중지
+        self.logger.log("ECOTAP Diagnosis Done.")
         self.status_label.setText('')  # 상태 라벨 초기화
         
     def update_progress(self, value, maximum):
