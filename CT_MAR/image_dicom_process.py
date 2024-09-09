@@ -17,8 +17,8 @@ compare_folder = 'C:\\Users\\tlab\\Documents\\ct_metal\\com'   # 비교할 DICOM
 processed_folder = 'C:\\Users\\tlab\\Documents\\ct_metal\\proc' # 처리된 DICOM 파일이 있는 폴더
 
 # ROI 설정(실제 분석에 맞게 수정 필요)
-signal_roi_coords = (250, 250, 280, 278) # 예: (x1, y1, x2, y2)
-noise_roi_coords = (27, 22, 88, 86)   # 예: (x1, y1, x2, y2)
+signal_roi_coords =  (218, 196, 307, 291) # 예: (x1, y1, x2, y2)
+noise_roi_coords =  (7, 26, 90, 105)  # 예: (x1, y1, x2, y2)
             
 def calculate_snr(signal_roi, noise_roi):
     signal_mean = np.mean(signal_roi)
