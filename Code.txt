@@ -162,12 +162,10 @@ python /home/tlab4090/Tlabb/ObjectDetection/myyolo/train.py
 ########################################YOLOV8
 conda create -n YOLOV8 python=3.8
 conda activate YOLOV8
-cd /home/tlab4090/Tlabb/ObjectDetection/CTA_YOLO
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV8
 python /home/tlab4090/Tlabb/ObjectDetection/CTA_YOLO/train.py
 
-
-cd /home/tlab4090/Tlabb/ObjectDetection/myyolo
-cd /home/tlab1004/Tlabb/ObjectDetection/myyolo
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV8
 pip install ultralytics
 
 #사용법
@@ -276,6 +274,13 @@ yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/da
 yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_spitial save=True
 
+
+
+#mammo
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True name=mammo_test
+
+
+
 #val
 yolo detect val data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/Tlabb/runs/detect/gauze_netinex/weights/best.pt' imgsz=512 batch=32 device=0 name=gauze save_json=True conf=0.1 name=conf0.1_0.85 iou=0.85
 
@@ -326,6 +331,14 @@ conda create -n YOLOnas python=3.8
 conda activate YOLOnas
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOnas
 
+
+############################################CT-MAR
+conda activate YOLOV8
+cd /home/tlab4090/Tlabb/CT_MAR/ADN
+python test.py  --gpu_id 0 --data_path "data/test/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
+
+
+rename 's/-//g' *
 
 
 ########################################Alphapose
@@ -428,6 +441,9 @@ python demo/image_demo.py --img /home/tlab4090/Tlabb/segman/mmlab/data/spine/ima
 cd /home/tlab4090/datasets/cityscapes/gtFine/ap
 cd /home/tlab4090/datasets/cityscapes/gtFine/lat
 rename -n 's/.png/.txt/' *.png
+rename 's/바꾸고싶은이름/바꿀이름/g' *.파일들 확장자
+
+
 2. 실행
 rename 's/.png/.txt/' *.png
 rename 's/.txt/.png/' *.txt
