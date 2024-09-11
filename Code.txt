@@ -333,13 +333,19 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOnas
 
 
 ############################################CT-MAR
-conda activate YOLOV8
+conda create --name marr python=3.9.18
+conda activate marr
+pip install astra-toolbox
+pip install oauthlib
+pip install odl
+pip install tensorboard-data-server
+pip install -r requirement_for_higher version_torch.txt
+
 cd /home/tlab4090/Tlabb/CT_MAR/ADN
 python test.py  --gpu_id 0 --data_path "data/test/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
 
-
-rename 's/-//g' *
-
+cd /home/tlab4090/Tlabb/CT_MAR/InDuDoNet/network/
+CUDA_VISIBLE_DEVICES=0 python test_clinic.py --data_path "CLINIC_metal/test/" --model_dir "pretrained_model/InDuDoNet_latest.pt" --save_path "results/CLINIC_metal/"
 
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
