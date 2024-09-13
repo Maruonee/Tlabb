@@ -331,21 +331,45 @@ conda create -n YOLOnas python=3.8
 conda activate YOLOnas
 cd /home/tlab1004/Tlabb/ObjectDetection/YOLOnas
 
+######################super resoultion############
+---------------------------DRCT------------------------
+git clone https://github.com/ming053l/DRCT.git
+conda create --name drct python=3.8 -y
+conda activate drct
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
+cd /home/tlab4090/Tlabb/super/drct
+pip install -r requirements.txt
+python setup.py develop
 
-############################################CT-MAR
-conda create --name marr python=3.9.18
-conda activate marr
-pip install astra-toolbox
-pip install oauthlib
-pip install odl
-pip install tensorboard-data-server
-pip install -r requirement_for_higher version_torch.txt
+python inference.py --input /home/tlab4090/datasets/images/ --output /home/tlab4090/datasets/output/ --model_path /home/tlab4090/Tlabb/super/drct/experiments/pretrained_models/DRCT-L_X4.pth
+----------------------------HMANet------------------------
+conda activate drct
+cd /home/tlab4090/Tlabb/super/HAT
+pip install -r requirements.txt
+python setup.py develop
 
-cd /home/tlab4090/Tlabb/CT_MAR/ADN
+python hat/test.py -opt options/test/HAT_GAN_Real_SRx4.yml
+#############################denosing############################
+conda activate nfanet
+cd /home/tlab4090/Tlabb/denoise/Restormer
+conda install pytorch=1.8 torchvision cudatoolkit=10.2 -c pytorch
+pip install matplotlib scikit-learn scikit-image opencv-python yacs joblib natsort h5py tqdm
+pip install einops gdown addict future lmdb numpy pyyaml requests scipy tb-nightly yapf lpips
+python setup.py develop --no_cuda_ext
+
+python demo.py --task Gaussian_Gray_Denoising --input_dir '/home/tlab4090/datasets/images/' --result_dir './demo/restored/'
+-----------------------PNGAN---------------------
+conda activate swinfir
+cd /home/tlab4090/Tlabb/denoise/PNGAN/
+
+python test_denoiser.py --method mirnet --input_dir /home/tlab4090/datasets/images/ --result_dir ./results/PolyU/ --weights /home/tlab4090/Tlabb/denoise/PNGAN/MIRNet_polyu.pth
+
+############################################CT-MAR(ADN)
+conda create --name swinfir python=3.7
+conda activate swinfir
+
+cd /home/tlab4090/Tlabb/CT_MAR/ADC_net
 python test.py  --gpu_id 0 --data_path "data/test/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
-
-cd /home/tlab4090/Tlabb/CT_MAR/InDuDoNet/network/
-CUDA_VISIBLE_DEVICES=0 python test_clinic.py --data_path "CLINIC_metal/test/" --model_dir "pretrained_model/InDuDoNet_latest.pt" --save_path "results/CLINIC_metal/"
 
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
@@ -364,7 +388,6 @@ python setup.py build develop
 python scripts/demo_inference.py --cfg configs/coco/resnet/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint pretrained_models/fast_421_res152_256x192.pth --indir /home/tlab1004/dataset/ChestPA/raw/train/Pass/ --outdir runs/exp --save_img --detector yolo --showbox --vis_fast
 
 ########################################MMLAb
-
 cd /home/tlab4090/Tlabb/Pose/mmpose
 conda create --name segmmlab python=3.8 -y
 conda activate segmmlab
