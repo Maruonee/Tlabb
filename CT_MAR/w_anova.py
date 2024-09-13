@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 import os
 
 #파일위치
-file = 'c:\\Users\\tlab\\Desktop\\chest_button_snr_cnr.xlsx'
+file = 'c:\\Users\\tlab\\Desktop\\sample.xlsx'
 
 #파일경로설정
 df = pd.read_excel(file)
 file_path = os.path.dirname(file)
-independent_name = df.columns[2]
+independent_name = df.columns[1]
 dependent_name = df.columns[3]
-independent_var = df.iloc[:, 2]  # C 행의 값이 독립변수
+independent_var = df.iloc[:, 1]  # C 행의 값이 독립변수
 dependent_var_data = df.iloc[:, 3]  # e 열의 첫 번째 값이 종속변수 이름
 
 # 고유한 독립변수 개수 감지 (중복 제거)
@@ -42,20 +42,23 @@ homogeneity_results_df = pd.DataFrame({
 homogeneity_results_df.to_csv(os.path.join(file_path, f'{dependent_name}_homogeneity_test_results.csv'), index=False)
 
 # Welch ANOVA 수행
-welch_anova_result = stats.ttest_ind(
-    *[dependent_var_data[independent_var == category] for category in unique_independent_vars], 
-    equal_var=False  # Welch ANOVA의 핵심 옵션
-)
+df_anova = pd.DataFrame({
+    independent_name: independent_var,
+    dependent_name: dependent_var_data
+})
+
+# OLS 모델 생성
+model = ols(f'{dependent_name} ~ C({independent_name})', data=df_anova).fit()
+
+
+# Welch ANOVA (robust='hc3' 옵션 사용)
+welch_anova_table = sm.stats.anova_lm(model, typ=2, robust='hc3')  # HC3는 비동질성을 허용하는 방법입니다.
 
 # Welch ANOVA 결과 저장
-welch_anova_results_df = pd.DataFrame({
-    'F-statistic': [welch_anova_result.statistic],
-    'p-value': [welch_anova_result.pvalue]
-})
 welch_anova_file_path = os.path.join(file_path, f'{dependent_name}_welch_anova_results.csv')
-welch_anova_results_df.to_csv(welch_anova_file_path, index=False)
+welch_anova_table.to_csv(welch_anova_file_path)
 
-# ANOVA 결과 시각화
+# Welch ANOVA 결과 시각화
 data_count = len(dependent_var_data)
 height = 6 
 width = max(10, data_count / 10)  # 데이터 개수에 비례하여 너비 조정
@@ -67,7 +70,7 @@ plt.xlabel(independent_name)
 plt.ylabel(dependent_name)
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig(os.path.join(file_path,f'{dependent_name}_boxplot_welch_anova.png'))
+plt.savefig(os.path.join(file_path, f'{dependent_name}_boxplot_welch_anova.png'))
 
 # Tukey HSD
 tukey_data = mc.pairwise_tukeyhsd(dependent_var_data, independent_var, alpha=0.05)

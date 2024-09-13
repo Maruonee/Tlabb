@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os
 
 #파일위치
-file = 'c:\\Users\\tlab\\Desktop\\chest_button_snr_cnr.xlsx'
+file = 'c:\\Users\\tlab\\Desktop\\abd.xlsx'
 
 #파일경로설정
 df = pd.read_excel(file)

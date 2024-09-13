@@ -12,13 +12,13 @@ import csv
 #         - 002.png
 ################################
 
-original_folder = 'C:\\Users\\tlab\\Documents\\ct_metal\\ori'  # 원본 PNG 파일이 있는 폴더
-compare_folder = 'C:\\Users\\tlab\\Documents\\ct_metal\\com'   # 비교할 PNG 파일이 있는 폴더
-processed_folder = 'C:\\Users\\tlab\\Documents\\ct_metal\\proc' # 처리된 PNG 파일이 있는 폴더
+original_folder = 'C:\\Users\\tlab\\Desktop\\origin'  # 원본 PNG 파일이 있는 폴더
+compare_folder = 'C:\\Users\\tlab\\Desktop\\superresoHAT'   # 비교할 PNG 파일이 있는 폴더
+processed_folder = 'C:\\Users\\tlab\\Desktop\\denoPNGAN' # 처리된 PNG 파일이 있는 폴더
 
 # ROI 설정(실제 분석에 맞게 수정 필요)
-signal_roi_coords = (250, 250, 280, 278)  # 예: (x1, y1, x2, y2)
-noise_roi_coords = (27, 22, 88, 86)  # 예: (x1, y1, x2, y2)
+signal_roi_coords = (220, 202, 311, 296)  # 예: (x1, y1, x2, y2)
+noise_roi_coords = (220, 202, 311, 296)  # 예: (x1, y1, x2, y2)
 
 def calculate_snr(signal_roi, noise_roi):
     signal_mean = np.mean(signal_roi)
@@ -29,14 +29,15 @@ def calculate_snr(signal_roi, noise_roi):
         snr = signal_mean / noise_std
         return snr
 
-def calculate_cnr(signal_roi, noise_roi):
-    mean_signal = np.mean(signal_roi)
-    mean_noise = np.mean(noise_roi)
-    noise_std = np.std(noise_roi)
+def calculate_cnr(roi_a, roi_b):
+    mean_a = np.mean(roi_a)
+    mean_b = np.mean(roi_b)
+    noise_std = np.std(roi_b) 
+    #분모 0일 경우
     if noise_std == 0:
         return np.inf
     else:
-        cnr = np.abs(mean_signal - mean_noise) / noise_std
+        cnr = np.abs(mean_a - mean_b) / noise_std
         return cnr
 
 def calculate_psnr(original_image, compared_image):
@@ -48,7 +49,11 @@ def calculate_psnr(original_image, compared_image):
     return psnr
 
 def calculate_ssim(original_image, compared_image):
-    ssim_value = structural_similarity(original_image, compared_image, data_range=compared_image.max() - compared_image.min())
+    # 두 이미지가 동일한 채널 수를 가지도록 변환하지 않고 다채널 이미지를 지원하도록 설정
+    if original_image.ndim == 3 and compared_image.ndim == 3:
+        ssim_value = structural_similarity(original_image, compared_image, multichannel=True)
+    else:
+        ssim_value = structural_similarity(original_image, compared_image)
     return ssim_value
 
 def process_files(original_folder, compare_folder, processed_folder, signal_roi_coords, noise_roi_coords):
@@ -57,7 +62,7 @@ def process_files(original_folder, compare_folder, processed_folder, signal_roi_
     processed_files = sorted([f for f in os.listdir(processed_folder) if f.endswith('.png')])
 
     # CSV 파일 경로 설정
-    output_csv = os.path.join(original_folder, 'output_results.csv')
+    output_csv = os.path.join(processed_folder, 'output_results.csv')
 
     with open(output_csv, mode='w', newline='') as csv_file:
         fieldnames = ['file_name', 'SNR (Original)', 'SNR (Compare)', 'SNR (Processed)',
