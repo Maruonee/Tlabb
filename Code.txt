@@ -364,12 +364,31 @@ cd /home/tlab4090/Tlabb/denoise/PNGAN/
 
 python test_denoiser.py --method mirnet --input_dir /home/tlab4090/datasets/images/ --result_dir ./results/PolyU/ --weights /home/tlab4090/Tlabb/denoise/PNGAN/MIRNet_polyu.pth
 
-############################################CT-MAR(ADN)
+############################################CT-MAR
+========================ADC==========================
 conda create --name swinfir python=3.7
 conda activate swinfir
 
 cd /home/tlab4090/Tlabb/CT_MAR/ADC_net
 python test.py  --gpu_id 0 --data_path "data/test/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
+
+========================DICDNet=========================
+conda create --name swinfir python=3.7
+conda activate swinfir
+
+cd /home/tlab4090/Tlabb/CT_MAR/DICDNet
+
+python3 test_DICDNet.py  --gpu_id 0 --data_path "data/test/" --model_dir "pretrain_model/DICDNet_latest.pt" --save_path "save_results/"
+
+=========================OSCNet=========================
+conda create --name swinfir python=3.7
+conda activate swinfir
+
+cd /home/tlab4090/Tlabb/CT_MAR/OSCNet
+
+python test.py  --gpu_id 0 --data_path "data/test/" --model "osc" --model_dir "pretrained_model/model_osc/net_latest.pt" --save_path "save_results/" --cdiv 1
+python test.py  --gpu_id 0 --data_path "data/test/" --model "oscplus" --model_dir "pretrained_model/model_oscplus/net_latest.pt" --save_path "save_results/" --cdiv 10
+
 
 ########################################Alphapose
 cd /home/tlab1004/Tlabb/Pose/AlphaPose
