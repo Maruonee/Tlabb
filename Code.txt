@@ -1,3 +1,16 @@
+classification 
+conda activate label
+python3 -m pip install tensorflow[and-cuda]
+conda install keras_preprocessing
+
+
+
+
+
+
+
+
+
 #########################################dataedit
 #install 
 conda create -n ConVformat python=3.8
@@ -144,8 +157,11 @@ python train.py --data data/coco_kpts.yaml --cfg cfg/yolov7-w6-pose.yaml --weigh
 python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --weights yolov7-w6-pose.pt --kpt-label
 
 #Pose detect
-python detect.py --weights '/media/tlab4090/96d2b314-5301-40da-9070-9edc55b99ba2/CT/학위논문/Results/Spitial/Object/yolov7/weights/best.pt' --source '/home/tlab4090/datasets/opt/test.txt' --conf-thres 0.5 --iou-thres 0.3 --save-txt --save-conf --name contrast
+python detect.py --weights '/home/tlab4090/datasets/sono_pene_v7/best.pt' --source '/home/tlab4090/Downloads/pene' --conf-thres 0.3 --iou-thres 0.2 --save-txt --save-conf --name sono_pene
 
+#Sono detect
+
+python detect.py --weights '/home/tlab1004/dataset/Con/results/CT_Con_YOLOV7_nontransfer/weights/best.pt' --source '/home/tlab1004/dataset/Con/images/*.tif' --device 0 --save-conf --save-txt --conf-thres 0.6 --name 'con0.6' --img-size 512
 
 
 ########################################YOLOV8_module
@@ -333,23 +349,27 @@ cd /home/tlab1004/Tlabb/ObjectDetection/YOLOnas
 
 ######################super resoultion############
 ---------------------------DRCT------------------------
-git clone https://github.com/ming053l/DRCT.git
-conda create --name drct python=3.8 -y
-conda activate drct
+conda create --name hatnet python=3.8 -y
+conda activate hatnet
 conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
 cd /home/tlab4090/Tlabb/super/drct
 pip install -r requirements.txt
 python setup.py develop
 
+conda activate hatnet
+cd /home/tlab4090/Tlabb/super/drct
 python inference.py --input /home/tlab4090/datasets/images/ --output /home/tlab4090/datasets/output/ --model_path /home/tlab4090/Tlabb/super/drct/experiments/pretrained_models/DRCT-L_X4.pth
-----------------------------HMANet------------------------
-conda activate drct
+----------------------------HATNet------------------------
+conda activate hatnet
 cd /home/tlab4090/Tlabb/super/HAT
 pip install -r requirements.txt
 python setup.py develop
 
-python hat/test.py -opt options/test/HAT_GAN_Real_SRx4.yml
+conda activate hatnet
+cd /home/tlab4090/Tlabb/super/HAT
 #############################denosing############################
+
+=------------------------restormer--------------------------------
 conda activate nfanet
 cd /home/tlab4090/Tlabb/denoise/Restormer
 conda install pytorch=1.8 torchvision cudatoolkit=10.2 -c pytorch
@@ -357,6 +377,8 @@ pip install matplotlib scikit-learn scikit-image opencv-python yacs joblib natso
 pip install einops gdown addict future lmdb numpy pyyaml requests scipy tb-nightly yapf lpips
 python setup.py develop --no_cuda_ext
 
+conda activate nfanet
+cd /home/tlab4090/Tlabb/denoise/Restormer
 python demo.py --task Gaussian_Gray_Denoising --input_dir '/home/tlab4090/datasets/images/' --result_dir './demo/restored/'
 -----------------------PNGAN---------------------
 conda activate swinfir
