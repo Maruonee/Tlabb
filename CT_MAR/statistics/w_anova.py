@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 import os
 
 #파일위치
-file = 'c:\\Users\\tlab\\Desktop\\sample.xlsx'
+file = 'c:\\Users\\tlab\\Desktop\\SSIM.xlsx'
 
 #파일경로설정
 df = pd.read_excel(file)
 file_path = os.path.dirname(file)
-independent_name = df.columns[1]
-dependent_name = df.columns[3]
-independent_var = df.iloc[:, 1]  # C 행의 값이 독립변수
-dependent_var_data = df.iloc[:, 3]  # e 열의 첫 번째 값이 종속변수 이름
+independent_name = df.columns[2]
+dependent_name = df.columns[4]
+independent_var = df.iloc[:, 2]  # C 행의 값이 독립변수
+dependent_var_data = df.iloc[:, 4]  # e 열의 첫 번째 값이 종속변수 이름
 
 # 고유한 독립변수 개수 감지 (중복 제거)
 unique_independent_vars = independent_var.unique()
@@ -53,10 +53,11 @@ model = ols(f'{dependent_name} ~ C({independent_name})', data=df_anova).fit()
 
 # Welch ANOVA (robust='hc3' 옵션 사용)
 welch_anova_table = sm.stats.anova_lm(model, typ=2, robust='hc3')  # HC3는 비동질성을 허용하는 방법입니다.
+pd.set_option('display.float_format', lambda x: '%.200f' % x)
 
 # Welch ANOVA 결과 저장
 welch_anova_file_path = os.path.join(file_path, f'{dependent_name}_welch_anova_results.csv')
-welch_anova_table.to_csv(welch_anova_file_path)
+welch_anova_table.to_csv(welch_anova_file_path, float_format='%.200f')
 
 # Welch ANOVA 결과 시각화
 data_count = len(dependent_var_data)

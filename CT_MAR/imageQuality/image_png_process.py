@@ -12,9 +12,9 @@ import csv
 #         - 002.png
 ################################
 
-original_folder = 'C:\\Users\\tlab\\Desktop\\origin'  # 원본 PNG 파일이 있는 폴더
-compare_folder = 'C:\\Users\\tlab\\Desktop\\superresoHAT'   # 비교할 PNG 파일이 있는 폴더
-processed_folder = 'C:\\Users\\tlab\\Desktop\\denoPNGAN' # 처리된 PNG 파일이 있는 폴더
+original_folder = 'C:\\Users\\tlab\\Desktop\\ct_mar\\opendata\\tissue\\tissue_metal'  # 원본 PNG 파일이 있는 폴더
+compare_folder = 'C:\\Users\\tlab\\Desktop\\ct_mar\\opendata\\tissue\\nmar'   # 비교할 PNG 파일이 있는 폴더
+processed_folder = 'C:\\Users\\tlab\\Desktop\\ct_mar\\opendata\\tissue\\tissue_acd' # 처리된 PNG 파일이 있는 폴더
 
 # ROI 설정(실제 분석에 맞게 수정 필요)
 signal_roi_coords = (220, 202, 311, 296)  # 예: (x1, y1, x2, y2)

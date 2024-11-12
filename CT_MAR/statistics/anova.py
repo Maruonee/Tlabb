@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 import os
 
 #파일위치
-file = 'c:\\Users\\tlab\\Desktop\\abd.xlsx'
+file = 'c:\\Users\\tlab\\Desktop\\SSIM.xlsx'
 
 #파일경로설정
 df = pd.read_excel(file)
 file_path = os.path.dirname(file)
 independent_name = df.columns[2]
-dependent_name = df.columns[3]
+dependent_name = df.columns[4]
 independent_var = df.iloc[:, 2]  # C 행의 값이 독립변수
-dependent_var_data = df.iloc[:, 3]  # e 열의 첫 번째 값이 종속변수 이름
+dependent_var_data = df.iloc[:, 4]  # e 열의 첫 번째 값이 종속변수 이름
 
 # 고유한 독립변수 개수 감지 (중복 제거)
 unique_independent_vars = independent_var.unique()
@@ -41,18 +41,30 @@ homogeneity_results_df = pd.DataFrame({
 })
 homogeneity_results_df.to_csv(os.path.join(file_path, f'{dependent_name}_homogeneity_test_results.csv'), index=False)
 
-# ANOVA 검정 수행
 df_anova = pd.DataFrame({
     independent_name: independent_var,
     dependent_name: dependent_var_data
 })
+
+# 독립 변수를 범주형으로 명시적으로 변환
+df_anova[independent_name] = df_anova[independent_name].astype('category')
+
+# 결측치 제거 (선택적)
+df_anova.dropna(subset=[independent_name, dependent_name], inplace=True)
+
+# ANOVA 모델 생성 및 수행
 model = ols(f'{dependent_name} ~ C({independent_name})', data=df_anova).fit()
-anova_table = sm.stats.anova_lm(model, typ=2)
+
+# ANOVA 검정 - typ=3으로 수정
+anova_table = sm.stats.anova_lm(model, typ=3)
+pd.set_option('display.float_format', lambda x: '%.200f' % x)
 
 # ANOVA 테이블 결과를 CSV 파일로 저장
 anova_file_path = os.path.join(file_path, f'{dependent_name}_anova_results.csv')
-anova_table.to_csv(anova_file_path)
+anova_table.to_csv(anova_file_path, float_format='%.200f')
 
+# ANOVA 결과 출력
+print(anova_table)
 # ANOVA 결과
 data_count = len(dependent_var_data)
 height = 6 
