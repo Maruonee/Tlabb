@@ -25,7 +25,7 @@ import numpy as np
 import os
 
 # 폴더설정
-folder_path = 'C:\\Users\\tlab\\Desktop\\onlyimage'
+folder_path = 'C:\\Users\\tlab\\Desktop\\ct_mar\\opendata\\tissue\\tissue_origin'
 
 
 def metal_segmentation(ct_image, threshold=2000):
