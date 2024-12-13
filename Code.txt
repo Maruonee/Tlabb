@@ -1,16 +1,15 @@
-classification 
-conda activate label
+#########################################classification 
+conda create -n classes python=3.8
 python3 -m pip install tensorflow[and-cuda]
-conda install keras_preprocessing
+pip install knockknock
+conda install -c conda-forge keras-preprocessing
+pip install Keras-Preprocessing
+pip install keras==2.9
+pip install patchify
 
 
-
-
-
-
-
-
-
+conda activate classes
+python3 /home/tlab4090/Tlabb/classfication/TensorClass/Predict.py
 #########################################dataedit
 #install 
 conda create -n ConVformat python=3.8
@@ -84,7 +83,7 @@ conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11
 
 #activate
 conda activate YOLOV5
-cd /home/tlab1004/Tlabb/ObjectDetection/YOLOV5
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV5
 
 #Pre train(optimizer hyperparameter)
 python train.py --cfg /home/tlab1004/dataset/opt/yolov5n.yaml --data /home/tlab1004/dataset/opt/coco128.yaml --batch 32 --epochs 10 --cache --evolve --img 512
@@ -97,10 +96,17 @@ python train.py --cfg /home/tlab1004/dataset/opt/yolov5m.yaml --data /home/tlab1
 #detect
 python detect.py --weights /home/tlab1004/dataset/Con/results/CT_Con_YOLOV5_transfer/weights/best.pt --source '/home/tlab1004/dataset/Con/images/*.tif' --save-conf --save-txt --conf-thres 0.7 --save-crop --line-thickness 1 --name 'con0.7' 
 
+
+python detect.py --weights '/home/tlab4090/datasets/sono_pene_v5/best.pt' --source '/home/tlab4090/Downloads/pene' --conf-thres 0.1 --iou-thres 0.1 --save-txt --save-conf --name sono_pene0.1
+
+
+
 #eval
 python val.py --data /home/tlab/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV5.pt --img 512
 
 python val.py --data /home/tlab1004/dataset/opt/coco128.yaml --weights /home/tlab1004/dataset/data/two/YOLOV3.pt --img 512
+
+
 ########################################YOLOR
 #install	
 conda create -n YOLORR python=3.8
@@ -157,7 +163,10 @@ python train.py --data data/coco_kpts.yaml --cfg cfg/yolov7-w6-pose.yaml --weigh
 python test.py --data data/coco_kpts.yaml --img 960 --conf 0.001 --iou 0.65 --weights yolov7-w6-pose.pt --kpt-label
 
 #Pose detect
-python detect.py --weights '/home/tlab4090/datasets/sono_pene_v7/best.pt' --source '/home/tlab4090/Downloads/pene' --conf-thres 0.3 --iou-thres 0.2 --save-txt --save-conf --name sono_pene
+python detect.py --weights '/home/tlab4090/datasets/sono_pene_v7/best.pt' --source '/home/tlab4090/Downloads/pene' --conf-thres 0.3 --iou-thres 0.1 --save-txt --save-conf --name sono_pene0.3
+
+#Pose detect
+python detect.py --weights '/home/tlab4090/datasets/sono_pene_v5/best.pt' --source '/home/tlab4090/Downloads/pene' --conf-thres 0.3 --iou-thres 0.3 --save-txt --save-conf --name sono_pene0.3
 
 #Sono detect
 
@@ -281,7 +290,7 @@ copy_paste	0.0	segment copy-paste (probability)
 
 
 #train
-yolo train model=None data='/home/tlab1004/dataset/opt/coco.yaml' batch=32 epochs=500 imgsz=512 save=True device=0 workers=16 name=gauze_normal
+
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model=/home/tlab4090/datasets/opt/yolov8n.yaml epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8cbam.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
@@ -291,6 +300,7 @@ yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epoch
 yolo train model=yolov6n.yaml data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 name=ct_spitial save=True
 
 
+yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
 
 #mammo
 yolo train data='/home/tlab4090/datasets/opt/coco.yaml' model='/home/tlab4090/datasets/opt/yolov8.yaml' epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True name=mammo_test
@@ -330,6 +340,40 @@ yolo detect train data='/home/tlab4090/datasets/opt/coco.yaml' model=/home/tlab4
 
 #predict  (default, conf 0.25 / iou 0.7)
 yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov3/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov3; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov5/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov5; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov6/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov6; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov7/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov7; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov8/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov8; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov8l/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov8l; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov8x/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov8x; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov9c/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov9c; yolo detect predict model='/home/tlab4090/Tlabb/runs/detect/yolov9e/weights/best.pt' source='/home/tlab4090/datasets/opt/test.txt' device=0 save_txt=True augment=True save_conf=True save_crop=True line_width=2 save=True workers=32 name=yolov9e;
+
+
+======================YOLOV11========================
+conda create -n YOLOV11 python=3.9
+conda activate YOLOV11
+cd /home/tlab4090/Tlabb/ObjectDetection/YOLOV11
+pip install git+https://github.com/ultralytics/ultralytics.git@main
+
+https://github.com/ultralytics/ultralytics
+
+train
+yolo train model=yolo11n.pt data='/home/tlab4090/datasets/opt/coco.yaml' epochs=300 imgsz=512 batch=32 device=0 workers=32 save=True
+
+#predict  (default, conf 0.25 / iou 0.7)
+yolo predict model=/home/tlab4090/datasets/best.pt source=/home/tlab4090/datasets/opt/test.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ########################################seg
 yolo segment train data=/home/tlab4090/datasets/opt/coco128-seg.yaml model=yolov8n-seg.yaml epochs=500 imgsz=512 batch=32 device=0 workers=32 save=True cache=True patience=0
@@ -394,6 +438,7 @@ conda activate swinfir
 cd /home/tlab4090/Tlabb/CT_MAR/ADC_net
 python test.py  --gpu_id 0 --data_path "data/test/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
 
+python test.py  --gpu_id 0 --data_path "data/h5/" --model_dir "models/ACDNet_latest.pt" --save_path "save_results/"
 ========================DICDNet=========================
 conda create --name swinfir python=3.7
 conda activate swinfir

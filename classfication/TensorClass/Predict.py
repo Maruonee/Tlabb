@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 import os
 from knockknock import slack_sender
-from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 from keras_preprocessing.image import ImageDataGenerator
 from keras.models import load_model
@@ -14,13 +13,13 @@ webhook_slack = "https://hooks.slack.com/services/T03DKNCH7RB/B04L95D4R8S/b0WFvA
 slack_channel = "#chestpa"
 
 #데이터 및 컴퓨터 설정
-img_dir = '/home/tlab4090/Downloads/resolution'
+img_dir = '/home/tlab4090/datasets/pene'
 class_num = 2
 cpu_core = 16 
 classes_name = ["Fail", "Pass"]
 custom_class_mode = 'categorical'#"categorical", "binary", "sparse", "input", "other",'None'
 #모델설정
-model_dir = "/home/tlab4090/datasets/sono_resol/DenseNet201_Best.h5"
+model_dir = "/home/tlab4090/datasets/sono_pene/DenseNet201_Fine_tuning.h5"
 model_name = "DenseNet201"
 #하이퍼파라미터 설정
 custom_batch = 16
@@ -40,7 +39,7 @@ predict_dataset = predict_datagen.flow_from_directory(
     )
 
 #모델불러오기
-model = load_model(model_dir, custom_objects={"recall_m": recall_m, "precision_m" : precision_m, "f1_score_m" : f1_score_m})
+model = load_model(model_dir, custom_objects={"recall_m": recall_m, "precision_m" : precision_m, "f1_score_m" : f1_score_m},compile=False)
 model.summary()
 
 @slack_sender(webhook_url=webhook_slack, channel=slack_channel)
