@@ -648,16 +648,20 @@ class DataCollectorApp(QWidget):
         perform_tap_up_down(1, 1, 60)
 
     def toggle_minute_checkbox(self):
+        """1분 설정 체크박스 동작"""
         if self.minute_checkbox.isChecked():  # 1분 체크박스가 체크되면
             self.duration_input.setText('60')  # 주기를 60초로 설정
             self.duration_input.setEnabled(False)  # 입력란 비활성화
+            self.month_checkbox.setChecked(False)  # 1개월 설정 해제
         else:
             self.duration_input.setEnabled(True)  # 입력란 활성화
 
     def toggle_month_checkbox(self):
+        """1개월 설정 체크박스 동작"""
         if self.month_checkbox.isChecked():  # 1개월 체크박스가 체크되면
             self.repeat_num_input.setText('43200')  # 반복 횟수를 43200으로 설정
             self.repeat_num_input.setEnabled(False)  # 입력란 비활성화
+            self.minute_checkbox.setChecked(False)  # 1분 설정 해제
         else:
             self.repeat_num_input.setEnabled(True)  # 입력란 활성화
 
@@ -691,10 +695,20 @@ class DataCollectorApp(QWidget):
     def start_collection(self):
        self.savedir = self.savedir_input.text()  # 저장 경로 설정
        self.duration = int(self.duration_input.text())  # 주기 설정
+       self.repeat_num = int(self.repeat_num_input.text())  # 반복 횟수 설정
+       self.stop_event = threading.Event()  # 중지 이벤트 설정
+       
+       print(f"[DEBUG] Duration: {self.duration}, Repeat Num: {self.repeat_num}")
+       self.logger.log(f"Starting collection with Duration: {self.duration}, Repeat: {self.repeat_num}")
+
+       self.progress_bar.setMaximum(self.duration)  # 진행률 바 최대값 설정
+       self.progress_bar.setValue(0)  # 진행률 바 초기값 설정
+       self.total_progress_bar.setMaximum(self.repeat_num)  # 총 진행률 바 최대값 설정
+       self.total_progress_bar.setValue(0)  # 총 진행률 바 초기값 설정
+       
        self.baud_rate = int(self.baud_rate_input.text())  # 보드 레이트 설정
        self.serial_port = self.serial_port_input.text()  # 시리얼 포트 설정
        self.ecotap_port = self.ecotap_port_input.text()  # ecotap 포트 설정
-       self.repeat_num = int(self.repeat_num_input.text())  # 반복 횟수 설정
        self.exp_num = int(self.exp_num_input.text())  # 실험 번호 설정
        self.exp_date = self.exp_date_input.text()  # 실험 날짜 설정
        self.audio_samplerate = int(self.audio_samplerate_input.text())  # 샘플링 레이트 설정
@@ -707,9 +721,7 @@ class DataCollectorApp(QWidget):
        self.tap_down_button.setEnabled(True)
        self.test_1_button.setEnabled(True)
        self.test_2_button.setEnabled(True)      
-       
-       self.stop_event = threading.Event()  # 중지 이벤트 설정
-       
+              
        self.logger.log(f"ECOTAP Diagnosis Start\nCycle: {self.duration} sec\nRepeat: {self.repeat_num}\nData save path: {getattr(self, 'sensor_recordings_folder_path', 'Vibration sensor not connected')}\nData save path: {self.audio_recordings_folder_path}\n")  # 시작 로그 출력
 
        if self.machine_error == 0:
@@ -747,11 +759,6 @@ class DataCollectorApp(QWidget):
 
        self.start_button.setEnabled(False)  # 시작 버튼 비활성화
        self.stop_button.setEnabled(True)  # 중지 버튼 활성화
-
-       self.progress_bar.setMaximum(100)  # 진행률 바 최대값 설정
-       self.progress_bar.setValue(0)  # 진행률 바 초기값 설정
-       self.total_progress_bar.setMaximum(100)  # 총 진행률 바 최대값 설정
-       self.total_progress_bar.setValue(0)  # 총 진행률 바 초기값 설정
 
     def stop_collection(self):
         self.stop_event.set()  # 중지 이벤트 설정
