@@ -317,7 +317,7 @@ class RootechAccura(QObject):
     def __init__(self, accura_ip, folder_path, exp_date, exp_num, port=502, interval=0.1):
         super().__init__()
         self.master = modbus_tcp.TcpMaster(host=accura_ip, port=port)
-        self.master.set_timeout(0.1)
+        self.master.set_timeout(1)
         
         self.folder_path = folder_path
         self.exp_date = exp_date
@@ -360,11 +360,18 @@ class RootechAccura(QObject):
     def to_float32(self, high, low):
         raw = (high << 16) | low
         return struct.unpack('>f', raw.to_bytes(4, byteorder='big'))[0]
-
+    
     def read_registers(self):
-        with self.lock:
-            voltage_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11100, 16)
-            current_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11200, 8)
+        retry_number = 3000  # 최대 재시도 횟수
+        for attempt in range(retry_number):
+            try:
+                with self.lock:  # Modbus 호출 동기화
+                    voltage_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11100, 16)
+                    current_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11200, 8)
+                break  # 요청 성공 시 루프 종료
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                time.sleep(0.5)  # 재시도 전에 대기
 
         # 전압 데이터 
         voltage_data = {
