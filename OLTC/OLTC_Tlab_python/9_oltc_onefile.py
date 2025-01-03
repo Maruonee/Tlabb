@@ -4,8 +4,6 @@ pip install pyinstaller
 pyinstaller --onefile --windowed --icon=ecotap.ico 8_oltc_onefile.py
 
 """
-
-
 import sys  # 시스템 관련 모듈
 import os  # 운영체제 관련 모듈
 import threading  # 멀티스레딩 관련 모듈
@@ -21,8 +19,13 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer  # PyQt5 핵�
 import time
 import serial
 import modbus_tk.defines as cst
-from modbus_tk import modbus_tcp
+from modbus_tk import modbus_rtu
+
+
+###ECOTAP VPD가 TCP/IP일 경우 수정
 # from modbus_tk import modbus_rtu
+ecotap_ip = '192.168.0.173'
+
 
 machine_error = 0  # 기계 오류 상태
 
@@ -35,7 +38,7 @@ class Logger(QObject):
     def log(self, message):
         self.log_signal.emit(message)  # 로그 신호 방출
 
-class RecorderWorker(QObject):
+class SoundRecorder(QObject):
     progress_signal = pyqtSignal(int, int)  # 진행률 신호 정의
     total_progress_signal = pyqtSignal(int, int)  # 총 진행률 신호 정의
     log_signal = pyqtSignal(str)  # 로그 신호 정의
@@ -89,7 +92,7 @@ class RecorderWorker(QObject):
         ex.sound_plot.ax.set_title("Sound")  # 그래프 제목 설정
         ex.sound_plot.draw()  # 그래프 업데이트
 
-class DataCollectorWorker(QObject):
+class VibrationRecorder(QObject):
     progress_signal = pyqtSignal(int, int)
     total_progress_signal = pyqtSignal(int, int)
     log_signal = pyqtSignal(str)
@@ -214,27 +217,31 @@ class PlotCanvas(FigureCanvas):
         self.ax.set_title(title)  # 그래프 제목 설정
         self.ax.plot([])  # 빈 그래프 초기화
 
-class ModbusRTUClient:
-    def __init__(self, ecotap_port, folder_path, exp_date, exp_num, ip_address='192.168.0.173', interval=0.1):
+class EcotapRecorder:
+    def __init__(self, ecotap_port, folder_path, exp_date, exp_num, ecotap_ip, interval=0.1):
         super().__init__()
-        ## 시리얼 포트 설정
-        # self.serial_port = serial.Serial(
-        #     port=ecotap_port,            
-        #     baudrate=38400,       
-        #     parity=serial.PARITY_EVEN,
-        #     stopbits=serial.STOPBITS_ONE, 
-        #     bytesize=serial.EIGHTBITS,
-        #     timeout=0.1 
-        # )
-        # self.master = modbus_rtu.RtuMaster(self.serial_port) 
-        
-        # TCP/IP 설정
-        self.master = modbus_tcp.TcpMaster(host=ip_address)
-        self.interval = interval  # 읽기 간격
+        self.ecotap_ip = ecotap_ip
 
-        self.master.set_timeout(1.0)
-        self.master.set_verbose(True)
-        self.stop_event = threading.Event()
+        ###ECOTAP VPD가 TCP/IP일 경우 수정
+        # self.master = modbus_tcp.TcpMaster(host=ecotap_ip)
+        # self.interval = interval  # 읽기 간격
+        
+        
+        ## 시리얼 포트 설정
+        self.serial_port = serial.Serial(
+            port=ecotap_port,            
+            baudrate=38400,       
+            parity=serial.PARITY_EVEN,
+            stopbits=serial.STOPBITS_ONE, 
+            bytesize=serial.EIGHTBITS,
+            timeout=0.1 
+        )
+        self.master = modbus_rtu.RtuMaster(self.serial_port) 
+        
+
+        self.master.set_timeout(0.1) 
+        self.master.set_verbose(True) 
+        self.stop_event = threading.Event() 
         
         self.folder_path = folder_path  # 데이터 저장 폴더 경로
         self.exp_date = exp_date  # 실험 날짜
@@ -254,7 +261,7 @@ class ModbusRTUClient:
         tap_op = holding_registers[3]  # 탭 동작횟수
         tap_de_voltage = holding_registers[6] # 탭 원하는 전압
         tap_position = holding_registers[1]  # 탭 위치
-        tap_voltage = input_registers[0] / 2  # 탭 전압         
+        tap_voltage = input_registers[0] / 2  # 탭 전압        
         tap_mode_raw = holding_registers[0]
         if  tap_mode_raw == 1:
             tap_mode = "AVR AUTO"
@@ -268,8 +275,8 @@ class ModbusRTUClient:
 
     def start_reading(self):
         self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
-        # TCP/IP 설정
-        self.thread = threading.Thread(target=self._update_registers) 
+        self.thread = threading.Thread(target=self._update_registers)
+        
         self.thread.start()
 
     def _update_registers(self):
@@ -289,10 +296,11 @@ class ModbusRTUClient:
     def stop_reading(self):
         self.stop_event.set()
         self.thread.join()
-        ## 시리얼  포트설정
-        # self.serial_port.close()
-        # TCP/IP 설정
-        self.master._do_close() 
+        # 시리얼 포트 설정
+        self.serial_port.close()
+        
+        ###ECOTAP VPD가 TCP/IP일 경우 수정
+        # self.master._do_close() 
     
     def get_latest_data(self):
         return self.read_registers()
@@ -312,13 +320,14 @@ class ModbusRTUClient:
         self.master.execute(1, cst.WRITE_SINGLE_COIL, 1, output_value=0)
 
 class DataCollectorApp(QWidget):
-    def __init__(self, machine_error):
+    def __init__(self, machine_error, ecotap_ip):
         super().__init__()
         self.tap_op = 0  # Tap Operations 초기값 설정
         self.tap_position = 0  # Tap Position 초기값 설정
         self.tap_voltage = 0  # Tap Voltage 초기값 설정
         self.tap_de_voltage = 0
         self.tap_mode = ''
+        self.ecotap_ip = ecotap_ip
         self.ecotap_port = ''  # ecotap_port 초기값 설정
         self.initUI()  # UI 초기화
         self.logger = Logger()  # 로그 객체 생성
@@ -391,9 +400,9 @@ class DataCollectorApp(QWidget):
         self.test_1_button.setEnabled(False)
         self.test_2_button.setEnabled(False)
         
-        self.no_modbus_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
-        self.no_modbus_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
-        ecotap_status_layout.addWidget(self.no_modbus_checkbox)  # Modbus 미연결 체크박스 추가  
+        self.no_ecotap_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
+        self.no_ecotap_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
+        ecotap_status_layout.addWidget(self.no_ecotap_checkbox)  # Modbus 미연결 체크박스 추가  
         ecotap_status_frame.setLayout(ecotap_status_layout)  # ECOTAP 상태 프레임에 레이아웃 설정
         left_panel_layout.addWidget(ecotap_status_frame)  # 좌측 패널 레이아웃에 ECOTAP 상태 프레임 추가
 
@@ -546,7 +555,7 @@ class DataCollectorApp(QWidget):
     def tap_up_action(self):
         def run_tap_up():
             self.logger.log("Tap Up")  # address 0 의 값을 1로 변경
-            self.modbus_client.tap_up()
+            self.ecotap_client.tap_up()
 
         # Tap Up 버튼 비활성화
         self.tap_up_button.setEnabled(False)
@@ -563,7 +572,7 @@ class DataCollectorApp(QWidget):
     def tap_down_action(self):
         def run_tap_down():
             self.logger.log("Tap Down")  # address 1 의 값을 1로 변경
-            self.modbus_client.tap_down()
+            self.ecotap_client.tap_down()
 
         # Tap Down 버튼 비활성화
         self.tap_up_button.setEnabled(False)
@@ -672,7 +681,7 @@ class DataCollectorApp(QWidget):
             self.baud_rate_input.setEnabled(True)  # 보드 레이트 입력란 활성화
 
     def toggle_modbus_sensor(self):
-        if self.no_modbus_checkbox.isChecked():  # Modbus 미연결 체크박스가 체크되면
+        if self.no_ecotap_checkbox.isChecked():  # Modbus 미연결 체크박스가 체크되면
             self.ecotap_port_input.setEnabled(False)  # Modbus 포트 입력란 비활성화
             self.tap_up_button.setEnabled(False)  # Tap Up 버튼 비활성화
             self.tap_down_button.setEnabled(False)  # Tap Down 버튼 비활성화
@@ -695,7 +704,7 @@ class DataCollectorApp(QWidget):
        self.duration = int(self.duration_input.text())  # 주기 설정
        self.repeat_num = int(self.repeat_num_input.text())  # 반복 횟수 설정
        self.stop_event = threading.Event()  # 중지 이벤트 설정
-       
+           # **디버깅용 로그 출력**
        print(f"[DEBUG] Duration: {self.duration}, Repeat Num: {self.repeat_num}")
        self.logger.log(f"Starting collection with Duration: {self.duration}, Repeat: {self.repeat_num}")
 
@@ -703,7 +712,7 @@ class DataCollectorApp(QWidget):
        self.progress_bar.setValue(0)  # 진행률 바 초기값 설정
        self.total_progress_bar.setMaximum(self.repeat_num)  # 총 진행률 바 최대값 설정
        self.total_progress_bar.setValue(0)  # 총 진행률 바 초기값 설정
-       
+              
        self.baud_rate = int(self.baud_rate_input.text())  # 보드 레이트 설정
        self.serial_port = self.serial_port_input.text()  # 시리얼 포트 설정
        self.ecotap_port = self.ecotap_port_input.text()  # ecotap 포트 설정
@@ -714,7 +723,7 @@ class DataCollectorApp(QWidget):
        if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
            self.sensor_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sensors')  # 센서 데이터 저장 폴더 생성
        self.audio_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sound')  # 사운드 데이터 저장 폴더 생성
-       
+       self.ecotap_ip = self.ecotap_ip
        self.tap_up_button.setEnabled(True)
        self.tap_down_button.setEnabled(True)
        self.test_1_button.setEnabled(True)
@@ -729,30 +738,30 @@ class DataCollectorApp(QWidget):
        elif self.machine_error == 2:
            self.timer.start(100)  # 타이머 시작 (0.1초 간격)
 
-       self.recorder_worker = RecorderWorker(self.duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 녹음 작업자 설정
+       self.sound_recorder = SoundRecorder(self.duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 녹음 작업자 설정
        self.recorder_thread = QThread()  # 녹음 스레드 설정
-       self.recorder_worker.moveToThread(self.recorder_thread)  # 녹음 작업자를 스레드로 이동
-       self.recorder_worker.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
-       self.recorder_worker.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
-       self.recorder_worker.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
-       self.recorder_worker.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
+       self.sound_recorder.moveToThread(self.recorder_thread)  # 녹음 작업자를 스레드로 이동
+       self.sound_recorder.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
+       self.sound_recorder.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
+       self.sound_recorder.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
+       self.sound_recorder.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
 
        if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
-           self.data_collector_worker = DataCollectorWorker(self.duration, self.baud_rate, self.serial_port, self.sensor_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 데이터 수집 작업자 설정
+           self.vibration_recorder = VibrationRecorder(self.duration, self.baud_rate, self.serial_port, self.sensor_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 데이터 수집 작업자 설정
            self.data_collector_thread = QThread()  # 데이터 수집 스레드 설정
-           self.data_collector_worker.moveToThread(self.data_collector_thread)  # 데이터 수집 작업자를 스레드로 이동
-           self.data_collector_worker.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
-           self.data_collector_worker.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
-           self.data_collector_worker.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
-           self.data_collector_worker.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
-           self.data_collector_thread.started.connect(self.data_collector_worker.run)  # 스레드 시작 시 실행할 메서드 연결
+           self.vibration_recorder.moveToThread(self.data_collector_thread)  # 데이터 수집 작업자를 스레드로 이동
+           self.vibration_recorder.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
+           self.vibration_recorder.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
+           self.vibration_recorder.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
+           self.vibration_recorder.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
+           self.data_collector_thread.started.connect(self.vibration_recorder.run)  # 스레드 시작 시 실행할 메서드 연결
            self.data_collector_thread.start()  # 데이터 수집 스레드 시작
 
-       self.recorder_thread.started.connect(self.recorder_worker.run)  # 스레드 시작 시 실행할 메서드 연결
+       self.recorder_thread.started.connect(self.sound_recorder.run)  # 스레드 시작 시 실행할 메서드 연결
        self.recorder_thread.start()  # 녹음 스레드 시작
 
-       if not self.no_modbus_checkbox.isChecked():  # Modbus가 연결된 경우
-           self.modbus_client = ModbusRTUClient(self.ecotap_port, self.ecotap_recordings_folder_path, self.exp_date, self.exp_num)
+       if not self.no_ecotap_checkbox.isChecked():  # Modbus가 연결된 경우
+           self.ecotap_client = EcotapRecorder(self.ecotap_port, self.ecotap_recordings_folder_path, self.exp_date, self.exp_num, self.ecotap_ip)
            self.ecotap_timer.start(1000)  # ECOTAP 데이터 업데이트 타이머 시작 (1초 간격)
 
        self.start_button.setEnabled(False)  # 시작 버튼 비활성화
@@ -768,8 +777,8 @@ class DataCollectorApp(QWidget):
         self.recorder_thread.wait()  # 녹음 스레드 종료 대기
 
         # Modbus RTU 데이터 읽기 중지
-        if hasattr(self, 'modbus_client'):
-            self.modbus_client.stop_reading()
+        if hasattr(self, 'ecotap_client'):
+            self.ecotap_client.stop_reading()
             self.ecotap_timer.stop()  # ECOTAP 데이터 업데이트 타이머 중지
 
         self.start_button.setEnabled(True)  # 시작 버튼 활성화
@@ -798,8 +807,8 @@ class DataCollectorApp(QWidget):
         self.tap_down_button.setEnabled(False)
         
         # Modbus RTU 종료
-        if hasattr(self, 'modbus_client'):
-            self.modbus_client.stop_reading()
+        if hasattr(self, 'ecotap_client'):
+            self.ecotap_client.stop_reading()
             self.ecotap_timer.stop()
             
         self.timer.stop()  # 타이머 중지
@@ -840,8 +849,8 @@ class DataCollectorApp(QWidget):
         self.status_visible = not self.status_visible  # 상태 가시성 토글
 
     def update_ecotap_status(self):
-        if hasattr(self, 'modbus_client'):
-            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode= self.modbus_client.get_latest_data()
+        if hasattr(self, 'ecotap_client'):
+            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode= self.ecotap_client.get_latest_data()
             self.tap_mode_label.setText(f'Operating mode: {tap_mode}')
             self.tap_op_label.setText(f'Tap Operations: {tap_op}')
             self.tap_position_label.setText(f'Tap Position: {tap_position}')
@@ -851,6 +860,6 @@ class DataCollectorApp(QWidget):
 if __name__ == '__main__':
     global ex
     app = QApplication(sys.argv)  # QApplication 객체 생성
-    ex = DataCollectorApp(machine_error)  # DataCollectorApp 객체 생성
+    ex = DataCollectorApp(machine_error, ecotap_ip)  # DataCollectorApp 객체 생성
     ex.show()  # 앱 창 표시
     sys.exit(app.exec_())  # 앱 실행 및 종료

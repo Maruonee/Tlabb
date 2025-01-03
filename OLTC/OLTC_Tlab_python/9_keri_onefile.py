@@ -4,8 +4,6 @@ pip install pyinstaller
 pyinstaller --onefile --windowed --icon=ecotap.ico 8_oltc_onefile.py
 
 """
-
-
 import sys  # 시스템 관련 모듈
 import os  # 운영체제 관련 모듈
 import threading  # 멀티스레딩 관련 모듈
@@ -16,15 +14,26 @@ import soundfile as sf  # 사운드 파일 저장 모듈
 import numpy as np  # 수치 계산 모듈
 import matplotlib.pyplot as plt  # 그래프 그리기 모듈
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas  # Matplotlib을 PyQt5에 통합
-from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QProgressBar, QTextEdit, QGroupBox, QCheckBox)  # PyQt5 위젯들
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QProgressBar, QTextEdit, QGroupBox, QCheckBox  # PyQt5 위젯들
 from PyQt5.QtCore import pyqtSignal, QObject, QThread, Qt, QTimer  # PyQt5 핵심 모듈
 import time
 import serial
 import modbus_tk.defines as cst
-from modbus_tk import modbus_tcp
-# from modbus_tk import modbus_rtu
+import struct
+import csv
+from modbus_tk import modbus_rtu, modbus_tcp
+
+ecotap_ip = '192.168.0.173'
+accura_ip = '169.254.6.188'
 
 machine_error = 0  # 기계 오류 상태
+
+
+def create_folder(savedir, exp_date, exp_num, suffix):
+    folder_name = f"{exp_date}_{exp_num}_{suffix}"  # 폴더 이름 생성
+    recordings_folder_path = os.path.join(savedir, str(exp_date), str(exp_num), folder_name)  # 폴더 경로 생성
+    os.makedirs(recordings_folder_path, exist_ok=True)  # 폴더 생성
+    return recordings_folder_path  # 폴더 경로 반환
 
 class Logger(QObject):
     log_signal = pyqtSignal(str)  # 로그 신호 정의
@@ -34,8 +43,9 @@ class Logger(QObject):
 
     def log(self, message):
         self.log_signal.emit(message)  # 로그 신호 방출
+import threading
 
-class RecorderWorker(QObject):
+class SoundRecorder(QObject):
     progress_signal = pyqtSignal(int, int)  # 진행률 신호 정의
     total_progress_signal = pyqtSignal(int, int)  # 총 진행률 신호 정의
     log_signal = pyqtSignal(str)  # 로그 신호 정의
@@ -51,45 +61,53 @@ class RecorderWorker(QObject):
         self.exp_date = exp_date  # 실험 날짜
         self.exp_num = exp_num  # 실험 번호
         self.stop_event = stop_event  # 중지 이벤트
+        self.lock = threading.Lock()  # Lock 객체 생성
 
     def run(self):
-        for i in range(self.repeat_num):  # 반복 횟수 만큼 녹음 실행
+        for i in range(self.repeat_num):  # 반복 횟수만큼 녹음 실행
             if self.stop_event.is_set():  # 중지 이벤트가 설정되면
                 break
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # 현재 시간을 타임스탬프로 저장
             folder_name = f"{self.exp_date}_{self.exp_num}_sound"  # 폴더 이름 생성
             filename = os.path.join(self.folder_path, f'{folder_name}_{timestamp}.wav')  # 파일 이름 생성
+
             recording = sd.rec(int(self.duration * self.samplerate), samplerate=self.samplerate, channels=self.channels)  # 녹음 시작
             for second in range(self.duration):  # 녹음 시간 동안 반복
                 if self.stop_event.is_set():  # 중지 이벤트가 설정되면
-                    sd.stop()  # 녹음 중지
-                    sf.write(filename, recording[:int(second * self.samplerate)], self.samplerate, format='FLAC')  # 파일 저장
-                    self.log_signal.emit(f"{filename} saved.")  # 로그 출력
+                    with self.lock:  # 파일 저장에 대한 동기화
+                        sd.stop()  # 녹음 중지
+                        sf.write(filename, recording[:int(second * self.samplerate)], self.samplerate, format='FLAC')  # 파일 저장
+                        self.log_signal.emit(f"{filename} saved.")  # 로그 출력
                     return
                 self.progress_signal.emit(int(((second + 1) / self.duration) * 100), 100)  # 진행률 업데이트
                 time.sleep(1)  # 1초 대기
+
             if self.stop_event.is_set():  # 중지 이벤트가 설정되면
                 break
+
             sd.wait()  # 녹음 완료 대기
-            sf.write(filename, recording, self.samplerate, format='FLAC')  # 파일 저장
-            self.log_signal.emit(f"{filename} saved.")  # 로그 출력
+            with self.lock:  # 파일 저장에 대한 동기화
+                sf.write(filename, recording, self.samplerate, format='FLAC')  # 파일 저장
+                self.log_signal.emit(f"{filename} saved.")  # 로그 출력
+
             self.progress_signal.emit(100, 100)  # 진행률 100% 설정
             self.total_progress_signal.emit(int(((i + 1) / self.repeat_num) * 100), 100)  # 총 진행률 업데이트
 
             threading.Thread(target=self.plot_sound, args=(filename,)).start()  # 별도 스레드에서 그래프 그리기
-        
+
         self.finished_signal.emit()  # 완료 신호 방출
 
     def plot_sound(self, filename):
-        data, samplerate = sf.read(filename)  # 파일 읽기
-        duration = len(data) / samplerate  # 녹음 길이 계산
-        time = np.linspace(0., duration, len(data))  # 시간 배열 생성
-        ex.sound_plot.ax.clear()  # 기존 그래프 지우기
-        ex.sound_plot.ax.plot(time, data)  # 새 그래프 그리기
-        ex.sound_plot.ax.set_title("Sound")  # 그래프 제목 설정
-        ex.sound_plot.draw()  # 그래프 업데이트
+        with self.lock:  # 그래프 그리기 작업 동기화
+            data, samplerate = sf.read(filename)  # 파일 읽기
+            duration = len(data) / samplerate  # 녹음 길이 계산
+            time = np.linspace(0., duration, len(data))  # 시간 배열 생성
+            ex.sound_plot.ax.clear()  # 기존 그래프 지우기
+            ex.sound_plot.ax.plot(time, data)  # 새 그래프 그리기
+            ex.sound_plot.ax.set_title("Sound")  # 그래프 제목 설정
+            ex.sound_plot.draw()  # 그래프 업데이트
 
-class DataCollectorWorker(QObject):
+class VibrationRecorder(QObject):
     progress_signal = pyqtSignal(int, int)
     total_progress_signal = pyqtSignal(int, int)
     log_signal = pyqtSignal(str)
@@ -200,12 +218,6 @@ class DataCollectorWorker(QObject):
         else:
             self.log_signal.emit("No valid VR1 data found in file for plotting.")
 
-def create_folder(savedir, exp_date, exp_num, suffix):
-    folder_name = f"{exp_date}_{exp_num}_{suffix}"  # 폴더 이름 생성
-    recordings_folder_path = os.path.join(savedir, str(exp_date), str(exp_num), folder_name)  # 폴더 경로 생성
-    os.makedirs(recordings_folder_path, exist_ok=True)  # 폴더 생성
-    return recordings_folder_path  # 폴더 경로 반환
-
 class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100, title=""):
         fig, self.ax = plt.subplots(figsize=(width, height), dpi=dpi)  # 그래프 설정
@@ -214,62 +226,53 @@ class PlotCanvas(FigureCanvas):
         self.ax.set_title(title)  # 그래프 제목 설정
         self.ax.plot([])  # 빈 그래프 초기화
 
-class ModbusRTUClient:
-    def __init__(self, ecotap_port, folder_path, exp_date, exp_num, ip_address='192.168.0.173', interval=0.1):
+class EcotapRecorder(QObject):
+    def __init__(self, ecotap_port, folder_path, exp_date, exp_num, ecotap_ip, interval=0.1):
         super().__init__()
-        ## 시리얼 포트 설정
-        # self.serial_port = serial.Serial(
-        #     port=ecotap_port,            
-        #     baudrate=38400,       
-        #     parity=serial.PARITY_EVEN,
-        #     stopbits=serial.STOPBITS_ONE, 
-        #     bytesize=serial.EIGHTBITS,
-        #     timeout=0.1 
-        # )
-        # self.master = modbus_rtu.RtuMaster(self.serial_port) 
-        
-        # TCP/IP 설정
-        self.master = modbus_tcp.TcpMaster(host=ip_address)
-        self.interval = interval  # 읽기 간격
+        self.ecotap_ip = ecotap_ip
+        # 시리얼 포트 설정
+        self.serial_port = serial.Serial(
+            port=ecotap_port,
+            baudrate=38400,
+            parity=serial.PARITY_EVEN,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=0.1
+        )
+        self.master = modbus_rtu.RtuMaster(self.serial_port)
+        self.master.timeout = 0.1
 
-        self.master.set_timeout(1.0)
-        self.master.set_verbose(True)
-        self.stop_event = threading.Event()
-        
         self.folder_path = folder_path  # 데이터 저장 폴더 경로
         self.exp_date = exp_date  # 실험 날짜
         self.exp_num = exp_num  # 실험 번호
-        
+        self.interval = interval
+        self.stop_event = threading.Event()
+        self.lock = threading.Lock()  # Lock 객체 생성
+
         if not os.path.exists(self.folder_path):
             os.makedirs(self.folder_path)  # 폴더가 없으면 생성
+
         # 데이터 읽기 시작
-        self.start_reading()
 
     def read_registers(self):
-        # 홀딩 레지스터 읽기 (슬레이브 ID: 1, 시작 주소: 0, 레지스터 수: 7)
-        holding_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 0, 7)
-        # 입력 레지스터 읽기 (슬레이브 ID: 1, 시작 주소: 3, 레지스터 수: 1)
-        input_registers = self.master.execute(1, cst.READ_INPUT_REGISTERS, 3, 1)
-        # 데이터 형식 결정 및 출력
+        with self.lock:  # Modbus 작업 동기화
+            # 홀딩 레지스터 읽기
+            holding_registers = self.master.read_holding_registers(1, count=7).registers
+            # 입력 레지스터 읽기
+            input_registers = self.master.read_input_registers(3, count=1).registers
         tap_op = holding_registers[3]  # 탭 동작횟수
-        tap_de_voltage = holding_registers[6] # 탭 원하는 전압
+        tap_de_voltage = holding_registers[6]  # 탭 원하는 전압
         tap_position = holding_registers[1]  # 탭 위치
-        tap_voltage = input_registers[0] / 2  # 탭 전압         
+        tap_voltage = input_registers[0] / 2  # 탭 전압
+
         tap_mode_raw = holding_registers[0]
-        if  tap_mode_raw == 1:
-            tap_mode = "AVR AUTO"
-        elif tap_mode_raw == 2:
-            tap_mode = "AVR MANUAL"
-        elif tap_mode_raw == 3:
-            tap_mode = "EXTERNAL CONTROL"
-        else:
-            tap_mode = "INVALID MODE"
+        tap_mode = {1: "AVR AUTO", 2: "AVR MANUAL", 3: "EXTERNAL CONTROL"}.get(tap_mode_raw, "INVALID MODE")
+
         return tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode
 
     def start_reading(self):
-        self.stop_event.clear()  # 스레드를 중지시키기 위한 이벤트 초기화
-        # TCP/IP 설정
-        self.thread = threading.Thread(target=self._update_registers) 
+        self.stop_event.clear()
+        self.thread = threading.Thread(target=self._update_registers)
         self.thread.start()
 
     def _update_registers(self):
@@ -277,48 +280,225 @@ class ModbusRTUClient:
             tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode = self.read_registers()
             self.save_to_file(tap_op, tap_de_voltage, tap_position, tap_voltage)
             time.sleep(0.1)
-        self.stop_event.set()  # 작업이 완료되면 스레드를 중지시킴
+        self.stop_event.set()
 
     def save_to_file(self, tap_op, tap_de_voltage, tap_position, tap_voltage):
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # 현재 시간을 타임스탬프로 저장
-        folder_name = f"{self.exp_date}_{self.exp_num}_ecotap"  # 폴더 이름 생성
-        filename = os.path.join(self.folder_path, f'{folder_name}.txt')  # 파일 경로 생성
-        with open(filename, "a") as f:
-            f.write(f"{timestamp}, Desire Voltage: {tap_de_voltage}V, Tap Operations Counter: {tap_op}, Current Tap Position: {tap_position}, Current Tap Voltage: {tap_voltage}V\n")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        folder_name = f"{self.exp_date}_{self.exp_num}_ecotap"
+        filename = os.path.join(self.folder_path, f'{folder_name}.txt')
         
+        with self.lock:  # 파일 쓰기 동기화
+            with open(filename, "a") as f:
+                f.write(f"{timestamp}, Desire Voltage: {tap_de_voltage}V, Tap Operations Counter: {tap_op}, "
+                        f"Current Tap Position: {tap_position}, Current Tap Voltage: {tap_voltage}V\n")
+
     def stop_reading(self):
         self.stop_event.set()
         self.thread.join()
-        ## 시리얼  포트설정
-        # self.serial_port.close()
-        # TCP/IP 설정
-        self.master._do_close() 
-    
+        with self.lock:  # 시리얼 포트 닫기 동기화
+            self.serial_port.close()
+
     def get_latest_data(self):
         return self.read_registers()
 
     def tap_up(self):
-        # Coil address 1의 status를 1로 변경
-        self.master.execute(1, cst.WRITE_SINGLE_COIL, 0, output_value=1)
-        time.sleep(1)
-        # 1초 후에 Coil address 1의 status를 0으로 변경
-        self.master.execute(1, cst.WRITE_SINGLE_COIL, 0, output_value=0)
+        with self.lock:  # Coil 제어 동기화
+            self.master.write_coil(1, True)
+            time.sleep(1)
+            self.master.write_coil(1, False)
 
     def tap_down(self):
-        # Coil address 0의 status를 1로 변경
-        self.master.execute(1, cst.WRITE_SINGLE_COIL, 1, output_value=1)
-        time.sleep(1)
-        # 1초 후에 Coil address 0의 status를 0으로 변경
-        self.master.execute(1, cst.WRITE_SINGLE_COIL, 1, output_value=0)
+        with self.lock:  # Coil 제어 동기화
+            self.master.write_coil(0, True)
+            time.sleep(1)
+            self.master.write_coil(0, False)
 
+class RootechAccura(QObject):
+    def __init__(self, accura_ip, folder_path, exp_date, exp_num, port=502, interval=0.1):
+        super().__init__()
+        self.master = modbus_tcp.TcpMaster(host=accura_ip, port=port)
+        self.master.set_timeout(0.1)
+        
+        self.folder_path = folder_path
+        self.exp_date = exp_date
+        self.exp_num = exp_num
+        self.interval = interval
+        self.stop_event = threading.Event()
+        self.lock = threading.Lock() 
+
+        if not os.path.exists(self.folder_path):
+            os.makedirs(self.folder_path) 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        # self.plot_signal.connect(self.voltage_plot)
+        # self.plot_signal.connect(self.current_plot)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # 데이터 읽기 시작
+        self.start_reading()
+        
+    #전압 전류 데이터 float32임
+    def to_float32(self, high, low):
+        raw = (high << 16) | low
+        return struct.unpack('>f', raw.to_bytes(4, byteorder='big'))[0]
+
+    def read_registers(self):
+        with self.lock:
+            voltage_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11100, 16)
+            current_registers = self.master.execute(1, cst.READ_HOLDING_REGISTERS, 11200, 8)
+
+        # 전압 데이터 
+        voltage_data = {
+            "VLN_A": self.to_float32(voltage_registers[0], voltage_registers[1]),
+            "VLN_B": self.to_float32(voltage_registers[2], voltage_registers[3]),
+            "VLN_C": self.to_float32(voltage_registers[4], voltage_registers[5]),
+            "VLN_AVG": self.to_float32(voltage_registers[6], voltage_registers[7]),
+            "VLL_AB": self.to_float32(voltage_registers[8], voltage_registers[9]),
+            "VLL_BC": self.to_float32(voltage_registers[10], voltage_registers[11]),
+            "VLL_CA": self.to_float32(voltage_registers[12], voltage_registers[13]),
+            "VLL_AVG": self.to_float32(voltage_registers[14], voltage_registers[15]),
+        }
+        # 전류 데이터 
+        current_data = {
+            "I_A": self.to_float32(current_registers[0], current_registers[1]),
+            "I_B": self.to_float32(current_registers[2], current_registers[3]),
+            "I_C": self.to_float32(current_registers[4], current_registers[5]),
+            "I_AVG": self.to_float32(current_registers[6], current_registers[7]),
+        }
+        return voltage_data, current_data
+
+    def start_reading(self):
+        self.stop_event.clear()
+        self.thread = threading.Thread(target=self._update_registers)
+        self.thread.start()
+
+    def _update_registers(self):
+        while not self.stop_event.is_set():
+            voltage_data, current_data = self.read_registers()
+            self.save_to_csv("volt", voltage_data)
+            self.save_to_csv("current", current_data)
+            time.sleep(0.1)
+
+    def save_to_csv(self, data_type, data):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        folder_name = f"{self.exp_date}_{self.exp_num}_accura"
+        filename = os.path.join(self.folder_path, f"{folder_name}_{data_type}.csv")
+        
+        while True:
+            try:
+                file_exists = os.path.isfile(filename)
+                with self.lock, open(filename, "a", newline='') as f:
+                    writer = csv.writer(f)
+                    if not file_exists:
+                        headers = ["Timestamp"] + list(data.keys())
+                        writer.writerow(headers)
+                    row = [timestamp] + list(data.values())
+                    writer.writerow(row)
+                break  # 저장 성공 시 루프 종료
+            except PermissionError:
+                time.sleep(0.1)  # 짧은 대기 후 재시도
+            except Exception as e:
+                break  # 다른 예외 발생 시 루프 종료
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # def plot_vibration(self, filename):
+    #     voltage_average_values = []
+        
+    #     def voltage_average_values(file_path):
+    #         voltage_average_values = []
+    #         with open(file_path, 'r') as file:
+    #             for line in file:
+    #                 match = re.search(r'VR1\s*:\s*(\d+)', line)
+    #                 if match:
+    #                     voltage_average_values = int(match.group(1))
+    #                     voltage_average_values.append(voltage_average_values)
+    #         return voltage_average_values
+
+    #     voltage_average_values = voltage_average_values(filename)
+        
+    #     if voltage_average_values:
+    #         ex.voltage_plot.ax.clear()
+    #         ex.voltage_plot.ax.plot(voltage_average_values, label="Vibration Data", marker='o', linestyle='-', markersize=3, linewidth=0.8)
+    #         ex.voltage_plot.ax.set_title("Vibration")
+    #         ex.voltage_plot.ax.set_xlabel("time")
+    #         ex.voltage_plot.ax.set_ylabel("Value")
+    #         ex.voltage_plot.ax.legend()
+    #         ex.voltage_plot.draw()
+    #     else:
+    #         self.log_signal.emit("No valid data found in file for plotting.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def stop_reading(self):
+        self.stop_event.set()
+        if self.thread.is_alive():
+            self.thread.join()
+        self.master._do_close()
+
+    def get_latest_data(self):
+        return self.read_registers()
+            
 class DataCollectorApp(QWidget):
-    def __init__(self, machine_error):
+    def __init__(self, machine_error, ecotap_ip, accura_ip):
         super().__init__()
         self.tap_op = 0  # Tap Operations 초기값 설정
         self.tap_position = 0  # Tap Position 초기값 설정
         self.tap_voltage = 0  # Tap Voltage 초기값 설정
         self.tap_de_voltage = 0
         self.tap_mode = ''
+        self.ecotap_ip = ecotap_ip #TECOTAP ip(TCP/TP연결시)
+        self.accura_ip = accura_ip #Rootech accura ip
         self.ecotap_port = ''  # ecotap_port 초기값 설정
         self.initUI()  # UI 초기화
         self.logger = Logger()  # 로그 객체 생성
@@ -391,9 +571,9 @@ class DataCollectorApp(QWidget):
         self.test_1_button.setEnabled(False)
         self.test_2_button.setEnabled(False)
         
-        self.no_modbus_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
-        self.no_modbus_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
-        ecotap_status_layout.addWidget(self.no_modbus_checkbox)  # Modbus 미연결 체크박스 추가  
+        self.no_ecotap_checkbox = QCheckBox("Not connected")  # Modbus 미연결 체크박스 설정
+        self.no_ecotap_checkbox.stateChanged.connect(self.toggle_modbus_sensor)  # 체크박스 상태 변경 연결
+        ecotap_status_layout.addWidget(self.no_ecotap_checkbox)  # Modbus 미연결 체크박스 추가  
         ecotap_status_frame.setLayout(ecotap_status_layout)  # ECOTAP 상태 프레임에 레이아웃 설정
         left_panel_layout.addWidget(ecotap_status_frame)  # 좌측 패널 레이아웃에 ECOTAP 상태 프레임 추가
 
@@ -420,13 +600,46 @@ class DataCollectorApp(QWidget):
 
         self.sound_plot = PlotCanvas(self, title="Sound")  # 사운드 그래프 설정
         self.vibration_plot = PlotCanvas(self, title="Vibration")  # 진동 그래프 설정
-        self.voltage_plot = PlotCanvas(self, title="Voltage")  # 전압 그래프 설정
-        self.current_plot = PlotCanvas(self, title="Current")  # 전류 그래프 설정
+        self.voltage_plot = PlotCanvas(self, title="Average Voltage, acuura ip")  # 전압 그래프 설정
+        self.current_plot = PlotCanvas(self, title="Average Current")  # 전류 그래프 설정
 
         plot_layout.addWidget(self.sound_plot)  # 그래프 레이아웃에 사운드 그래프 추가
         plot_layout.addWidget(self.vibration_plot)  # 그래프 레이아웃에 진동 그래프 추가
-        plot_layout.addWidget(self.voltage_plot)  # 그래프 레이아웃에 전압 그래프 추가
-        plot_layout.addWidget(self.current_plot)  # 그래프 레이아웃에 전류 그래프 추가
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        # plot_layout.addWidget(self.voltage_plot)  # 그래프 레이아웃에 전압 그래프 추가
+        # plot_layout.addWidget(self.current_plot)  # 그래프 레이아웃에 전류 그래프 추가
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         vibration_frame = QGroupBox('Vibration')  # 진동 설정 프레임 설정
         vibration_layout = QHBoxLayout()  # 진동 설정 레이아웃 설정
@@ -470,7 +683,6 @@ class DataCollectorApp(QWidget):
         exp_layout.addWidget(self.exp_num_input)  # 데이터 이름 설정 레이아웃에 입력란 추가
         exp_frame.setLayout(exp_layout)  # 데이터 이름 설정 프레임에 레이아웃 설정
         mid_panel_layout.addWidget(exp_frame)  # 좌측 패널 레이아웃에 데이터 이름 설정 프레임 추가
-        
         duration_frame = QGroupBox('Diagnosis setup')  # 진단 설정 프레임 설정
         duration_layout = QHBoxLayout()  # 진단 설정 레이아웃 설정
         self.duration_label = QLabel('Sec')  # 주기 라벨 설정
@@ -546,7 +758,7 @@ class DataCollectorApp(QWidget):
     def tap_up_action(self):
         def run_tap_up():
             self.logger.log("Tap Up")  # address 0 의 값을 1로 변경
-            self.modbus_client.tap_up()
+            self.ecotap_client.tap_up()
 
         # Tap Up 버튼 비활성화
         self.tap_up_button.setEnabled(False)
@@ -563,7 +775,7 @@ class DataCollectorApp(QWidget):
     def tap_down_action(self):
         def run_tap_down():
             self.logger.log("Tap Down")  # address 1 의 값을 1로 변경
-            self.modbus_client.tap_down()
+            self.ecotap_client.tap_down()
 
         # Tap Down 버튼 비활성화
         self.tap_up_button.setEnabled(False)
@@ -642,8 +854,8 @@ class DataCollectorApp(QWidget):
                 self.tap_up_button.setEnabled(True)
                 self.tap_down_button.setEnabled(True)
 
-        # Tap Up 1번, Tap Down 1번 실행하는 루틴을 60번 반복
-        perform_tap_up_down(1, 1, 60)
+        # Tap Up 1번, Tap Down 1번 실행하는 루틴을 600번 반복
+        perform_tap_up_down(1, 1, 600)
 
     def toggle_minute_checkbox(self):
         """1분 설정 체크박스 동작"""
@@ -672,7 +884,7 @@ class DataCollectorApp(QWidget):
             self.baud_rate_input.setEnabled(True)  # 보드 레이트 입력란 활성화
 
     def toggle_modbus_sensor(self):
-        if self.no_modbus_checkbox.isChecked():  # Modbus 미연결 체크박스가 체크되면
+        if self.no_ecotap_checkbox.isChecked():  # Modbus 미연결 체크박스가 체크되면
             self.ecotap_port_input.setEnabled(False)  # Modbus 포트 입력란 비활성화
             self.tap_up_button.setEnabled(False)  # Tap Up 버튼 비활성화
             self.tap_down_button.setEnabled(False)  # Tap Down 버튼 비활성화
@@ -695,7 +907,7 @@ class DataCollectorApp(QWidget):
        self.duration = int(self.duration_input.text())  # 주기 설정
        self.repeat_num = int(self.repeat_num_input.text())  # 반복 횟수 설정
        self.stop_event = threading.Event()  # 중지 이벤트 설정
-       
+           # **디버깅용 로그 출력**
        print(f"[DEBUG] Duration: {self.duration}, Repeat Num: {self.repeat_num}")
        self.logger.log(f"Starting collection with Duration: {self.duration}, Repeat: {self.repeat_num}")
 
@@ -703,24 +915,29 @@ class DataCollectorApp(QWidget):
        self.progress_bar.setValue(0)  # 진행률 바 초기값 설정
        self.total_progress_bar.setMaximum(self.repeat_num)  # 총 진행률 바 최대값 설정
        self.total_progress_bar.setValue(0)  # 총 진행률 바 초기값 설정
-       
        self.baud_rate = int(self.baud_rate_input.text())  # 보드 레이트 설정
        self.serial_port = self.serial_port_input.text()  # 시리얼 포트 설정
        self.ecotap_port = self.ecotap_port_input.text()  # ecotap 포트 설정
        self.exp_num = int(self.exp_num_input.text())  # 실험 번호 설정
        self.exp_date = self.exp_date_input.text()  # 실험 날짜 설정
        self.audio_samplerate = int(self.audio_samplerate_input.text())  # 샘플링 레이트 설정
-       self.ecotap_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'ecotap')  # 센서 데이터 저장 폴더 생성
-       if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
-           self.sensor_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sensors')  # 센서 데이터 저장 폴더 생성
+    
+       self.ecotap_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'ecotap')  # ECOTAP 데이터 저장 폴더 생성
+    
+       self.accura_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'accura')  # 잔압,전류 데이터 저장 폴더 생성
+    
+       self.sensor_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sensors')  # 센서 데이터 저장 폴더 생성
+       
        self.audio_recordings_folder_path = create_folder(self.savedir, self.exp_date, self.exp_num, 'sound')  # 사운드 데이터 저장 폴더 생성
        
+       self.ecotap_ip = self.ecotap_ip
+       self.accura_ip = self.accura_ip
        self.tap_up_button.setEnabled(True)
        self.tap_down_button.setEnabled(True)
        self.test_1_button.setEnabled(True)
        self.test_2_button.setEnabled(True)      
               
-       self.logger.log(f"ECOTAP Diagnosis Start\nCycle: {self.duration} sec\nRepeat: {self.repeat_num}\nData save path: {getattr(self, 'sensor_recordings_folder_path', 'Vibration sensor not connected')}\nData save path: {self.audio_recordings_folder_path}\n")  # 시작 로그 출력
+       self.logger.log(f"ECOTAP Diagnosis Start\nCycle: {self.duration} sec\nRepeat: {self.repeat_num}\nData save path: {getattr(self, 'sensor_recordings_folder_path')}\nData save path: {self.audio_recordings_folder_path}\n")  # 시작 로그 출력
 
        if self.machine_error == 0:
            self.timer.start(500)  # 타이머 시작 (0.5초 간격)
@@ -729,31 +946,41 @@ class DataCollectorApp(QWidget):
        elif self.machine_error == 2:
            self.timer.start(100)  # 타이머 시작 (0.1초 간격)
 
-       self.recorder_worker = RecorderWorker(self.duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 녹음 작업자 설정
-       self.recorder_thread = QThread()  # 녹음 스레드 설정
-       self.recorder_worker.moveToThread(self.recorder_thread)  # 녹음 작업자를 스레드로 이동
-       self.recorder_worker.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
-       self.recorder_worker.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
-       self.recorder_worker.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
-       self.recorder_worker.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
+       self.sound_recorder = SoundRecorder(self.duration, self.audio_samplerate, 2, self.audio_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 녹음 작업자 설정
+       self.sound_recorder_thread = QThread()  # 녹음 스레드 설정
+       self.sound_recorder.moveToThread(self.sound_recorder_thread)  # 녹음 작업자를 스레드로 이동
+       self.sound_recorder.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
+       self.sound_recorder.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
+       self.sound_recorder.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
+       self.sound_recorder.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
+       self.sound_recorder_thread.started.connect(self.sound_recorder.run)  # 스레드 시작 시 실행할 소리녹음 메서드 연결
+       self.sound_recorder_thread.start()  # 소리 녹음 스레드 시작
 
        if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
-           self.data_collector_worker = DataCollectorWorker(self.duration, self.baud_rate, self.serial_port, self.sensor_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 데이터 수집 작업자 설정
-           self.data_collector_thread = QThread()  # 데이터 수집 스레드 설정
-           self.data_collector_worker.moveToThread(self.data_collector_thread)  # 데이터 수집 작업자를 스레드로 이동
-           self.data_collector_worker.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
-           self.data_collector_worker.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
-           self.data_collector_worker.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
-           self.data_collector_worker.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
-           self.data_collector_thread.started.connect(self.data_collector_worker.run)  # 스레드 시작 시 실행할 메서드 연결
-           self.data_collector_thread.start()  # 데이터 수집 스레드 시작
-
-       self.recorder_thread.started.connect(self.recorder_worker.run)  # 스레드 시작 시 실행할 메서드 연결
-       self.recorder_thread.start()  # 녹음 스레드 시작
-
-       if not self.no_modbus_checkbox.isChecked():  # Modbus가 연결된 경우
-           self.modbus_client = ModbusRTUClient(self.ecotap_port, self.ecotap_recordings_folder_path, self.exp_date, self.exp_num)
+           self.vibration_recorder = VibrationRecorder(self.duration, self.baud_rate, self.serial_port, self.sensor_recordings_folder_path, self.repeat_num, self.exp_date, self.exp_num, self.stop_event)  # 진동 데이터 수집 작업자 설정
+           self.vibration_sound_recorder_thread = QThread()  # 진동 데이터 수집 스레드 설정
+           self.vibration_recorder.moveToThread(self.vibration_sound_recorder_thread)  # 진동 데이터 수집 작업자를 스레드로 이동
+           self.vibration_recorder.progress_signal.connect(self.update_progress)  # 진행률 업데이트 연결
+           self.vibration_recorder.total_progress_signal.connect(self.update_total_progress)  # 총 진행률 업데이트 연결
+           self.vibration_recorder.log_signal.connect(self.logger.log)  # 로그 업데이트 연결
+           self.vibration_recorder.finished_signal.connect(self.collection_finished)  # 완료 신호 연결
+           self.vibration_sound_recorder_thread.started.connect(self.vibration_recorder.run)  # 스레드 시작 시 실행할 진동메서드 연결
+           self.vibration_sound_recorder_thread.start()  # 진동 데이터 수집 스레드 시작
+                      
+       if not self.no_ecotap_checkbox.isChecked():  # ECOTAP이 연결된 경우
+           self.ecotap_client = EcotapRecorder(self.ecotap_port, self.ecotap_recordings_folder_path, self.exp_date, self.exp_num, self.ecotap_ip)
+           self.ecotap_recorder_thread = QThread()  # ECOTAP 스레드 설정
+           self.ecotap_client.moveToThread(self.ecotap_recorder_thread)  # ECOTAP 작업자를 스레드로 이동
+           self.ecotap_recorder_thread.started.connect(self.ecotap_client.start_reading)  # 스레드 시작 시 실행할 ECOTAP 메서드 연결
+           self.ecotap_recorder_thread.start()
            self.ecotap_timer.start(1000)  # ECOTAP 데이터 업데이트 타이머 시작 (1초 간격)
+           
+       self.accura_client = RootechAccura(self.accura_ip, self.accura_recordings_folder_path, self.exp_date, self.exp_num) #Accura 데이터 수집 작업자 설정
+       self.accura_recorder_thread = QThread()  # Accura 스레드 설정
+       self.accura_client.moveToThread(self.accura_recorder_thread)  # Accura 작업자를 스레드로 이동
+       self.accura_recorder_thread.started.connect(self.accura_client.start_reading)  # 스레드 시작 시 실행할 Accura 메서드 연결
+       self.accura_recorder_thread.start()
+           
 
        self.start_button.setEnabled(False)  # 시작 버튼 비활성화
        self.stop_button.setEnabled(True)  # 중지 버튼 활성화
@@ -762,14 +989,18 @@ class DataCollectorApp(QWidget):
         self.stop_event.set()  # 중지 이벤트 설정
         
         if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
-            self.data_collector_thread.quit()  # 데이터 수집 스레드 중지
-            self.data_collector_thread.wait()  # 데이터 수집 스레드 종료 대기
-        self.recorder_thread.quit()  # 녹음 스레드 중지
-        self.recorder_thread.wait()  # 녹음 스레드 종료 대기
+            self.vibration_sound_recorder_thread.quit()  # 데이터 수집 스레드 중지
+            self.vibration_sound_recorder_thread.wait()  # 데이터 수집 스레드 종료 대기
+            
+        self.sound_recorder_thread.quit()  # 녹음 스레드 중지
+        self.sound_recorder_thread.wait()  # 녹음 스레드 종료 대기
 
-        # Modbus RTU 데이터 읽기 중지
-        if hasattr(self, 'modbus_client'):
-            self.modbus_client.stop_reading()
+        self.accura_recorder_thread.quit()  # Accura 스레드 중지
+        self.accura_recorder_thread.wait()  # Accura 스레드 종료 대기
+
+        # ECOTAP 데이터 중지
+        if hasattr(self, 'ecotap_client'):
+            self.ecotap_client.stop_reading()
             self.ecotap_timer.stop()  # ECOTAP 데이터 업데이트 타이머 중지
 
         self.start_button.setEnabled(True)  # 시작 버튼 활성화
@@ -785,10 +1016,10 @@ class DataCollectorApp(QWidget):
     def collection_finished(self):
         self.stop_event.set()  # 모든 작업 중지
         if not self.no_vibration_sensor_checkbox.isChecked():  # 진동 센서가 연결된 경우
-            self.data_collector_thread.quit()  # 데이터 수집 스레드 중지
-            self.data_collector_thread.wait()  # 데이터 수집 스레드 종료 대기
-        self.recorder_thread.quit()  # 녹음 스레드 중지
-        self.recorder_thread.wait()  # 녹음 스레드 종료 대기
+            self.vibration_sound_recorder_thread.quit()  # 데이터 수집 스레드 중지
+            self.vibration_sound_recorder_thread.wait()  # 데이터 수집 스레드 종료 대기
+        self.sound_recorder_thread.quit()  # 녹음 스레드 중지
+        self.sound_recorder_thread.wait()  # 녹음 스레드 종료 대기
                 
         self.start_button.setEnabled(True)  # 시작 버튼 활성화
         self.stop_button.setEnabled(False)  # 중지 버튼 비활성화
@@ -797,9 +1028,9 @@ class DataCollectorApp(QWidget):
         self.tap_up_button.setEnabled(False)
         self.tap_down_button.setEnabled(False)
         
-        # Modbus RTU 종료
-        if hasattr(self, 'modbus_client'):
-            self.modbus_client.stop_reading()
+        # ECOTAP종료
+        if hasattr(self, 'ecotap_client'):
+            self.ecotap_client.stop_reading()
             self.ecotap_timer.stop()
             
         self.timer.stop()  # 타이머 중지
@@ -840,8 +1071,8 @@ class DataCollectorApp(QWidget):
         self.status_visible = not self.status_visible  # 상태 가시성 토글
 
     def update_ecotap_status(self):
-        if hasattr(self, 'modbus_client'):
-            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode= self.modbus_client.get_latest_data()
+        if hasattr(self, 'ecotap_client'):
+            tap_op, tap_de_voltage, tap_position, tap_voltage, tap_mode= self.ecotap_client.get_latest_data()
             self.tap_mode_label.setText(f'Operating mode: {tap_mode}')
             self.tap_op_label.setText(f'Tap Operations: {tap_op}')
             self.tap_position_label.setText(f'Tap Position: {tap_position}')
@@ -851,6 +1082,6 @@ class DataCollectorApp(QWidget):
 if __name__ == '__main__':
     global ex
     app = QApplication(sys.argv)  # QApplication 객체 생성
-    ex = DataCollectorApp(machine_error)  # DataCollectorApp 객체 생성
+    ex = DataCollectorApp(machine_error, ecotap_ip, accura_ip)  # DataCollectorApp 객체 생성
     ex.show()  # 앱 창 표시
     sys.exit(app.exec_())  # 앱 실행 및 종료
